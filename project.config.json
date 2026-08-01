@@ -13,7 +13,9 @@
       "outputPath": ""
     },
     "useCompilerPlugins": false,
-    "minifyWXML": true
+    "minifyWXML": true,
+    "urlCheck": false,
+    "checkSiteMap": false
   },
   "compileType": "miniprogram",
   "simulatorPluginLibVersion": {},
@@ -21,6 +23,6 @@
     "ignore": [],
     "include": []
   },
-  "appid": "wxa103e0f3e7ff3f6c",
+  "appid": "wxREPLACE_WITH_YOUR_APPID_HERE",
   "editorSetting": {}
 }

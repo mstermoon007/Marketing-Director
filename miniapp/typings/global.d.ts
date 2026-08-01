@@ -51,6 +51,17 @@ declare const require: (id: string) => any
 declare const module: any
 declare const exports: any
 
+// 兼容前端打包时注入的 process.env（Vite / Webpack 等常见场景）
+declare const process: {
+  env?: {
+    GITHUB_SEED?: string
+    NODE_ENV?: string
+    [k: string]: string | undefined
+  }
+  version?: string
+  platform?: string
+}
+
 declare const wx: {
   // ===== 网络 =====
   request<T = any>(options: {

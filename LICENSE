@@ -1,0 +1,362 @@
+================================================================================
+                       LICENSE · 版权与授权声明
+                  Marketing Director / 营销战略执行智能体
+                    Copyright © 2026 · 版权所有，保留一切权利
+================================================================================
+
+==============================================================================
+【语言优先级】本文件中英文对照版本并存。中文版本为权威版本，英文版本仅作
+翻译参考；如中英文表述之间存在任何歧义、冲突或不一致，以中文版本为准。
+==============================================================================
+
+
+══════════════════════════════════════════════════════════════════════════════
+                               中文版本（权威版本）
+══════════════════════════════════════════════════════════════════════════════
+
+                                版权声明
+
+          Copyright © 2026  Marketing Director 项目团队（以下简称「版权方」）
+                              版权所有，保留一切权利。
+
+──────────────────────────────────────────────────────────────────────────────
+一、定义
+──────────────────────────────────────────────────────────────────────────────
+1.1 「本项目」或「软件」
+    指本软件及与其一并提供的全部源代码、目标代码、二进制文件、
+    Prompt 模板、行业技能知识库（skills 目录）、UI 组件、
+    配置文件、API 定义、测试用例、文档（含 README、开发文档、
+    设计思路文档）以及任何衍生形式的文件与数据。
+
+1.2 「非商业用途」
+    指任何不直接或间接产生经济利益、不以营利为目的的使用场景，
+    包括但不限于：
+        (a) 个人学习、研究、技术实验、毕业论文写作；
+        (b) 非营利性教育机构的教学演示、学生作业；
+        (c) 在技术会议、学术论文、技术博客中引用代码或截图
+            （须注明出处为本项目 GitHub 仓库）；
+        (d) 慈善机构、公益社团、开源社区中免费提供给
+            不特定第三方使用的非营利性场景。
+
+1.3 「商业用途」
+    指任何直接或间接产生经济利益、用于营利性活动的使用场景，
+    包括但不限于：
+        (a) 以营利为目的，将本项目或其衍生作品作为 SaaS、PaaS、
+            收费 App、收费咨询交付物等付费产品销售或使用；
+        (b) 将本项目嵌入、集成、打包至面向外部客户的
+            商业解决方案、定制化开发项目中；
+        (c) 企业、事业单位、政府机构（含下属单位）将本项目用于
+            其生产、运营、管理、决策等核心业务流程；
+        (d) 通过加盟、分许可、转授权、再许可、多层分销等
+            任何方式将本项目或其衍生作品作为商业资源
+            进行营利性授权；
+        (e) 其他任何以营利为目的、通过使用本项目
+            获取直接或间接商业利益的行为。
+
+──────────────────────────────────────────────────────────────────────────────
+二、授权范围（仅授予非商业用途）
+──────────────────────────────────────────────────────────────────────────────
+2.1 版权方在此授予任何合法获取本项目副本的个人或组织
+    一份**免费的、不可转让的、非独占的、非分许可的**版权许可，
+    仅用于第一条所定义的「非商业用途」，在符合下述条件的前提下
+    可以使用、复制、修改、合并、发布、分发本项目：
+
+    (a) 保留并完整展示本 LICENSE 文件的全部内容；
+    (b) 在任何衍生作品的显眼位置声明「本作品基于 Marketing Director
+        项目二次开发，原项目仅用于研究讨论，商用需授权」
+        并提供本仓库原始链接；
+    (c) 不得去除、修改或遮挡任何版权标识、作者署名、
+        授权声明、徽标或本文件中的任何文字。
+
+2.2 本授权**不包含**：
+    (a) 任何形式的商业用途（无论是否直接收费）；
+    (b) 将版权方的商标、Logo、产品名称、品牌形象
+        用于宣传、营销、推广活动；
+    (c) 以版权方名义对外发布声明、承诺、签署合同
+        或从事任何可能导致第三方误认为与版权方
+        存在合作、代理、赞助关系的行为。
+
+──────────────────────────────────────────────────────────────────────────────
+三、商业用途（须单独书面授权）
+──────────────────────────────────────────────────────────────────────────────
+3.1 任何「商业用途」均须**在实际使用发生之前**，
+    与版权方签署书面授权协议（《商用授权协议》）并
+    根据企业规模、使用场景、地域范围、授权期限等
+    因素支付相应的授权费用。
+
+3.2 商用授权类型（具体以《商用授权协议》为准，以下仅为示例）：
+    ┌─────────────────┬────────────────────────────────────────────────────┐
+    │ 授权类型         │ 适用场景                                            │
+    ├─────────────────┼────────────────────────────────────────────────────┤
+    │ 企业内部版        │ 单家企业内部自用（非对外售卖）                      │
+    │ SaaS 平台版      │ 作为 SaaS/PaaS 平台对外提供服务                    │
+    │ 解决方案集成版   │ 集成到定制化项目 / 行业解决方案中交付给终端客户    │
+    │ 区域独家代理版   │ 特定区域内的独家转授权权利                         │
+    │ 永久买断版       │ 源代码一次性永久买断（具体条款面议）                │
+    └─────────────────┴────────────────────────────────────────────────────┘
+
+3.3 商用授权咨询渠道：
+        📧 Email  :   license@ai-marketing-strategy.example
+        📮 GitHub :   本仓库 GitHub Issues 置顶商务授权帖
+        💬 微信联络 :  本仓库 README.md 「版权与商用授权」章节更新公布
+
+3.4 **未获得书面授权即开展商业使用的，构成侵犯著作权行为。
+    版权方保留向人民法院提起诉讼、要求
+    停止侵权、消除影响、赔礼道歉、赔偿实际损失
+    （含合理律师费、公证费、保全费、诉讼费等）
+    以及追究其刑事责任（如适用）的全部权利。**
+
+──────────────────────────────────────────────────────────────────────────────
+四、专利与商标（明确不授权）
+──────────────────────────────────────────────────────────────────────────────
+4.1 本文件仅授予著作权许可，**不授予任何专利权许可、商标使用权、
+    商业秘密许可或其他知识产权许可**。版权方所享有的任何专利、
+    商标、商号、商品特有包装装潢、商业秘密等权利，
+    不得被视为因本文件而默示授予。
+
+4.2 「Marketing Director」、「营销战略执行智能体」以及项目 Logo
+    均为版权方的商业标识，未经书面同意，不得在任何
+    产品、服务、宣传材料、媒体报道中使用。
+
+──────────────────────────────────────────────────────────────────────────────
+五、免责声明（AS IS）
+──────────────────────────────────────────────────────────────────────────────
+5.1 本项目按「原样（AS IS）」提供，**不附有任何明示或默示的担保**，
+    包括但不限于：
+        (a) 对适销性、特定用途适用性、不侵权的默示担保；
+        (b) 本项目完全无缺陷、无错误、无漏洞、无病毒、
+            无后门、不间断运行的担保；
+        (c) 本项目输出的 AI 内容、营销建议、诊断结论、
+            任务规划、复盘报告等与真实商业结果的
+            适配性、准确性、法律合规性、道德正当性的担保。
+
+5.2 在任何情况下，版权方、作者、贡献者均不对以下任何损失承担责任
+    （即使已被告知该等损失发生的可能性）：
+        · 任何直接损失、间接损失、附带损失、特殊损失、
+          衍生性损失、惩罚性损失；
+        · 利润损失、业务中断、信息丢失、数据丢失、
+          客户流失、商誉损失、营业中断损失；
+        · 因违反合同、侵权（含疏忽）、严格责任或其他
+          任何法理而产生的损失；
+        · 因微信平台、大语言模型 API、服务器运营商、
+          网络服务提供商、操作系统升级等第三方行为
+          导致的兼容性问题或服务中断。
+
+5.3 AI 内容特别提示：
+    本项目涉及调用大语言模型（LLM）自动生成内容。
+    LLM 生成内容可能存在事实错误、数据幻觉、法律不当、
+    伦理偏差。用户应自行承担使用 AI 输出内容的全部责任，
+    对于真实商业决策须结合人工专业判断进行二次验证。
+    版权方不对 AI 输出内容承担任何直接或间接责任。
+
+──────────────────────────────────────────────────────────────────────────────
+六、用户内容与数据
+──────────────────────────────────────────────────────────────────────────────
+6.1 用户在使用本项目过程中上传、输入、生成的
+    所有文本、图片、文档、音频、视频、业务数据等内容
+    （以下统称「用户内容」），其所有权、知识产权
+    均归用户或其合法权利人所有。
+
+6.2 用户保证其上传、输入、使用的所有内容不侵犯任何
+    第三方的合法权益，不违反任何适用法律法规、
+    公序良俗、平台规则。因用户内容产生的任何纠纷、
+    索赔、处罚，均由用户自行承担。
+
+──────────────────────────────────────────────────────────────────────────────
+七、终止
+──────────────────────────────────────────────────────────────────────────────
+7.1 若用户违反本文件的任何条款（尤其是「非商业用途」限制），
+    本授权自动终止，无需版权方另行通知。
+
+7.2 授权终止后，用户必须立即：
+    (a) 停止使用本项目的一切行为；
+    (b) 以任何方式（含但不限于删除、销毁、格式化）
+        清除其控制范围内的全部本项目副本及衍生作品；
+    (c) 如存在商业侵权行为，按照版权方要求
+        配合完成侵权调查、提供真实销售数据、
+        配合审计并支付侵权赔偿。
+
+──────────────────────────────────────────────────────────────────────────────
+八、法律适用与争议解决
+──────────────────────────────────────────────────────────────────────────────
+8.1 本文件的订立、生效、履行、解释、修改、终止以及
+    与本文件或本项目相关的任何争议、纠纷、索赔，
+    均适用**中华人民共和国法律**（不含其冲突法规范）。
+
+8.2 因本文件或使用本项目引起的或与之相关的任何争议，
+    各方应首先友好协商解决；协商不成的，任何一方均有权
+    提交至**版权方所在地有管辖权的人民法院**诉讼解决。
+
+8.3 本文件任何条款被有管辖权的人民法院认定为无效、
+    非法或不可执行的，其余条款的有效性、合法性、
+    可执行性不受影响。
+
+──────────────────────────────────────────────────────────────────────────────
+九、完整协议与修改
+──────────────────────────────────────────────────────────────────────────────
+9.1 本文件（连同 README.md、开发文档中的版权声明章节）
+    构成版权方与用户之间关于本项目使用授权的
+    完整协议，并取代双方此前就同一事项达成的
+    所有口头或书面沟通、谅解、备忘录或协议。
+
+9.2 版权方有权随时修改本文件。修改后的版本自
+    发布于本仓库 LICENSE 文件之日起生效。
+    继续使用本项目视为用户接受修改后的版本。
+
+
+══════════════════════════════════════════════════════════════════════════════
+                           ENGLISH VERSION (Reference Only)
+══════════════════════════════════════════════════════════════════════════════
+
+                            COPYRIGHT NOTICE
+
+    Copyright © 2026 Marketing Director Project Team ("The Copyright Holder")
+                        ALL RIGHTS RESERVED.
+
+──────────────────────────────────────────────────────────────────────────────
+1. DEFINITIONS
+──────────────────────────────────────────────────────────────────────────────
+a) "The Project" or "the Software" means ALL of the files, source code,
+   binaries, prompts, industry skills knowledge bases, UI components,
+   configs, API definitions, tests, documentation and all derivative works
+   distributed with or derived from this repository.
+b) "Non-Commercial Use" means any use that does NOT directly or indirectly
+   generate economic benefit and is NOT directed towards commercial advantage
+   or monetary compensation.
+c) "Commercial Use" means ANY use for commercial advantage or monetary
+   compensation, including but not limited to SaaS deployment, paid apps,
+   paid consulting deliverables, integration into commercial customer-facing
+   solutions, enterprise internal production usage, sublicensing, resale,
+   franchise models or multi-level distribution.
+
+──────────────────────────────────────────────────────────────────────────────
+2. LICENSE GRANT — NON-COMMERCIAL USE ONLY
+──────────────────────────────────────────────────────────────────────────────
+Permission is hereby granted, FREE OF CHARGE, to any person or organization
+obtaining a copy of the Project, a worldwide, royalty-free, non-exclusive,
+non-transferable, non-sublicensable license to use, copy, modify, merge,
+publish and distribute the Project SOLELY FOR NON-COMMERCIAL PURPOSES,
+subject to the following conditions:
+
+   a) This entire LICENSE file must be retained IN FULL in all copies
+      or substantial portions of the Project.
+   b) Any derivative work must include a prominent notice:
+      "This work is derivative of Marketing Director. Original project is
+       for RESEARCH & DISCUSSION ONLY — commercial use REQUIRES WRITTEN
+       LICENSE from the Copyright Holder."
+      and provide a link back to this original GitHub repository.
+   c) No copyright notice, author attribution, brand logo or any text
+      within this file may be removed, modified or obscured.
+
+NO COMMERCIAL RIGHTS ARE GRANTED BY THIS FILE.
+
+──────────────────────────────────────────────────────────────────────────────
+3. COMMERCIAL USE REQUIRES WRITTEN LICENSE
+──────────────────────────────────────────────────────────────────────────────
+ANY Commercial Use, whether direct or indirect, whether paid or bundled
+with other paid offerings, REQUIRES A SEPARATE WRITTEN LICENSE AGREEMENT
+executed between the user and the Copyright Holder BEFORE the Commercial
+Use commences.
+
+Available Commercial License tiers (subject to separate agreement):
+   • Enterprise Internal License (single company internal use only)
+   • SaaS Platform License          (offering Project-derived features as SaaS)
+   • Solution Integration License   (embed into customer-facing projects)
+   • Regional Exclusive License     (exclusive regional distribution rights)
+   • Perpetual Buyout License       (one-time buyout of full source rights)
+
+Commercial Licensing Inquiries:
+   📧 Email  :  license@ai-marketing-strategy.example
+   📮 GitHub :  Pinned "Commercial License" issue in this repository
+
+⚠️ ANY COMMERCIAL USE WITHOUT A VALID SIGNED WRITTEN LICENSE CONSTITUTES
+COPYRIGHT INFRINGEMENT. The Copyright Holder reserves ALL rights to pursue
+legal action, including injunctions, full compensatory damages, punitive
+damages, reimbursement of ALL legal fees, and criminal liability if
+applicable under the laws of the People's Republic of China.
+
+──────────────────────────────────────────────────────────────────────────────
+4. NO PATENT / TRADEMARK LICENSE
+──────────────────────────────────────────────────────────────────────────────
+This file grants a COPYRIGHT LICENSE ONLY. NO license is granted, whether
+expressly, by implication, by estoppel or otherwise, to any patents,
+trademarks, service marks, trade names, logos, trade secrets, or other
+intellectual property rights of the Copyright Holder.
+
+The trademarks "Marketing Director" and all related logos, product names
+and branding are proprietary and may NOT be used in any product, service,
+promotional material or press release without prior written consent.
+
+──────────────────────────────────────────────────────────────────────────────
+5. DISCLAIMER OF WARRANTY (THE SOFTWARE IS PROVIDED "AS IS")
+──────────────────────────────────────────────────────────────────────────────
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+SPECIFIC AI CONTENT DISCLAIMER:
+This Project calls Large Language Model (LLM) APIs to generate automated
+content. LLM outputs may contain factual errors, hallucinations, legally
+problematic statements or ethical biases. THE USER BEARS FULL SOLE
+RESPONSIBILITY for any decisions, actions or omissions based on LLM
+outputs. All real-world business decisions MUST undergo a second manual
+verification by qualified human professionals.
+
+──────────────────────────────────────────────────────────────────────────────
+6. TERMINATION
+──────────────────────────────────────────────────────────────────────────────
+This license and all rights granted hereunder terminate AUTOMATICALLY and
+IMMEDIATELY WITHOUT NOTICE from the Copyright Holder if the user materially
+breaches any provision of this file (in particular but not limited to the
+"Non-Commercial Use" restriction). Upon termination the user must (a) cease
+all use of the Project, (b) destroy ALL copies and derivative works in the
+user's possession or control by any means (deletion, overwriting, secure
+erasure, physical destruction of media) and (c) if any commercial
+infringement has occurred, fully cooperate with the Copyright Holder's
+investigation, provide complete and truthful revenue data, and pay
+full compensatory damages including all legal and audit costs.
+
+──────────────────────────────────────────────────────────────────────────────
+7. GOVERNING LAW & JURISDICTION
+──────────────────────────────────────────────────────────────────────────────
+This file is governed by and construed in accordance with the LAWS OF THE
+PEOPLE'S REPUBLIC OF CHINA, excluding its conflict-of-law rules. Any and
+all disputes, claims or controversies arising out of or in connection with
+this file, its breach, termination, validity, interpretation, enforcement,
+or use of the Project shall be referred to and finally resolved by
+EXCLUSIVE JURISDICTION OF THE COMPETENT PEOPLE'S COURT located at the
+Copyright Holder's principal place of business in the People's Republic of
+China.
+
+──────────────────────────────────────────────────────────────────────────────
+8. SEVERABILITY
+──────────────────────────────────────────────────────────────────────────────
+If any provision of this file is held to be illegal, invalid or
+unenforceable by a court of competent jurisdiction, then such provision
+shall be deemed severable and shall not affect the validity and
+enforceability of the remaining provisions, which shall remain in full
+force and effect.
+
+──────────────────────────────────────────────────────────────────────────────
+9. ENTIRE AGREEMENT
+──────────────────────────────────────────────────────────────────────────────
+This file (together with the Copyright sections in README.md and the
+Chinese-language development document) constitutes the ENTIRE AGREEMENT
+between the user and the Copyright Holder and supersedes all prior or
+contemporaneous oral or written communications, understandings, MOUs,
+statements or agreements relating to the same subject matter.
+
+The Copyright Holder reserves the right to modify this file at any time.
+Any modifications shall be effective immediately upon posting to the
+LICENSE file in this repository. Continued use of the Project after such
+posting constitutes acceptance of the modified terms.
+
+================================================================================
+                              · END OF LICENSE ·
+================================================================================
+                         All Rights Reserved · 版权所有
+================================================================================
