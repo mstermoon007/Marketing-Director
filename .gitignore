@@ -1,0 +1,131 @@
+# =========================================================================
+# .gitignore — AI营销战略执行智能体（GitHub开源标准三合一）
+# 参考：https://github.com/github/gitignore 下的 Node.gitignore / Python.gitignore / macOS.gitignore
+# =========================================================================
+
+# ----------------------------- macOS / Windows ---------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ----------------------------- Editor / IDE ------------------------------
+# Trae AI 本地会话缓存（不入库）
+.trae/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-workspace
+
+# ----------------------------- Node / 微信小程序 -------------------------
+node_modules/
+miniprogram_npm/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+.npm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dist/
+build/
+out/
+coverage/
+*.tsbuildinfo
+.cache/
+.parcel-cache/
+
+# 微信开发者工具本地产物
+project.private.config.json
+.check-result.json
+check-report.json
+miniapp/check-report.json  # 兼容路径
+
+# ----------------------------- Python -----------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Python 虚拟环境（所有常见命名）
+.venv/
+venv/
+ENV/
+env/
+.python-version
+
+# pip 相关
+pip-log.txt
+pip-delete-this-directory.txt
+
+# pytest / coverage
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter / IPython
+.ipynb_checkpoints
+IPython/
+
+# ----------------------------- Env / Secrets（禁止入库！） ----------------
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+credentials.json
+client_secret.json
+.vault
+
+# ----------------------------- App Data ---------------------------------
+# 本地数据库（生产 DB 永不入库）
+data/app.db
+data/*.db
+data/*.sqlite*
+data/uploads/
+uploads/
+
+# 临时文件
+*.tmp
+*.bak
+*.old
+*.log
+logs/

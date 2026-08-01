@@ -1,0 +1,60 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="loading-wrap">
+    <view class="loading-spinner"></view>
+    <view class="loading-text">正在加载作战路线图...</view>
+  </view>
+
+  <block wx:if="{{!loading && phases.length > 0}}">
+    <view class="roadmap-header">
+      <view class="goal-icon">🎯</view>
+      <view class="goal-title">{{overallGoal}}</view>
+      <view class="week-info-row">
+        <picker mode="selector" range="{{weekOptions}}" value="{{weekIndex}}" bindchange="onWeekChange">
+          <view class="week-picker">
+            <text class="week-current">第 {{currentWeek}} 周</text>
+            <text class="week-arrow">▼</text>
+          </view>
+        </picker>
+        <view class="week-divider">/</view>
+        <view class="week-total">共 {{totalWeeks}} 周</view>
+        <view class="phase-badge" wx:if="{{phaseInfo}}">
+          {{phaseInfo.phase_name}} · {{phaseInfo.weeks_cover}}周
+        </view>
+      </view>
+    </view>
+
+    <view class="phase-section">
+      <progress-bar
+        currentWeek="{{currentWeek}}"
+        totalWeeks="{{totalWeeks}}"
+        phaseIndex="{{phaseInfo.phase_index}}"
+        phaseName="{{phaseInfo.phase_name}}"
+      />
+    </view>
+
+    <view class="phase-section">
+      <view class="section-title">三阶段作战路线图</view>
+      <phase-timeline currentWeek="{{currentWeek}}" phases="{{phases}}" />
+    </view>
+
+    <view class="action-bar-spacer"></view>
+    <view class="action-bar">
+      <button class="action-btn action-btn-secondary" bindtap="onGoDiagnosis">
+        <text class="btn-icon">🔙</text>
+        <text>查看诊断报告</text>
+      </button>
+      <button class="action-btn action-btn-primary" bindtap="onGoWeekly">
+        <text class="btn-icon">📅</text>
+        <text>查看本周任务 →</text>
+      </button>
+    </view>
+  </block>
+
+  <empty-state
+    wx:if="{{!loading && phases.length === 0}}"
+    icon="🗺️"
+    text="请先完成营销诊断"
+    action-text="去做诊断"
+    bind:action="onGoDiagnosis"
+  />
+</view>

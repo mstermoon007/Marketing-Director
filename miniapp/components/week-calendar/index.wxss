@@ -1,0 +1,145 @@
+.week-calendar {
+  padding: var(--spacing-md) var(--spacing-sm);
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.week-scroll {
+  width: 100%;
+}
+
+.week-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: var(--spacing-xs);
+}
+
+.week-day {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: var(--spacing-sm) var(--spacing-xs);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+  min-height: 160rpx;
+  position: relative;
+}
+
+.weekday-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.date-wrap {
+  position: relative;
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin-bottom: var(--spacing-xs);
+}
+
+.date-num {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.today-tag {
+  position: absolute;
+  top: -6rpx;
+  right: -6rpx;
+  width: 28rpx;
+  height: 28rpx;
+  background: var(--color-primary);
+  color: var(--color-white);
+  font-size: 18rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.day-today .date-wrap {
+  border: 2rpx solid var(--color-primary);
+}
+
+.day-today .weekday-label {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.day-active {
+  background: var(--color-primary);
+}
+
+.day-active .weekday-label {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.day-active .date-num {
+  color: var(--color-white);
+  font-weight: 700;
+}
+
+.day-active .date-wrap {
+  border: none;
+}
+
+.day-active .today-tag {
+  background: var(--color-white);
+  color: var(--color-primary);
+}
+
+.day-active .rate-bg {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.day-active .rate-fill {
+  background: var(--color-white);
+}
+
+.day-active .rate-dot {
+  background: var(--color-white);
+}
+
+.rate-indicator {
+  width: 80%;
+  margin-top: auto;
+  padding-top: var(--spacing-xs);
+}
+
+.rate-bg {
+  width: 100%;
+  height: 8rpx;
+  background: var(--color-border);
+  border-radius: var(--radius-round);
+  overflow: hidden;
+}
+
+.rate-fill {
+  height: 100%;
+  background: var(--color-success);
+  border-radius: var(--radius-round);
+  transition: width 0.3s ease;
+}
+
+.rate-dot {
+  position: absolute;
+  bottom: 12rpx;
+  right: 50%;
+  transform: translateX(50%);
+  width: 12rpx;
+  height: 12rpx;
+  background: var(--color-success);
+  border-radius: 50%;
+}

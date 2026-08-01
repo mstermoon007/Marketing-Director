@@ -1,0 +1,64 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/onboarding/index",
+    "pages/profile/index",
+    "pages/diagnosis/index",
+    "pages/roadmap/index",
+    "pages/weekly-plan/index",
+    "pages/task-detail/index",
+    "pages/review/index",
+    "pages/home/index",
+    "pages/plan/index",
+    "pages/plan/day",
+    "pages/upload/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "AI营销战略助手",
+    "navigationBarBackgroundColor": "#1989fa",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f7f8fa",
+    "enablePullDownRefresh": false
+  },
+  "tabBar": {
+    "color": "#7d7e80",
+    "selectedColor": "#1989fa",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "工作台",
+        "iconPath": "static/tab-profile.png",
+        "selectedIconPath": "static/tab-profile-active.png"
+      },
+      {
+        "pagePath": "pages/roadmap/index",
+        "text": "路线图",
+        "iconPath": "static/tab-plan.png",
+        "selectedIconPath": "static/tab-plan-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "static/tab-review.png",
+        "selectedIconPath": "static/tab-review-active.png"
+      }
+    ]
+  },
+  "usingComponents": {
+    "card": "/components/card/index",
+    "loading": "/components/loading/index",
+    "empty-state": "/components/empty-state/index"
+  },
+  "networkTimeout": {
+    "request": 30000,
+    "uploadFile": 60000
+  },
+  "permission": {
+    "scope.userInfo": {
+      "desc": "用于个性化营销建议"
+    }
+  },
+  "sitemapLocation": "sitemap.json"
+}

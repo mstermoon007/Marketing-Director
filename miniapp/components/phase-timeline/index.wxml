@@ -1,0 +1,47 @@
+<view class="phase-timeline">
+  <view class="timeline-line"></view>
+  <view
+    class="phase-item"
+    wx:for="{{displayPhases}}"
+    wx:key="phase_index"
+  >
+    <view class="timeline-dot-wrap">
+      <view
+        class="timeline-dot {{item.isCurrent ? 'dot-current' : ''}} {{item.isCompleted ? 'dot-completed' : ''}} {{item.isPending ? 'dot-pending' : ''}}"
+      ></view>
+    </view>
+    <view
+      class="phase-card {{item.isCurrent ? 'card-current' : ''}} {{item.isCompleted ? 'card-completed' : ''}}"
+    >
+      <view class="phase-header">
+        <view class="phase-title-wrap">
+          <text class="phase-name">{{item.phase_name}}</text>
+          <text class="phase-weeks">第{{item.weeks_cover}}周</text>
+        </view>
+        <view class="phase-badge" wx:if="{{item.isCurrent}}">进行中</view>
+        <view class="phase-badge badge-done" wx:elif="{{item.isCompleted}}">已完成</view>
+        <view class="phase-badge badge-pending" wx:else>待开始</view>
+      </view>
+
+      <view class="phase-section">
+        <view class="section-label">关键动作</view>
+        <view class="action-list">
+          <view
+            class="action-item"
+            wx:for="{{item.actionsWithStatus}}"
+            wx:for-item="action"
+            wx:key="text"
+          >
+            <text class="action-icon">{{action.icon}}</text>
+            <text class="action-text">{{action.text}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="phase-section">
+        <view class="section-label">成功标准</view>
+        <view class="success-criteria">{{item.success_criteria}}</view>
+      </view>
+    </view>
+  </view>
+</view>

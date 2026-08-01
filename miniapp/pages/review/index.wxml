@@ -1,0 +1,229 @@
+<view class="page">
+  <view class="content">
+    <view class="type-selector">
+      <view
+        class="type-tag {{reviewType === 'weekly' ? 'active' : ''}}"
+        data-type="weekly"
+        bindtap="onSelectReviewType"
+      >周复盘</view>
+      <view
+        class="type-tag {{reviewType === 'monthly' ? 'active' : ''}}"
+        data-type="monthly"
+        bindtap="onSelectReviewType"
+      >月复盘</view>
+      <view
+        class="type-tag {{reviewType === 'quarterly' ? 'active' : ''}}"
+        data-type="quarterly"
+        bindtap="onSelectReviewType"
+      >季复盘</view>
+    </view>
+
+    <view wx:if="{{reviewType === 'weekly'}}" class="week-label">第{{weekNumber}}周</view>
+
+    <view class="question-card">
+      <view class="question-header">
+        <text class="question-num">Q1</text>
+        <text class="question-title">本周完成了哪些任务？</text>
+      </view>
+      <textarea
+        class="question-textarea"
+        placeholder="列出本周已完成的任务，越详细越好..."
+        placeholder-class="textarea-placeholder"
+        auto-height
+        value="{{formData.completed_tasks}}"
+        data-field="completed_tasks"
+        bindinput="onInput"
+        maxlength="1000"
+      />
+    </view>
+
+    <view class="question-card">
+      <view class="question-header">
+        <text class="question-num">Q2</text>
+        <text class="question-title">哪些任务没完成？为什么？</text>
+      </view>
+      <textarea
+        class="question-textarea"
+        placeholder="未完成的任务及原因分析..."
+        placeholder-class="textarea-placeholder"
+        auto-height
+        value="{{formData.incomplete_tasks}}"
+        data-field="incomplete_tasks"
+        bindinput="onInput"
+        maxlength="1000"
+      />
+    </view>
+
+    <view class="question-card">
+      <view class="question-header">
+        <text class="question-num">Q3</text>
+        <text class="question-title">本周最大的收获是什么？</text>
+      </view>
+      <textarea
+        class="question-textarea"
+        placeholder="经验、洞察、突破...都可以写下来"
+        placeholder-class="textarea-placeholder"
+        auto-height
+        value="{{formData.key_takeaway}}"
+        data-field="key_takeaway"
+        bindinput="onInput"
+        maxlength="1000"
+      />
+    </view>
+
+    <view class="question-card">
+      <view class="question-header">
+        <text class="question-num">Q4</text>
+        <text class="question-title">遇到了什么困难？</text>
+      </view>
+      <textarea
+        class="question-textarea"
+        placeholder="阻碍、挑战、卡点...诚实面对"
+        placeholder-class="textarea-placeholder"
+        auto-height
+        value="{{formData.difficulties}}"
+        data-field="difficulties"
+        bindinput="onInput"
+        maxlength="1000"
+      />
+    </view>
+
+    <view class="question-card">
+      <view class="question-header">
+        <text class="question-num">Q5</text>
+        <text class="question-title">数据截图（可选）</text>
+        <text class="question-tip">建议上传</text>
+      </view>
+
+      <view wx:if="{{formData.images && formData.images.length > 0}}" class="images-grid">
+        <view
+          class="image-item"
+          wx:for="{{formData.images}}"
+          wx:key="*this"
+          data-idx="{{index}}"
+          bindtap="onPreviewImage"
+        >
+          <image class="image-preview" src="{{item}}" mode="aspectFill"></image>
+          <view
+            class="image-remove"
+            catchtap="onRemoveImage"
+            data-idx="{{index}}"
+          >×</view>
+        </view>
+      </view>
+
+      <view
+        wx:if="{{!formData.images || formData.images.length < 9}}"
+        class="upload-btn"
+        bindtap="onSelectImages"
+      >
+        <text class="upload-icon">📷</text>
+        <text class="upload-text">上传截图</text>
+      </view>
+    </view>
+
+    <view wx:if="{{showAnalysis}}" class="question-card ai-card">
+      <view class="question-header ai-header">
+        <text class="question-num">Q6</text>
+        <text class="question-title">AI智能分析</text>
+        <view wx:if="{{!aiProcessing && latestReview}}" class="refresh-btn" bindtap="onRefreshAnalysis">
+          <text>刷新</text>
+        </view>
+      </view>
+
+      <view wx:if="{{analysisLoading}}" class="ai-loading">
+        <view class="ai-spinner"></view>
+        <view class="ai-loading-text">AI分析中...</view>
+      </view>
+
+      <view wx:elif="{{aiProcessing}}" class="ai-loading">
+        <view class="ai-emoji">🤖</view>
+        <view class="ai-loading-text">AI正在分析你的复盘...</view>
+        <view class="ai-sub-text">预计30秒左右完成</view>
+      </view>
+
+      <block wx:elif="{{latestReview}}">
+        <view class="summary-card">
+          <view class="summary-title">📊 总评</view>
+          <view class="summary-text">{{latestReview.summary}}</view>
+        </view>
+
+        <view wx:if="{{metrics.length > 0}}" class="metrics-section">
+          <view class="section-label">📈 指标对比</view>
+          <view
+            class="metric-item"
+            wx:for="{{metrics}}"
+            wx:key="name"
+          >
+            <view class="metric-header">
+              <text class="metric-name">{{item.name}}</text>
+              <text class="metric-value">{{item.actual}}/{{item.target}}</text>
+            </view>
+            <view class="metric-bar-outer">
+              <view
+                class="metric-bar-inner {{item.achieved ? 'achieved' : 'not-achieved'}}"
+                style="width: {{item.percent}}%"
+              ></view>
+            </view>
+          </view>
+        </view>
+
+        <view wx:if="{{latestReview.what_worked && latestReview.what_worked.length > 0}}" class="worked-section">
+          <view class="section-label worked-label">✅ 做得好的地方</view>
+          <view
+            class="worked-item"
+            wx:for="{{latestReview.what_worked}}"
+            wx:key="*this"
+          >
+            <text class="worked-bullet">+</text>
+            <text class="worked-text">{{item}}</text>
+          </view>
+        </view>
+
+        <view wx:if="{{latestReview.what_didnt && latestReview.what_didnt.length > 0}}" class="didnt-section">
+          <view class="section-label didnt-label">❌ 做得不好的地方</view>
+          <view
+            class="didnt-item"
+            wx:for="{{latestReview.what_didnt}}"
+            wx:key="*this"
+          >
+            <text class="didnt-bullet">-</text>
+            <text class="didnt-text">{{item}}</text>
+          </view>
+        </view>
+
+        <view wx:if="{{latestReview.suggestions && latestReview.suggestions.length > 0}}" class="suggestions-section">
+          <view class="section-label suggestions-label">💡 AI建议</view>
+          <view
+            class="suggestion-item"
+            wx:for="{{latestReview.suggestions}}"
+            wx:key="*this"
+          >
+            <view class="suggestion-index">{{index + 1}}</view>
+            <text class="suggestion-text">{{item}}</text>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <view class="bottom-placeholder"></view>
+  </view>
+
+  <view class="bottom-bar">
+    <view
+      class="submit-btn {{submitting ? 'disabled' : ''}}"
+      bindtap="onSubmitReview"
+    >
+      <view wx:if="{{submitting}}" class="submit-loading">
+        <view class="submit-progress-outer">
+          <view class="submit-progress-inner" style="width: {{submittingProgress}}%"></view>
+        </view>
+        <text class="submit-loading-text">提交中 {{submittingProgress}}%</text>
+      </view>
+      <view wx:else class="submit-content">
+        <text class="submit-text">提交复盘</text>
+        <text class="submit-arrow">→</text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,322 @@
+/* 工作台首页 */
+.page {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding-bottom: 120rpx;
+}
+
+/* 欢迎横幅 */
+.welcome-banner {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: #fff;
+  padding: 60rpx 48rpx;
+  border-radius: 0 0 32rpx 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.welcome-title {
+  font-size: 44rpx;
+  font-weight: 700;
+  margin-bottom: 12rpx;
+}
+
+.welcome-subtitle {
+  font-size: 30rpx;
+  opacity: 0.9;
+  margin-bottom: 16rpx;
+  line-height: 1.5;
+}
+
+.welcome-date {
+  font-size: 26rpx;
+  opacity: 0.7;
+}
+
+/* 步骤流程 */
+.step-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx 48rpx;
+  margin: 0 24rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+  margin-bottom: 24rpx;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.step-icon {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: #f0f0f0;
+  color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: 700;
+  transition: all 0.3s;
+}
+
+.step.done .step-icon {
+  background: #4caf50;
+  color: #fff;
+}
+
+.step.active .step-icon {
+  background: #1a1a2e;
+  color: #fff;
+  animation: pulse 1.5s infinite;
+}
+
+.step-label {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.step.done .step-label {
+  color: #4caf50;
+}
+
+.step.active .step-label {
+  color: #1a1a2e;
+  font-weight: 600;
+}
+
+.step-line {
+  width: 80rpx;
+  height: 4rpx;
+  background: #f0f0f0;
+  margin: 0 12rpx;
+  margin-bottom: 30rpx;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* 目标列表 */
+.goal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.goal-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.5;
+}
+
+.goal-marker {
+  flex-shrink: 0;
+}
+
+/* 指标行 */
+.metrics-row {
+  display: flex;
+  margin: 0 24rpx;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.metric-box {
+  flex: 1;
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  text-align: center;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+}
+
+.metric-value {
+  font-size: 40rpx;
+  font-weight: 800;
+  color: #1a1a2e;
+}
+
+.metric-label {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 6rpx;
+}
+
+/* 快捷操作网格 */
+.action-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  background: #f7f8fa;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  flex: 1 1 calc(50% - 10rpx);
+  min-width: calc(50% - 10rpx);
+}
+
+.action-icon {
+  font-size: 44rpx;
+}
+
+.action-text {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+/* 诊断摘要 */
+.diag-score {
+  text-align: center;
+  padding: 16rpx 0 24rpx;
+}
+
+.score-num {
+  font-size: 72rpx;
+  font-weight: 800;
+  color: #1a1a2e;
+}
+
+.score-label {
+  font-size: 26rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+
+.diag-strategy {
+  background: #f0f9ff;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  font-size: 26rpx;
+  color: #0c4a6e;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* 引导步骤 */
+.onboarding-steps {
+  background: #fff;
+  margin: 24rpx;
+  border-radius: 16rpx;
+  padding: 40rpx 32rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+}
+
+.onboarding-item {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.onboarding-item:last-child {
+  border-bottom: none;
+}
+
+.onboarding-num {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.onboarding-text {
+  font-size: 30rpx;
+  color: #333;
+}
+
+/* 操作按钮 */
+.action-area {
+  padding: 40rpx 36rpx;
+}
+
+/* 底部 */
+.bottom-area {
+  display: flex;
+  justify-content: center;
+  padding: 40rpx;
+}
+
+.reset-link {
+  font-size: 26rpx;
+  color: #999;
+  text-decoration: underline;
+}
+
+/* 行业技能卡片 */
+.skill-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 20rpx;
+  padding-bottom: 16rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.skill-header .skill-icon {
+  font-size: 36rpx;
+}
+
+.skill-header .skill-label {
+  font-size: 26rpx;
+  color: #0c4a6e;
+  font-weight: 600;
+}
+
+.skill-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.skill-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 12rpx;
+  padding: 16rpx 20rpx;
+  background: linear-gradient(135deg, #f0f9ff, #f0f4ff);
+  border-radius: 12rpx;
+  font-size: 26rpx;
+  color: #333;
+  line-height: 1.5;
+}
+
+.skill-tip .tip-bullet {
+  flex-shrink: 0;
+  font-size: 28rpx;
+}
+
+.skill-tip .tip-text {
+  flex: 1;
+}
+
+.skill-hint {
+  margin-top: 20rpx;
+  font-size: 24rpx;
+  color: #999;
+  text-align: center;
+}

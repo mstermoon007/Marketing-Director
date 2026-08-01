@@ -1,0 +1,104 @@
+.task-card {
+  background: #fff;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  margin: var(--spacing-md) 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.task-done {
+  opacity: 0.7;
+}
+
+.task-done .task-title {
+  text-decoration: line-through;
+  color: var(--color-text-secondary);
+}
+
+.task-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+}
+
+.task-icon {
+  font-size: 40rpx;
+  flex-shrink: 0;
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.5;
+  margin-bottom: 12rpx;
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.time-slot {
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+  background: var(--color-background-light);
+  padding: 4rpx 16rpx;
+  border-radius: var(--radius-xs);
+}
+
+.status-label {
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+}
+
+.task-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: 1rpx solid var(--color-border-light);
+}
+
+.btn-detail,
+.btn-checkin {
+  flex: 1;
+  height: 72rpx;
+  line-height: 72rpx;
+  border-radius: var(--radius-round);
+  font-size: 28rpx;
+  padding: 0;
+  margin: 0;
+}
+
+.btn-detail {
+  background: #fff;
+  color: var(--color-primary);
+  border: 2rpx solid var(--color-primary);
+}
+
+.btn-detail::after {
+  border: none;
+}
+
+.btn-checkin {
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+}
+
+.btn-checkin::after {
+  border: none;
+}

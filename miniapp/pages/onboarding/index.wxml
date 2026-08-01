@@ -1,0 +1,290 @@
+<view class="onboarding-container">
+  <view class="step-bar">
+    <view class="step-bar-inner">
+      <view
+        class="step-node {{index <= currentStep ? 'active' : ''}} {{index === currentStep ? 'current' : ''}}"
+        wx:for="{{stepTitles}}"
+        wx:key="index"
+      >
+        <view class="step-circle">{{index + 1}}</view>
+        <view class="step-label">{{item}}</view>
+      </view>
+    </view>
+    <view class="step-progress">
+      <view class="step-progress-inner" style="width: {{(currentStep / 3) * 100}}%"></view>
+    </view>
+  </view>
+
+  <view class="form-card">
+    <block wx:if="{{currentStep === 0}}">
+      <view class="card-title">{{stepTitles[0]}}</view>
+      <view class="form-item">
+        <text class="form-label">企业名称 <text class="required">*</text></text>
+        <input
+          class="form-input"
+          placeholder="请输入企业名称"
+          value="{{formData.company_name}}"
+          data-field="company_name"
+          bindinput="onInput"
+        />
+      </view>
+      <view class="form-item">
+        <text class="form-label">所属行业 <text class="required">*</text></text>
+        <picker
+          mode="selector"
+          range="{{industries}}"
+          value="{{industryIndex}}"
+          data-field="industry"
+          data-source="industries"
+          bindchange="onPickerChange"
+        >
+          <view class="form-picker {{formData.industry ? '' : 'placeholder'}}">
+            {{formData.industry || '请选择行业'}}
+            <text class="arrow">›</text>
+          </view>
+        </picker>
+      </view>
+      <view class="form-item">
+        <text class="form-label">所在城市 <text class="required">*</text></text>
+        <input
+          class="form-input"
+          placeholder="例：上海市 浦东新区"
+          value="{{formData.city}}"
+          data-field="city"
+          bindinput="onInput"
+        />
+      </view>
+      <view class="form-item">
+        <text class="form-label">团队规模 <text class="required">*</text></text>
+        <picker
+          mode="selector"
+          range="{{teamSizes}}"
+          value="{{teamSizeIndex}}"
+          data-field="team_size"
+          data-source="teamSizes"
+          bindchange="onPickerChange"
+        >
+          <view class="form-picker {{formData.team_size ? '' : 'placeholder'}}">
+            {{formData.team_size || '请选择团队规模'}}
+            <text class="arrow">›</text>
+          </view>
+        </picker>
+      </view>
+    </block>
+
+    <block wx:elif="{{currentStep === 1}}">
+      <view class="card-title">{{stepTitles[1]}}</view>
+      <view class="form-item">
+        <text class="form-label">主营产品/服务 <text class="required">*</text></text>
+        <textarea
+          class="form-textarea"
+          placeholder="请描述您的主营产品或服务，例：精品咖啡馆、少儿英语培训..."
+          value="{{formData.main_product}}"
+          data-field="main_product"
+          bindinput="onInput"
+          auto-height
+        />
+      </view>
+      <view class="form-item">
+        <text class="form-label">客单价范围 <text class="required">*</text></text>
+        <picker
+          mode="selector"
+          range="{{priceRanges}}"
+          value="{{priceRangeIndex}}"
+          data-field="price_range"
+          data-source="priceRanges"
+          bindchange="onPickerChange"
+        >
+          <view class="form-picker {{formData.price_range ? '' : 'placeholder'}}">
+            {{formData.price_range || '请选择客单价范围'}}
+            <text class="arrow">›</text>
+          </view>
+        </picker>
+      </view>
+      <view class="form-item">
+        <text class="form-label">目标客户画像 <text class="required">*</text></text>
+        <textarea
+          class="form-textarea"
+          placeholder="描述您的核心客户群体，例：25-35岁都市白领、注重品质与体验..."
+          value="{{formData.target_customer}}"
+          data-field="target_customer"
+          bindinput="onInput"
+          auto-height
+        />
+      </view>
+    </block>
+
+    <block wx:elif="{{currentStep === 2}}">
+      <view class="card-title">{{stepTitles[2]}}</view>
+      <view class="form-item">
+        <text class="form-label">现有营销渠道（多选） <text class="required">*</text></text>
+        <view class="channel-tags">
+          <view
+            class="channel-tag {{formData.current_channels.indexOf(item) > -1 ? 'active' : ''}}"
+            wx:for="{{marketingChannels}}"
+            wx:key="index"
+          >
+            {{item}}
+          </view>
+        </view>
+        <checkbox-group bindchange="onChannelChange" style="display:none">
+          <checkbox
+            wx:for="{{marketingChannels}}"
+            wx:key="index"
+            value="{{index}}"
+            checked="{{formData.current_channels.indexOf(item) > -1}}"
+          />
+        </checkbox-group>
+        <picker
+          mode="multiSelector"
+          range="{{[marketingChannels]}}"
+          bindchange="onChannelChange"
+          style="margin-top:12rpx"
+        >
+          <view class="form-picker {{formData.current_channels.length ? '' : 'placeholder'}}">
+            {{formData.current_channels.length ? ('已选' + formData.current_channels.length + '个渠道') : '点击选择营销渠道'}}
+            <text class="arrow">›</text>
+          </view>
+        </picker>
+      </view>
+      <view class="form-item">
+        <text class="form-label">月营销预算 <text class="required">*</text></text>
+        <picker
+          mode="selector"
+          range="{{monthlyBudgets}}"
+          value="{{monthlyBudgetIndex}}"
+          data-field="monthly_budget"
+          data-source="monthlyBudgets"
+          bindchange="onPickerChange"
+        >
+          <view class="form-picker {{formData.monthly_budget ? '' : 'placeholder'}}">
+            {{formData.monthly_budget || '请选择月营销预算'}}
+            <text class="arrow">›</text>
+          </view>
+        </picker>
+      </view>
+      <view class="form-item">
+        <text class="form-label">当前最大痛点 <text class="required">*</text></text>
+        <textarea
+          class="form-textarea"
+          placeholder="描述目前营销中遇到的最大问题，例：获客成本高、转化率低、没有专业团队..."
+          value="{{formData.biggest_pain}}"
+          data-field="biggest_pain"
+          bindinput="onInput"
+          auto-height
+        />
+      </view>
+    </block>
+
+    <block wx:elif="{{currentStep === 3}}">
+      <view class="card-title">{{stepTitles[3]}}</view>
+      <view class="summary-section">
+        <view class="summary-row-title">企业基本信息</view>
+        <view class="summary-row">
+          <text class="summary-label">企业名称</text>
+          <view class="summary-value-wrap">
+            <text class="check-icon">✅</text>
+            <text class="summary-value">{{formData.company_name}}</text>
+          </view>
+        </view>
+        <view class="summary-row">
+          <text class="summary-label">所属行业</text>
+          <view class="summary-value-wrap">
+            <text class="check-icon">✅</text>
+            <text class="summary-value">{{formData.industry}}</text>
+          </view>
+        </view>
+        <view class="summary-row">
+          <text class="summary-label">所在城市</text>
+          <view class="summary-value-wrap">
+            <text class="check-icon">✅</text>
+            <text class="summary-value">{{formData.city}}</text>
+          </view>
+        </view>
+        <view class="summary-row">
+          <text class="summary-label">团队规模</text>
+          <view class="summary-value-wrap">
+            <text class="check-icon">✅</text>
+            <text class="summary-value">{{formData.team_size}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="summary-section">
+        <view class="summary-row-title">产品与客户</view>
+        <view class="summary-row">
+          <text class="summary-label">主营产品</text>
+          <view class="summary-value-wrap">
+            <text class="check-icon">✅</text>
+            <text class="summary-value">{{formData.main_product}}</text>
+          </view>
+        </view>
+        <view class="summary-row">
+          <text class="summary-label">客单价</text>
+          <view class="summary-value-wrap">
+            <text class="check-icon">✅</text>
+            <text class="summary-value">{{formData.price_range}}</text>
+          </view>
+        </view>
+        <view class="summary-row">
+          <text class="summary-label">目标客户</text>
+          <view class="summary-value-wrap">
+            <text class="check-icon">✅</text>
+            <text class="summary-value">{{formData.target_customer}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="summary-section">
+        <view class="summary-row-title">营销现状</view>
+        <view class="summary-row">
+          <text class="summary-label">营销渠道</text>
+          <view class="summary-value-wrap">
+            <text class="check-icon">✅</text>
+            <view class="channel-tags-inline">
+              <text class="tag tag-blue" wx:for="{{formData.current_channels}}" wx:key="index">{{item}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="summary-row">
+          <text class="summary-label">月预算</text>
+          <view class="summary-value-wrap">
+            <text class="check-icon">✅</text>
+            <text class="summary-value">{{formData.monthly_budget}}</text>
+          </view>
+        </view>
+        <view class="summary-row">
+          <text class="summary-label">最大痛点</text>
+          <view class="summary-value-wrap">
+            <text class="check-icon">✅</text>
+            <text class="summary-value">{{formData.biggest_pain}}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <view class="action-bar">
+    <button
+      wx:if="{{currentStep > 0}}"
+      class="btn-secondary action-btn"
+      bindtap="onPrevStep"
+    >
+      上一步
+    </button>
+    <button
+      wx:if="{{currentStep < 3}}"
+      class="btn-primary action-btn"
+      disabled="{{!canNextStep}}"
+      bindtap="onNextStep"
+    >
+      下一步
+    </button>
+    <button
+      wx:else
+      class="btn-primary action-btn submit-btn"
+      disabled="{{submitting}}"
+      bindtap="onSubmit"
+    >
+      {{submitting ? '启动中...' : '开始AI诊断'}}
+    </button>
+  </view>
+</view>

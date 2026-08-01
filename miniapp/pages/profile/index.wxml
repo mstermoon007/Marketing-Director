@@ -1,0 +1,190 @@
+<view class="profile-container">
+  <view class="top-banner">
+    <view class="banner-bg"></view>
+    <view class="banner-content">
+      <view class="company-row">
+        <text class="company-name">{{business.company_name || '未设置'}}</text>
+      </view>
+      <view class="tags-row">
+        <text class="banner-tag" wx:if="{{business.industry}}">{{business.industry}}</text>
+        <text class="banner-tag" wx:if="{{business.team_size}}">{{business.team_size}}</text>
+        <text class="banner-tag phase-tag" wx:if="{{phaseText}}">{{phaseText}}</text>
+      </view>
+      <view class="week-info" wx:if="{{weekText}}">
+        <text class="week-text">{{weekText}} · 距季末 {{weeksRemainingInQuarter}} 周</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="stats-grid">
+    <view class="stats-cell">
+      <view class="stats-num">{{stats.totalTasksCompleted}}</view>
+      <view class="stats-label">已完成任务</view>
+    </view>
+    <view class="stats-cell">
+      <view class="stats-num">{{stats.totalCheckinDays}}</view>
+      <view class="stats-label">累计打卡</view>
+    </view>
+    <view class="stats-cell">
+      <view class="stats-num">{{stats.currentStreak}}</view>
+      <view class="stats-label">连续天数</view>
+    </view>
+    <view class="stats-cell">
+      <view class="stats-num">{{stats.weekCompletionRate}}%</view>
+      <view class="stats-label">本周完成率</view>
+    </view>
+  </view>
+
+  <view class="section-card">
+    <view class="section-title">
+      <text class="title-text">企业信息详情</text>
+      <view class="title-action" wx:if="{{!editing}}" bindtap="onEditInfo">
+        <text class="action-icon">✏️</text>
+        <text class="action-text">编辑</text>
+      </view>
+      <view class="title-action" wx:else bindtap="onCancelEdit">
+        <text class="action-text">取消</text>
+      </view>
+    </view>
+
+    <block wx:if="{{!editing}}">
+      <view class="info-row">
+        <text class="info-label">企业名称</text>
+        <text class="info-value">{{business.company_name || '-'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">所属行业</text>
+        <text class="info-value">{{business.industry || '-'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">所在城市</text>
+        <text class="info-value">{{business.city || '-'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">团队规模</text>
+        <text class="info-value">{{business.team_size || '-'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">主营产品</text>
+        <text class="info-value">{{business.main_product || '-'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">客单价</text>
+        <text class="info-value">{{business.price_range || '-'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">目标客户</text>
+        <text class="info-value">{{business.target_customer || '-'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">营销渠道</text>
+        <view class="channel-tags">
+          <text class="tag tag-blue" wx:for="{{business.current_channels}}" wx:key="index" wx:if="{{business.current_channels}}">{{item}}</text>
+          <text class="info-value" wx:else>-</text>
+        </view>
+      </view>
+      <view class="info-row">
+        <text class="info-label">月营销预算</text>
+        <text class="info-value">{{business.monthly_budget || '-'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">最大痛点</text>
+        <text class="info-value">{{business.biggest_pain || '-'}}</text>
+      </view>
+    </block>
+
+    <block wx:else>
+      <view class="form-item">
+        <text class="form-label">企业名称 <text class="required">*</text></text>
+        <input class="form-input" placeholder="请输入" value="{{editForm.company_name}}" data-field="company_name" bindinput="onEditInput" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">所属行业 <text class="required">*</text></text>
+        <picker mode="selector" range="{{industries}}" data-field="industry" data-source="industries" bindchange="onEditPicker">
+          <view class="form-picker {{editForm.industry ? '' : 'placeholder'}}">
+            {{editForm.industry || '请选择行业'}} <text class="arrow">›</text>
+          </view>
+        </picker>
+      </view>
+      <view class="form-item">
+        <text class="form-label">所在城市 <text class="required">*</text></text>
+        <input class="form-input" placeholder="请输入" value="{{editForm.city}}" data-field="city" bindinput="onEditInput" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">团队规模 <text class="required">*</text></text>
+        <picker mode="selector" range="{{teamSizes}}" data-field="team_size" data-source="teamSizes" bindchange="onEditPicker">
+          <view class="form-picker {{editForm.team_size ? '' : 'placeholder'}}">
+            {{editForm.team_size || '请选择'}} <text class="arrow">›</text>
+          </view>
+        </picker>
+      </view>
+      <view class="form-item">
+        <text class="form-label">主营产品 <text class="required">*</text></text>
+        <textarea class="form-textarea" placeholder="请描述" value="{{editForm.main_product}}" data-field="main_product" bindinput="onEditInput" auto-height />
+      </view>
+      <view class="form-item">
+        <text class="form-label">客单价 <text class="required">*</text></text>
+        <picker mode="selector" range="{{priceRanges}}" data-field="price_range" data-source="priceRanges" bindchange="onEditPicker">
+          <view class="form-picker {{editForm.price_range ? '' : 'placeholder'}}">
+            {{editForm.price_range || '请选择'}} <text class="arrow">›</text>
+          </view>
+        </picker>
+      </view>
+      <view class="form-item">
+        <text class="form-label">目标客户 <text class="required">*</text></text>
+        <textarea class="form-textarea" placeholder="请描述" value="{{editForm.target_customer}}" data-field="target_customer" bindinput="onEditInput" auto-height />
+      </view>
+      <view class="form-item">
+        <text class="form-label">营销渠道</text>
+        <picker mode="multiSelector" range="{{[marketingChannels]}}" bindchange="onEditChannelChange">
+          <view class="form-picker {{editForm.current_channels.length ? '' : 'placeholder'}}">
+            {{editForm.current_channels.length ? ('已选' + editForm.current_channels.length + '个') : '点击选择'}} <text class="arrow">›</text>
+          </view>
+        </picker>
+      </view>
+      <view class="form-item">
+        <text class="form-label">月营销预算 <text class="required">*</text></text>
+        <picker mode="selector" range="{{monthlyBudgets}}" data-field="monthly_budget" data-source="monthlyBudgets" bindchange="onEditPicker">
+          <view class="form-picker {{editForm.monthly_budget ? '' : 'placeholder'}}">
+            {{editForm.monthly_budget || '请选择'}} <text class="arrow">›</text>
+          </view>
+        </picker>
+      </view>
+      <view class="form-item">
+        <text class="form-label">最大痛点 <text class="required">*</text></text>
+        <textarea class="form-textarea" placeholder="请描述" value="{{editForm.biggest_pain}}" data-field="biggest_pain" bindinput="onEditInput" auto-height />
+      </view>
+      <button class="btn-primary save-btn" bindtap="onSaveEdit">保存修改</button>
+    </block>
+  </view>
+
+  <view class="section-card shortcuts-card">
+    <view class="section-title">
+      <text class="title-text">快捷入口</text>
+    </view>
+    <view class="shortcut-grid">
+      <view class="shortcut-item" bindtap="onGoDiagnosis">
+        <view class="shortcut-icon">🔍</view>
+        <text class="shortcut-text">诊断报告</text>
+      </view>
+      <view class="shortcut-item" bindtap="onGoRoadmap">
+        <view class="shortcut-icon">🗺️</view>
+        <text class="shortcut-text">路线图</text>
+      </view>
+      <view class="shortcut-item" bindtap="onGoWeekly">
+        <view class="shortcut-icon">📅</view>
+        <text class="shortcut-text">本周任务</text>
+      </view>
+      <view class="shortcut-item" bindtap="onGoReview">
+        <view class="shortcut-icon">📝</view>
+        <text class="shortcut-text">复盘</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="action-area">
+    <view class="reset-btn" bindtap="onResetAll">
+      <text class="reset-text">🔄 重新开始（清除所有数据）</text>
+    </view>
+  </view>
+</view>

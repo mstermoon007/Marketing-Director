@@ -1,0 +1,261 @@
+/* 全局样式 - V3.0 规范变量定义 (文档9.2节) */
+page {
+  /* 颜色系统 */
+  --color-primary: #1989fa;
+  --color-success: #07c160;
+  --color-warning: #ff976a;
+  --color-danger: #ee0a24;
+  --color-text: #323233;
+  --color-text-secondary: #969799;
+  --color-text-placeholder: #c8c9cc;
+  --color-background: #f7f8fa;
+  --color-background-light: #fafafa;
+  --color-border: #ebedf0;
+  --color-border-light: #f2f3f5;
+  --color-white: #ffffff;
+
+  /* 字号系统 */
+  --font-size-xs: 20rpx;
+  --font-size-sm: 24rpx;
+  --font-size-md: 28rpx;
+  --font-size-lg: 32rpx;
+  --font-size-xl: 36rpx;
+  --font-size-xxl: 40rpx;
+
+  /* 间距系统 */
+  --spacing-xs: 8rpx;
+  --spacing-sm: 16rpx;
+  --spacing-md: 24rpx;
+  --spacing-lg: 32rpx;
+  --spacing-xl: 48rpx;
+
+  /* 圆角系统 */
+  --radius-xs: 4rpx;
+  --radius-sm: 8rpx;
+  --radius-md: 16rpx;
+  --radius-lg: 24rpx;
+  --radius-xl: 32rpx;
+  --radius-round: 999rpx;
+
+  /* 阴影 */
+  --shadow-sm: 0 2rpx 8rpx rgba(0,0,0,0.04);
+  --shadow-md: 0 4rpx 16rpx rgba(0,0,0,0.06);
+  --shadow-lg: 0 8rpx 24rpx rgba(0,0,0,0.08);
+
+  /* 基础样式 */
+  background: var(--color-background);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Helvetica Neue', sans-serif;
+  color: var(--color-text);
+  font-size: var(--font-size-md);
+  line-height: 1.6;
+}
+
+/* ===== 公用组件样式 ===== */
+
+/* 卡片 */
+.card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 32rpx;
+  margin: 24rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+}
+
+/* 标题 */
+.section-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 24rpx;
+}
+
+/* 主按钮 */
+.btn-primary {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: #fff;
+  border: none;
+  border-radius: 48rpx;
+  font-size: 32rpx;
+  padding: 24rpx 0;
+}
+
+.btn-primary[disabled] {
+  background: #ccc;
+  color: #999;
+}
+
+/* 次按钮 */
+.btn-secondary {
+  background: #fff;
+  color: #1a1a2e;
+  border: 2rpx solid #1a1a2e;
+  border-radius: 48rpx;
+  font-size: 28rpx;
+  padding: 20rpx 0;
+}
+
+/* 标签 */
+.tag {
+  display: inline-block;
+  padding: 6rpx 20rpx;
+  border-radius: 24rpx;
+  font-size: 24rpx;
+  margin-right: 12rpx;
+  margin-bottom: 8rpx;
+}
+
+.tag-red { background: #ffeded; color: #e74c3c; }
+.tag-orange { background: #fff3e0; color: #ff9800; }
+.tag-yellow { background: #fffde7; color: #fbc02d; }
+.tag-green { background: #e8f5e9; color: #4caf50; }
+.tag-blue { background: #e3f2fd; color: #2196f3; }
+
+/* ===== 进度条 ===== */
+.progress-bar {
+  height: 12rpx;
+  background: #eee;
+  border-radius: 4rpx;
+  overflow: hidden;
+}
+
+.progress-inner {
+  height: 100%;
+  border-radius: 4rpx;
+  transition: width 0.6s;
+}
+
+/* ===== 复盘相关 ===== */
+.summary-banner {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: #fff;
+  padding: 48rpx 48rpx 56rpx;
+  text-align: center;
+}
+
+.summary-icon {
+  font-size: 64rpx;
+  margin-bottom: 16rpx;
+}
+
+.summary-text {
+  font-size: 30rpx;
+  line-height: 1.6;
+  opacity: 0.95;
+  max-width: 560rpx;
+  margin: 0 auto;
+}
+
+.metric-list {
+  display: flex;
+  flex-direction: column;
+  gap: 32rpx;
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.metric-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.metric-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.metric-badge {
+  padding: 6rpx 16rpx;
+  border-radius: 24rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.badge-green { background: #e8f5e9; color: #4caf50; }
+.badge-red { background: #ffeded; color: #e74c3c; }
+
+.metric-numbers {
+  display: flex;
+  align-items: baseline;
+  gap: 8rpx;
+  font-size: 28rpx;
+}
+
+.metric-actual {
+  font-weight: 700;
+  color: #1a1a2e;
+  font-size: 36rpx;
+}
+
+.metric-target {
+  color: #999;
+}
+
+.metric-sep {
+  color: #ccc;
+}
+
+.bar-green { background: #4caf50; }
+.bar-red { background: #e74c3c; }
+
+.point-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.point-item {
+  display: flex;
+  gap: 12rpx;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.point-icon {
+  flex-shrink: 0;
+}
+
+.point-item.good { color: #2e7d32; }
+.point-item.bad { color: #c62828; }
+
+.suggestion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.suggestion-item {
+  display: flex;
+  gap: 16rpx;
+  align-items: flex-start;
+}
+
+.suggestion-num {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.suggestion-text {
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.6;
+  flex: 1;
+}
+
+.action-area {
+  padding: 40rpx 36rpx;
+}

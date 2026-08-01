@@ -1,0 +1,65 @@
+# ==========================================================================
+# .gitattributes — 统一 Git 对行尾 / 差异 / 二进制的处理
+# ==========================================================================
+
+# ------------------------- 行尾归一化 -------------------------------------
+*           text=auto eol=lf
+
+# 明确声明文本类型，保证跨平台一致
+*.py        text diff=python
+*.ts        text diff=typescript
+*.tsx       text diff=typescript
+*.js        text diff=javascript
+*.jsx       text diff=javascript
+*.json      text
+*.md        text diff=markdown
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.toml      text
+*.sh        text eol=lf
+*.sql       text
+*.html      text
+*.wxml      text
+*.css       text
+*.wxss      text
+*.scss      text
+*.less      text
+*.vue       text
+*.txt       text
+*.cfg       text
+*.ini       text
+
+# ------------------------- 明确声明二进制 --------------------------------
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.ico       binary
+*.webp      binary
+*.svg       text  # SVG 是 XML，允许 diff
+*.mp3       binary
+*.mp4       binary
+*.woff      binary
+*.woff2     binary
+*.ttf       binary
+*.otf       binary
+*.eot       binary
+*.db        binary
+*.sqlite    binary
+*.sqlite3   binary
+*.zip       binary
+*.tar       binary
+*.gz        binary
+*.pdf       binary
+
+# ------------------------- GitHub linguist 分类 ---------------------------
+# 让仓库语言占比更真实（忽略 vendor / 产物 / Markdown 文档）
+*.md                    linguist-detectable=false
+miniapp/node_modules/*  linguist-vendored
+dist/*                  linguist-generated=true
+build/*                 linguist-generated=true
+__pycache__/*           linguist-vendored
+data/app.db             linguist-vendored
+
+# Snapshots：不参与 PR Diff（大文本会刷屏）
+tests/snapshots/*.snap  linguist-generated -diff

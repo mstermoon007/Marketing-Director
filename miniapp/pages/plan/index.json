@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "7天执行计划",
+  "usingComponents": {
+    "card": "/components/card/index",
+    "loading": "/components/loading/index",
+    "empty-state": "/components/empty-state/index"
+  }
+}

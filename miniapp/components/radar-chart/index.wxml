@@ -1,0 +1,83 @@
+<view class="radar-chart">
+  <view class="radar-svg-wrap">
+    <svg class="radar-svg" viewBox="-100 -100 200 200" xmlns="http://www.w3.org/2000/svg">
+      <polygon
+        wx:for="{{gridPolygons}}"
+        wx:for-item="points"
+        wx:key="*this"
+        class="grid-polygon"
+        points="{{points}}"
+        fill="none"
+        stroke="var(--color-border)"
+        stroke-width="1"
+      />
+
+      <line
+        wx:for="{{dimensions}}"
+        wx:key="key"
+        class="axis-line"
+        x1="0"
+        y1="0"
+        x2="{{item.axisEndX}}"
+        y2="{{item.axisEndY}}"
+        stroke="var(--color-border)"
+        stroke-width="1"
+      />
+
+      <polygon
+        class="score-polygon"
+        points="{{scorePolygonPoints}}"
+        fill="var(--color-primary)"
+        fill-opacity="0.3"
+        stroke="var(--color-primary)"
+        stroke-width="2"
+      />
+
+      <circle
+        wx:for="{{dataPoints}}"
+        wx:key="*this"
+        class="data-point"
+        cx="{{item.x}}"
+        cy="{{item.y}}"
+        r="3"
+        fill="var(--color-primary)"
+        stroke="#fff"
+        stroke-width="1"
+      />
+
+      <text
+        wx:for="{{dimensions}}"
+        wx:key="key"
+        class="dimension-label"
+        x="{{item.labelX}}"
+        y="{{item.labelY}}"
+        text-anchor="middle"
+        dominant-baseline="central"
+        font-size="10"
+        fill="var(--color-text)"
+      >
+        {{item.name}}
+      </text>
+    </svg>
+  </view>
+
+  <view class="radar-legend">
+    <view
+      class="legend-item"
+      wx:for="{{dimensions}}"
+      wx:key="key"
+    >
+      <view class="legend-color" style="background: {{item.color}};"></view>
+      <view class="legend-info">
+        <text class="legend-name">{{item.name}}</text>
+        <text class="legend-score">{{item.score}}分</text>
+      </view>
+      <view class="legend-bar">
+        <view
+          class="legend-bar-fill"
+          style="width: {{item.score}}%; background: {{item.color}};"
+        ></view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,31 @@
+<view class="week-calendar">
+  <scroll-view class="week-scroll" scroll-x="false" enhanced="{{true}}" show-scrollbar="{{false}}">
+    <view class="week-row">
+      <view
+        class="week-day {{item.isActive ? 'day-active' : ''}} {{item.isToday ? 'day-today' : ''}}"
+        wx:for="{{days}}"
+        wx:key="dateStr"
+        data-day-index="{{index}}"
+        bindtap="onTapDay"
+      >
+        <text class="weekday-label">{{item.weekday}}</text>
+        <view class="date-wrap">
+          <text class="date-num">{{item.dateNum}}</text>
+          <view wx:if="{{item.isToday}}" class="today-tag">今</view>
+        </view>
+        <view class="rate-indicator" wx:if="{{item.hasRate}}">
+          <view class="rate-bg">
+            <view
+              class="rate-fill"
+              style="width: {{item.rate > 100 ? 100 : item.rate}}%;"
+            ></view>
+          </view>
+        </view>
+        <view
+          class="rate-dot"
+          wx:if="{{item.hasRate && item.rate >= 100}}"
+        ></view>
+      </view>
+    </view>
+  </scroll-view>
+</view>

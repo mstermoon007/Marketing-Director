@@ -1,0 +1,64 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="loading-wrap">
+    <view class="loading-spinner"></view>
+    <view class="loading-text">AI正在深度诊断营销状况...</view>
+  </view>
+
+  <block wx:if="{{!loading && report}}">
+    <view class="section section-score">
+      <health-score
+        overallScore="{{report.overall_score}}"
+        overallComment="{{report.overall_comment}}"
+        dimensionScores="{{report.dimension_scores}}"
+      />
+    </view>
+
+    <view class="section section-radar">
+      <view class="section-title">五维能力雷达图</view>
+      <radar-chart scores="{{report.dimension_scores}}" />
+    </view>
+
+    <view class="section section-issues">
+      <view class="section-title">Top 3 核心问题</view>
+      <view class="issue-list">
+        <view class="issue-item" wx:for="{{report.top_issues}}" wx:key="title">
+          <view class="issue-icon">{{issueLevelIcon[item.level]}}</view>
+          <view class="issue-content">
+            <view class="issue-title">{{item.title}}</view>
+            <view class="issue-suggestion">→ {{item.suggestion}}</view>
+          </view>
+          <view class="issue-level-tag" style="color: {{issueLevelColor[item.level]}}; background: {{issueLevelColor[item.level]}}1A;">
+            {{issueLevelLabel[item.level]}}
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="skill-tips-section" wx:if="{{skillTips.length > 0}}">
+      <view class="skill-tips-header">
+        <text class="skill-tips-icon">{{skillIcon}}</text>
+        <text class="skill-tips-label">AI已结合「{{skillLabel}}」行业知识生成诊断</text>
+      </view>
+      <view class="skill-tips-list">
+        <view class="skill-tip-item" wx:for="{{skillTips}}" wx:key="*this">
+          <text class="skill-tip-bullet">💡</text>
+          <text class="skill-tip-text">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="cta-section">
+      <button class="btn-primary cta-btn" bindtap="onGeneratePlan" loading="{{generating}}">
+        查看季度路线图 →
+      </button>
+    </view>
+  </block>
+
+  <empty-state
+    wx:if="{{!loading && !report}}"
+    icon="📋"
+    text="暂无诊断报告"
+    action-text="开始诊断"
+    bind:action="onRetry"
+  />
+</view>

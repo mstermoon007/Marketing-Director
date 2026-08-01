@@ -1,0 +1,396 @@
+.page {
+  min-height: 100vh;
+  background: #f7f8fa;
+  padding-bottom: 180rpx;
+}
+
+.loading-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 200rpx;
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 4rpx solid #e5e6eb;
+  border-top-color: #1677ff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  margin-top: 24rpx;
+  font-size: 28rpx;
+  color: #86909c;
+}
+
+.content {
+  padding: 24rpx;
+}
+
+.header-card {
+  background: linear-gradient(135deg, #1677ff 0%, #4096ff 100%);
+  border-radius: 20rpx;
+  padding: 36rpx 32rpx;
+  margin-bottom: 24rpx;
+  color: #fff;
+  box-shadow: 0 8rpx 24rpx rgba(22, 119, 255, 0.25);
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24rpx;
+}
+
+.task-title {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  padding-right: 16rpx;
+}
+
+.title-icon {
+  font-size: 40rpx;
+  margin-right: 12rpx;
+  margin-top: 4rpx;
+}
+
+.title-text {
+  font-size: 36rpx;
+  font-weight: 700;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.status-tag {
+  padding: 8rpx 20rpx;
+  border-radius: 24rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.status-pending {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.status-doing {
+  background: rgba(255, 214, 102, 0.9);
+  color: #874d00;
+}
+
+.status-done {
+  background: #07c160;
+  color: #fff;
+}
+
+.header-meta {
+  display: flex;
+  gap: 32rpx;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+}
+
+.meta-icon {
+  font-size: 28rpx;
+  margin-right: 8rpx;
+}
+
+.meta-text {
+  font-size: 26rpx;
+  opacity: 0.95;
+}
+
+.section {
+  margin-bottom: 28rpx;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+  padding-left: 4rpx;
+}
+
+.section-icon {
+  font-size: 32rpx;
+  margin-right: 10rpx;
+}
+
+.section-text {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1d2129;
+}
+
+.how-to-card,
+.checklist-card,
+.done-criteria-card,
+.record-card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 28rpx;
+}
+
+.how-to-text {
+  font-size: 28rpx;
+  color: #4e5969;
+  line-height: 1.8;
+}
+
+.checklist-card {
+  padding: 16rpx 20rpx;
+}
+
+.checklist-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 20rpx 12rpx;
+  border-radius: 12rpx;
+  transition: all 0.2s;
+}
+
+.checklist-item.checked {
+  background: #f0f9eb;
+}
+
+.checklist-item.checked .check-text {
+  color: #07c160;
+  text-decoration: line-through;
+}
+
+.check-box {
+  width: 44rpx;
+  height: 44rpx;
+  border: 3rpx solid #c9cdd4;
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 16rpx;
+  margin-top: 2rpx;
+  font-size: 28rpx;
+  color: #fff;
+  background: #fff;
+}
+
+.checklist-item.checked .check-box {
+  background: #07c160;
+  border-color: #07c160;
+  color: #fff;
+}
+
+.check-index {
+  width: 44rpx;
+  height: 44rpx;
+  line-height: 44rpx;
+  text-align: center;
+  border-radius: 50%;
+  background: #e8f3ff;
+  color: #1677ff;
+  font-size: 24rpx;
+  font-weight: 600;
+  flex-shrink: 0;
+  margin-right: 16rpx;
+}
+
+.checklist-item.checked .check-index {
+  background: #e8f7ee;
+  color: #07c160;
+}
+
+.check-text {
+  font-size: 28rpx;
+  color: #1d2129;
+  line-height: 1.6;
+  flex: 1;
+  padding-top: 6rpx;
+}
+
+.done-criteria-text {
+  font-size: 28rpx;
+  color: #1d2129;
+  line-height: 1.7;
+  background: #fffbe6;
+  padding: 20rpx 24rpx;
+  border-radius: 12rpx;
+  border-left: 6rpx solid #faad14;
+}
+
+.images-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.image-item {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+
+.image-preview {
+  width: 100%;
+  height: 100%;
+}
+
+.image-remove {
+  position: absolute;
+  top: 6rpx;
+  right: 6rpx;
+  width: 40rpx;
+  height: 40rpx;
+  line-height: 36rpx;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 32rpx;
+}
+
+.notes-list {
+  margin-bottom: 24rpx;
+}
+
+.note-item {
+  background: #f7f8fa;
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  margin-bottom: 12rpx;
+}
+
+.note-content {
+  font-size: 28rpx;
+  color: #1d2129;
+  line-height: 1.6;
+}
+
+.record-actions {
+  display: flex;
+  gap: 24rpx;
+}
+
+.action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 84rpx;
+  border-radius: 12rpx;
+  border: 2rpx dashed #c9cdd4;
+  background: #fff;
+}
+
+.action-btn-camera {
+  border-color: #1677ff;
+  background: #e8f3ff;
+}
+
+.action-btn-text {
+  border-color: #faad14;
+  background: #fffbe6;
+}
+
+.action-icon {
+  font-size: 32rpx;
+  margin-right: 8rpx;
+}
+
+.action-text {
+  font-size: 28rpx;
+  color: #4e5969;
+  font-weight: 500;
+}
+
+.action-btn-camera .action-text {
+  color: #1677ff;
+}
+
+.action-btn-text .action-text {
+  color: #d46b08;
+}
+
+.bottom-placeholder {
+  height: 40rpx;
+}
+
+.bottom-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 20rpx 32rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  background: #fff;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.06);
+}
+
+.bottom-bar-done {
+  display: flex;
+  justify-content: center;
+}
+
+.done-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96rpx;
+  background: linear-gradient(135deg, #07c160 0%, #00b42a 100%);
+  border-radius: 48rpx;
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 600;
+  box-shadow: 0 8rpx 24rpx rgba(7, 193, 96, 0.3);
+}
+
+.done-btn:active {
+  opacity: 0.9;
+  transform: scale(0.98);
+}
+
+.btn-icon {
+  margin-right: 12rpx;
+  font-size: 36rpx;
+}
+
+.btn-text {
+  font-size: 32rpx;
+}
+
+.done-tag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80rpx;
+  padding: 0 48rpx;
+  background: #f0f9eb;
+  border-radius: 40rpx;
+}
+
+.done-tag-icon {
+  margin-right: 12rpx;
+  font-size: 32rpx;
+}
+
+.done-tag-text {
+  font-size: 30rpx;
+  color: #07c160;
+  font-weight: 600;
+}

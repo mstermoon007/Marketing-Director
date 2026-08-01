@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "AI营销战略助手",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "usingComponents": {
+    "progress-bar": "/components/progress-bar/index",
+    "task-card": "/components/task-card/index",
+    "empty-state": "/components/empty-state/index"
+  }
+}

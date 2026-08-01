@@ -1,0 +1,43 @@
+# 执行引擎 — 单日任务详细 Prompt
+# 版本: 0.1.0
+# 用途: 在 executor/system.txt 的约束下，为每一天生成精细到「动作 + 检查项」的任务清单
+# 嵌入位置: 被 executor/system.txt 按 7 天循环渲染
+
+【{{ day_label }} — {{ focus }}】
+日期上下文：
+- 企业背景：
+{{ business_context }}
+- 诊断结论摘要：
+{{ diagnosis_context }}
+{% if skills_text %}
+- 行业技能参考：
+{{ skills_text }}
+{% endif %}
+{% if yesterday_feedback %}
+- 昨日执行反馈（请据此调整今日安排）：
+{{ yesterday_feedback }}
+{% endif %}
+
+为这一天设计 1–5 个任务（每个任务必须是今天当天即可完成的具体动作），
+任务时长总计不得超过 120 分钟。
+每个任务必须包含：
+- time_slot："上午" / "下午" / "晚上" 三选一
+- title：任务名称（老板一眼看懂）
+- how_to：怎么做（步骤 + 话术 + 参考文案/模板）
+- checklist：操作检查项（分点列清单，做完一项划一项）
+- done_criteria：完成判定标准（必须可量化/可观察，不能是"尽量做好"）
+- estimated_minutes：预估分钟数（整数，5–60 之间）
+
+请按 JSON 格式输出单日任务数组：
+{
+  "tasks": [
+    {
+      "time_slot": "上午",
+      "title": "任务名称",
+      "how_to": "怎么做",
+      "checklist": ["步骤1", "步骤2"],
+      "done_criteria": "完成标准",
+      "estimated_minutes": 30
+    }
+  ]
+}

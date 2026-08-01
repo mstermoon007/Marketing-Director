@@ -1,0 +1,17 @@
+<view class="task-card {{isDone ? 'task-done' : ''}}">
+  <view class="task-header" bindtap="onTapDetail">
+    <view class="task-icon">{{statusIcon}}</view>
+    <view class="task-info">
+      <view class="task-title">{{task.title}}</view>
+      <view class="task-meta">
+        <text class="time-slot">{{task.time_slot}}</text>
+        <text class="status-label">{{statusLabel}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{showCheckin && !isDone}}" class="task-actions">
+    <button class="btn-detail" bindtap="onTapDetail">查看详情</button>
+    <button class="btn-checkin" bindtap="onCheckin">打卡</button>
+  </view>
+</view>

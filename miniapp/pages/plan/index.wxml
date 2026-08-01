@@ -1,0 +1,87 @@
+<!-- 7天任务卡片页（周视图） -->
+<view class="page">
+  <loading wx:if="{{loading}}" text="AI正在拆解执行任务..."></loading>
+
+  <view wx:if="{{!loading && plan}}">
+    <!-- 主题横幅 -->
+    <view class="theme-banner">
+      <view class="theme-label">本周主题</view>
+      <view class="theme-title">{{plan.theme}}</view>
+    </view>
+
+    <!-- 本周目标 -->
+    <card title="本周目标">
+      <view class="goal-list">
+        <view class="goal-item" wx:for="{{plan.goals}}" wx:key="*this">
+          <view class="goal-marker">🎯</view>
+          <text>{{item}}</text>
+        </view>
+      </view>
+    </card>
+
+    <!-- 核心指标 -->
+    <view class="metrics-row" wx:if="{{metrics.length}}">
+      <view class="metric-box" wx:for="{{metrics}}" wx:key="*this">
+        <view class="metric-value">0</view>
+        <view class="metric-label">{{item}}</view>
+      </view>
+    </view>
+
+    <!-- 7天任务卡片（横向滑动） -->
+    <scroll-view class="days-scroll" scroll-x enable-flex>
+      <view class="day-card {{index === activeDay ? 'active' : ''}}"
+            wx:for="{{plan.days}}" wx:key="day_label"
+            data-index="{{index}}"
+            bindtap="onDayTap">
+        <view class="day-label">{{item.day_label}}</view>
+        <view class="day-focus">{{item.focus}}</view>
+        <view class="day-task-count">{{item.tasks.length}}项任务</view>
+      </view>
+    </scroll-view>
+
+    <!-- 选中日期的任务列表 -->
+    <card wx:if="{{activeDayData}}" padding="32rpx">
+      <view class="day-focus-area">
+        <view class="focus-tag">今日重点：{{activeDayData.focus}}</view>
+      </view>
+
+      <view class="task-list">
+        <view class="task-item" wx:for="{{activeDayData.tasks}}" wx:key="title" wx:for-item="task">
+          <view class="task-header">
+            <view class="task-time">{{task.time_slot}}</view>
+            <view class="task-check" data-index="{{index}}" bindtap="onTaskToggle">
+              <text wx:if="{{task.done}}">✅</text>
+              <text wx:else>⬜</text>
+            </view>
+          </view>
+          <view class="task-title">{{task.title}}</view>
+          <view class="task-how">{{task.how_to}}</view>
+
+          <view class="checklist" wx:if="{{task.checklist && task.checklist.length}}">
+            <view class="check-item" wx:for="{{task.checklist}}" wx:key="*this" wx:for-item="step">
+              <text class="check-bullet">•</text>
+              <text>{{step}}</text>
+            </view>
+          </view>
+
+          <view class="task-footer">
+            <view class="task-done-criteria" wx:if="{{task.done_criteria}}">
+              <text class="criteria-icon">✓</text>
+              <text>{{task.done_criteria}}</text>
+            </view>
+            <view class="task-duration">⏱ {{task.estimated_minutes}}分钟</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="day-detail-link" bindtap="onGoDayDetail">
+        <text>查看当日详情 →</text>
+      </view>
+      <view class="action-inline" bindtap="onStartReview">
+        <text>本周完成？上传截图复盘 →</text>
+      </view>
+    </card>
+  </view>
+
+  <empty-state wx:if="{{!loading && !plan}}" icon="📅" text="尚未生成执行计划" action-text="生成执行计划" bind:action="onGenerate"></empty-state>
+</view>

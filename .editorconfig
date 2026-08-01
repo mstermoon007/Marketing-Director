@@ -1,0 +1,59 @@
+# ============================================================
+# EditorConfig is awesome: https://EditorConfig.org
+# Top-most EditorConfig file (GitHub 开源项目标配)
+# ============================================================
+
+root = true
+
+# ================= 通用：所有文件 ===========================
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# ================= TypeScript/JavaScript ==================
+[*.{ts,tsx,js,jsx}]
+indent_size = 2
+max_line_length = 100
+
+# ================= Python (PEP8) ===========================
+[*.py]
+indent_size = 4
+max_line_length = 100
+
+# ================= Markdown ================================
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = 100
+
+# ================= JSON/JSON5 ==============================
+[*.json]
+indent_size = 2
+
+# ================= YAML ====================================
+[*.{yml,yaml}]
+indent_size = 2
+
+# ================= Shell ===================================
+[*.sh]
+indent_size = 2
+end_of_line = lf
+
+# ================= Makefile ================================
+[Makefile]
+indent_style = tab
+
+# ================= CSS / WXSS ==============================
+[*.{css,wxss,scss,less}]
+indent_size = 2
+
+# ================= HTML / WXML =============================
+[*.{html,wxml}]
+indent_size = 2
+
+# ================= SQL =====================================
+[*.sql]
+indent_size = 2

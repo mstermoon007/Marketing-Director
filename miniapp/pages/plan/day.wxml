@@ -1,0 +1,35 @@
+<!-- 日详情页 -->
+<view class="page">
+  <view wx:if="{{day}}">
+    <view class="day-header">
+      <view class="day-label">{{day.day_label}}</view>
+      <view class="day-focus">{{day.focus}}</view>
+    </view>
+
+    <card padding="32rpx">
+      <view class="section-title">今日任务（{{day.tasks.length}}项）</view>
+
+      <view class="timeline">
+        <view class="timeline-item" wx:for="{{day.tasks}}" wx:key="title" wx:for-item="task">
+          <view class="timeline-time">{{task.time_slot}}</view>
+          <view class="timeline-dot {{task.done ? 'done' : ''}}"></view>
+          <view class="timeline-content">
+            <view class="task-title {{task.done ? 'task-done' : ''}}">{{task.title}}</view>
+            <view class="task-how">{{task.how_to}}</view>
+            <view class="checklist" wx:if="{{task.checklist && task.checklist.length}}">
+              <view class="check-item" wx:for="{{task.checklist}}" wx:key="*this" wx:for-item="step">
+                <text>• {{step}}</text>
+              </view>
+            </view>
+            <view class="task-meta">
+              <text class="duration">⏱ {{task.estimated_minutes}}分钟</text>
+              <text class="done-criteria" wx:if="{{task.done_criteria}}">完成标准：{{task.done_criteria}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </card>
+  </view>
+
+  <empty-state wx:else icon="📅" text="暂无任务数据"></empty-state>
+</view>

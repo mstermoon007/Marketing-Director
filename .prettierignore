@@ -1,0 +1,43 @@
+# Prettier / build artifacts / vendor
+dist
+build
+node_modules
+coverage
+*.min.*
+
+# IDE / editor (避免把 .vscode 或 .idea 的个人配置加入版本)
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+*.swp
+*.swo
+*~
+
+# Mac / Windows 系统文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.python-debug.log*
+
+# Env / Secrets (永远不要提交到 Git!)
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+.credentials
+.vault
