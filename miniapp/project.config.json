@@ -1,0 +1,16 @@
+{
+  "appid": "touristappid",
+  "projectname": "miniapp",
+  "description": "AI营销战略智能体小程序前端",
+  "compileType": "miniprogram",
+  "libVersion": "latest",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "bigPackageSizeSupport": true,
+    "ignoreUploadUnusedFiles": true
+  }
+}
