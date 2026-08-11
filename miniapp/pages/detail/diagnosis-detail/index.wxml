@@ -1,0 +1,73 @@
+<view class="page">
+  <!-- 空状态：尚未诊断 -->
+  <view wx:if="{{!hasData}}" class="empty">
+    <view class="empty-icon">🩺</view>
+    <view class="empty-title">还没有诊断报告</view>
+    <view class="empty-sub">在对话里描述你的业务，AI 会生成一份营销健康诊断。</view>
+    <button class="btn-primary" bindtap="goChat">去对话生成</button>
+  </view>
+  <block wx:else>
+    <!-- 综合健康度 -->
+    <view class="hero">
+      <view class="hero-score" style="color:{{scoreColor}}">
+        <text class="score-num">{{overallScore}}</text>
+        <text class="score-unit">分</text>
+      </view>
+      <view class="hero-meta">
+        <view class="hero-badge" style="background:{{scoreColor}}">{{scoreLabel}}</view>
+        <view class="hero-comment">{{diagnosis.overall_comment}}</view>
+        <view class="hero-time">{{updatedText}}</view>
+      </view>
+    </view>
+
+    <!-- 五维雷达 -->
+    <view class="card">
+      <view class="card-title">五维能力雷达</view>
+      <view class="radar-wrap">
+        <radar-chart labels="{{radar.labels}}" values="{{radar.values}}" size="{{220}}" />
+      </view>
+      <view class="dim-legend">
+        <text wx:for="{{radar.labels}}" wx:key="*this" class="dim-item">{{item}} {{radar.values[index]}}</text>
+      </view>
+    </view>
+
+    <!-- Top 核心问题 -->
+    <view class="card">
+      <view class="card-title">核心问题 Top {{issues.length}}</view>
+      <view wx:for="{{issues}}" wx:key="title" class="issue">
+        <view class="issue-head">
+          <text class="issue-icon">{{item.levelIcon}}</text>
+          <text class="issue-title">{{item.title}}</text>
+          <text class="issue-tag" style="color:{{item.levelColor}};border-color:{{item.levelColor}}">{{item.levelLabel}}</text>
+        </view>
+        <view wx:if="{{item.category}}" class="issue-cat">维度：{{item.category}}</view>
+        <view class="issue-suggest">建议：{{item.suggestion}}</view>
+      </view>
+    </view>
+
+    <!-- 季度路线图 -->
+    <view class="card">
+      <view class="card-title">季度路线图</view>
+      <view wx:if="{{roadmapGoal}}" class="roadmap-goal">总体目标：{{roadmapGoal}}</view>
+      <view wx:for="{{roadmapPhases}}" wx:key="phase_index" class="phase">
+        <view class="phase-head">
+          <text class="phase-name">阶段{{item.phase_index}} · {{item.phase_name}}</text>
+          <text class="phase-week">第 {{item.weeks_cover}} 周</text>
+        </view>
+        <view class="phase-actions">
+          <text wx:for="{{item.key_actions}}" wx:for-item="a" wx:key="*this" class="chip">{{a}}</text>
+        </view>
+        <view class="phase-criteria">达成标准：{{item.success_criteria}}</view>
+      </view>
+    </view>
+
+    <!-- 底部操作 -->
+    <view class="foot-bar">
+      <button class="btn-ghost" bindtap="onCopySummary">
+        {{copiedTip ? '已复制 ✓' : '复制诊断要点'}}
+      </button>
+      <button class="btn-share" open-type="share">分享报告</button>
+    </view>
+    <view class="foot-tip">报告已自动保存在本地，随时可回看。</view>
+  </block>
+</view>

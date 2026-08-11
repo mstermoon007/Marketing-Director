@@ -1,0 +1,44 @@
+<view class="bubble-row {{role}}">
+  <!-- 系统提示 -->
+  <view wx:if="{{role === 'system'}}" class="sys">{{content}}</view>
+  <view wx:elif="{{role === 'user'}}" class="user-bubble">
+    <!-- 用户消息 -->
+    <text class="user-text">{{content}}</text>
+  </view>
+  <view wx:else class="agent-wrap">
+    <!-- Agent 消息 -->
+    <view class="agent-bubble">
+      <markdown-view content="{{content}}"></markdown-view>
+
+      <view wx:if="{{streaming}}" class="thinking-slot">
+        <thinking-indicator active="{{true}}" steps="{{thinkingSteps}}"></thinking-indicator>
+      </view>
+
+      <view wx:if="{{toolCalls.length}}" class="tools">
+        <text class="tool" wx:for="{{toolCalls}}" wx:key="index">⚙ {{item}}</text>
+      </view>
+
+      <view wx:if="{{cardTitle}}" class="card-chip" bindtap="onCardTap">
+        <text class="card-kind">{{cardTitle}}</text>
+        <text class="card-hint">{{cardCta}}</text>
+      </view>
+
+      <view class="bubble-foot">
+        <text wx:if="{{intentLabel}}" class="intent-chip">{{intentLabel}}</text>
+        <!-- 持续学习：反馈采集 -->
+        <view wx:if="{{showFeedback}}" class="fb-bar">
+          <view
+            class="fb-btn {{feedback === 1 ? 'on' : ''}}"
+            data-rating="1"
+            catchtap="onFeedback"
+          >👍</view>
+          <view
+            class="fb-btn {{feedback === -1 ? 'off' : ''}}"
+            data-rating="-1"
+            catchtap="onFeedback"
+          >👎</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

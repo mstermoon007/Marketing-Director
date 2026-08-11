@@ -1,0 +1,74 @@
+<view class="page">
+  <!-- 空状态 -->
+  <view wx:if="{{!hasData}}" class="empty">
+    <view class="empty-icon">📊</view>
+    <view class="empty-title">还没有复盘报告</view>
+    <view class="empty-sub">周末在日程页点「本周复盘」，或对话里说「帮我复盘本周」即可生成。</view>
+    <button class="btn-primary" bindtap="goChat">去对话生成</button>
+  </view>
+  <block wx:else>
+    <view class="head">
+      <view class="head-title">第 {{weekNumber || '本'}} 周复盘</view>
+      <view class="head-time">{{updatedText}}</view>
+    </view>
+
+    <!-- 总评 -->
+    <view class="card summary">
+      <view class="card-title">本周总评</view>
+      <view class="summary-text">{{summary}}</view>
+    </view>
+
+    <!-- 指标达成 -->
+    <view wx:if="{{metrics.length}}" class="card">
+      <view class="card-title">关键指标达成</view>
+      <view wx:for="{{metrics}}" wx:key="metric_name" class="metric">
+        <view class="metric-top">
+          <text class="metric-name">{{item.metric_name}}</text>
+          <text class="metric-rate" style="color:{{item.rateColor}}">{{item.rate}}%</text>
+        </view>
+        <view class="metric-bar">
+          <view class="metric-fill" style="width:{{item.rate > 100 ? 100 : item.rate}}%;background:{{item.rateColor}}"></view>
+        </view>
+        <view class="metric-num">实际 {{item.actual}} / 目标 {{item.target}}</view>
+      </view>
+    </view>
+
+    <!-- 做得好 / 待改进 -->
+    <view class="card">
+      <view class="card-title good">做得好的</view>
+      <view wx:if="{{whatWorked.length}}">
+        <view wx:for="{{whatWorked}}" wx:key="*this" class="line good-line">✅ {{item}}</view>
+      </view>
+      <view wx:else class="line-empty">暂无记录</view>
+    </view>
+
+    <view class="card">
+      <view class="card-title bad">待改进</view>
+      <view wx:if="{{whatDidnt.length}}">
+        <view wx:for="{{whatDidnt}}" wx:key="*this" class="line bad-line">⚠️ {{item}}</view>
+      </view>
+      <view wx:else class="line-empty">暂无记录</view>
+    </view>
+
+    <!-- 下周建议 -->
+    <view class="card">
+      <view class="card-title">下周建议</view>
+      <view wx:for="{{suggestions}}" wx:key="*this" class="sug">
+        <view class="sug-text">💡 {{item}}</view>
+        <view class="sug-rate">
+          <text class="sug-btn" data-idx="{{index}}" data-rating="1" catchtap="onRateSuggestion">👍</text>
+          <text class="sug-btn" data-idx="{{index}}" data-rating="-1" catchtap="onRateSuggestion">👎</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 闭环落点：采纳 → 更新计划 + 排期 -->
+    <view class="foot-bar">
+      <button wx:if="{{!applied}}" class="btn-primary" loading="{{applying}}" disabled="{{applying}}" bindtap="onApply">
+        {{applying ? '生成中…' : '采纳建议并生成下周计划'}}
+      </button>
+      <button wx:else class="btn-done" bindtap="goChat">已排期，去日程查看 ✓</button>
+    </view>
+    <view class="foot-tip">采纳后系统自动出下周 7 天计划并排进日程，无需手动搬运。</view>
+  </block>
+</view>

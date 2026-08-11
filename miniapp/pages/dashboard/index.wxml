@@ -1,0 +1,91 @@
+<view class="dash">
+  <view wx:if="{{!hasData}}" class="empty">
+    <text class="empty-title">还没有数据</text>
+    <text class="empty-sub">去对话页让顾问帮你诊断、生成计划，这里会自动同步看板</text>
+    <view class="empty-btn" bindtap="goChat">去对话 →</view>
+  </view>
+  <block wx:else>
+    <!-- 概览卡片 -->
+    <view class="overview">
+      <view class="score-card">
+        <text class="score-num">{{overallScore}}</text>
+        <text class="score-label">综合健康度</text>
+        <text class="score-name" wx:if="{{profile.company_name}}">{{profile.company_name}}</text>
+        <text class="score-meta" wx:if="{{profile.industry}}">{{profile.industry}} · {{profile.city || '—'}}</text>
+      </view>
+      <view class="prog-card">
+        <progress-bar percent="{{weekCompletion}}" label="本周完成率"></progress-bar>
+        <view class="today-count">今日任务 {{todayTasks.length}} 项</view>
+      </view>
+    </view>
+
+    <!-- 阶段四：季度进度 -->
+    <view class="card">
+      <view class="card-title">
+        季度进度
+        <text class="card-link" bindtap="goReview" wx:if="{{phaseIndex}}">本周复盘 →</text>
+      </view>
+      <view class="q-row">
+        <text class="q-week">第 {{currentWeek || '—'}} / {{totalWeeks}} 周</text>
+        <text class="q-phase">阶段{{phaseIndex}} · {{phaseName}}</text>
+      </view>
+      <view class="q-bar">
+        <view class="q-fill" style="width:{{quarterProgress}}%"></view>
+      </view>
+      <view class="q-pct">已推进 {{quarterProgress}}%</view>
+    </view>
+
+    <!-- 雷达图 -->
+    <view class="card" wx:if="{{radarValues.length}}">
+      <view class="card-title">五维营销健康度</view>
+      <radar-chart labels="{{radarLabels}}" values="{{radarValues}}" size="{{240}}"></radar-chart>
+    </view>
+
+    <!-- 阶段四：业务数据上传入口 -->
+    <view class="card">
+      <view class="card-title">业务数据</view>
+      <view class="upload-row">
+        <text class="upload-tip">上传本周 CSV / 数据截图，AI 自动解析并生成 KPI，为周末复盘提供燃料。</text>
+        <button class="upload-btn" loading="{{uploading}}" disabled="{{uploading}}" bindtap="onUpload">
+          {{uploading ? '解析中…' : '上传数据'}}
+        </button>
+      </view>
+
+      <!-- 上传后回显 KPI -->
+      <view wx:if="{{lastKpi && lastKpi.rows.length}}" class="kpi-box">
+        <view class="kpi-sum" wx:if="{{lastKpi.summary}}">{{lastKpi.summary}}</view>
+        <view wx:for="{{lastKpi.rows}}" wx:key="metric" class="kpi-row">
+          <text class="kpi-name">{{item.metric}}</text>
+          <text class="kpi-val">{{item.actual}}{{item.target != null ? ' / ' + item.target : ''}}</text>
+          <text class="kpi-rate" wx:if="{{item.achievement_rate != null}}">{{item.achievement_rate}}%</text>
+        </view>
+        <view class="kpi-foot" wx:if="{{lastKpi.overall_achievement != null}}">
+          综合达成率 {{lastKpi.overall_achievement}}%
+        </view>
+      </view>
+      <view wx:elif="{{hasMerged}}" class="kpi-box">
+        <view wx:for="{{mergedNumbers}}" wx:key="*this" class="kpi-row">
+          <text class="kpi-name">{{index}}</text>
+          <text class="kpi-val">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 今日任务 -->
+    <view class="card">
+      <view class="card-title">
+        今日待办
+        <text class="card-link" bindtap="goPlan">计划进度 →</text>
+      </view>
+      <view wx:if="{{todayTasks.length}}">
+        <task-card
+          wx:for="{{todayTasks}}"
+          wx:key="id"
+          task="{{item}}"
+          bind:toggle="onTaskToggle"
+        ></task-card>
+      </view>
+      <view wx:else class="card-empty">今天还没有排定的任务，去对话页让顾问安排日程吧</view>
+    </view>
+  </block>
+</view>

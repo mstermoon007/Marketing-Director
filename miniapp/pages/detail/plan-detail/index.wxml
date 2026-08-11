@@ -1,0 +1,91 @@
+<view class="plan">
+  <!-- ============ 空态 ============ -->
+  <view wx:if="{{!hasData && !planMode}}" class="empty">
+    <text class="empty-title">还没有计划</text>
+    <text class="empty-sub">在对话页说「生成营销计划 / 安排本周日程」，这里会展示执行进度</text>
+    <view class="empty-btn" bindtap="goChat">去对话 →</view>
+  </view>
+  <block wx:elif="{{planMode}}">
+    <!-- ============ A. 计划模式：可微调 + 确认排期 ============ -->
+    <view class="plan-head">
+      <view class="plan-badges">
+        <text wx:if="{{weekNumber}}" class="badge">第 {{weekNumber}} 周</text>
+        <text wx:if="{{phaseName}}" class="badge badge-ghost">{{phaseName}}</text>
+        <text wx:if="{{confirmed}}" class="badge badge-ok">已确认</text>
+      </view>
+      <text class="plan-theme">{{planTheme}}</text>
+      <view wx:if="{{planGoals.length}}" class="goals">
+        <text class="goal" wx:for="{{planGoals}}" wx:key="*this">· {{item}}</text>
+      </view>
+      <text class="edit-tip">点击任务文字可直接修改，改完记得保存</text>
+    </view>
+
+    <view class="day-block" wx:for="{{planDays}}" wx:key="day_index">
+      <view class="day-head">
+        <text class="day-name">{{item.day_name}}</text>
+        <text class="day-date" wx:if="{{item.date}}">{{item.date}}</text>
+      </view>
+      <text wx:if="{{item.focus}}" class="day-focus">聚焦：{{item.focus}}</text>
+
+      <view class="ptask" wx:for="{{item.tasks}}" wx:for-item="t" wx:for-index="ti" wx:key="id">
+        <view
+          class="ptask-slot"
+          data-day-index="{{item.day_index}}"
+          data-task-index="{{ti}}"
+          bindtap="onEditSlot"
+        >{{t.time_slot || '设置时段'}}</view>
+        <view
+          class="ptask-body"
+          data-day-index="{{item.day_index}}"
+          data-task-index="{{ti}}"
+          bindtap="onEditTitle"
+        >
+          <text class="ptask-title">{{t.title}}</text>
+          <text wx:if="{{t.how_to}}" class="ptask-how">{{t.how_to}}</text>
+        </view>
+        <text class="ptask-edit">✎</text>
+      </view>
+    </view>
+
+    <view class="action-bar">
+      <view class="btn btn-ghost" bindtap="onRegenerate">重新生成</view>
+      <view
+        wx:if="{{pendingEdits > 0}}"
+        class="btn btn-warn {{submitting ? 'disabled' : ''}}"
+        bindtap="onSaveEdits"
+      >保存微调（{{pendingEdits}}）</view>
+      <view
+        wx:if="{{!confirmed}}"
+        class="btn btn-primary {{submitting ? 'disabled' : ''}}"
+        bindtap="onConfirm"
+      >确认并排期</view>
+      <view wx:else class="btn btn-primary" bindtap="goSchedule">查看日程 →</view>
+    </view>
+    <view class="bottom-pad"></view>
+  </block>
+  <block wx:else>
+    <!-- ============ B. 进度模式：已排期后的执行跟踪 ============ -->
+    <view class="overall">
+      <text class="overall-num">{{overall}}%</text>
+      <text class="overall-label">整体完成度（{{doneCount}}/{{totalCount}}）</text>
+    </view>
+
+    <view class="day-block" wx:for="{{days}}" wx:key="day_index">
+      <view class="day-head">
+        <text class="day-name">{{item.day_name}}</text>
+        <text class="day-date" wx:if="{{item.date}}">{{item.date}}</text>
+      </view>
+      <progress-bar percent="{{item.percent}}" label="当日进度"></progress-bar>
+      <view class="tasks">
+        <task-card
+          wx:for="{{item.tasks}}"
+          wx:for-item="t"
+          wx:key="id"
+          task="{{t}}"
+          dayName="{{item.day_name}}"
+          bind:toggle="onTaskToggle"
+        ></task-card>
+      </view>
+    </view>
+  </block>
+</view>

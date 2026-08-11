@@ -1,0 +1,59 @@
+<view class="sched">
+  <view wx:if="{{!hasData}}" class="empty">
+    <text class="empty-title">还没有日程</text>
+    <text class="empty-sub">在对话页说「安排本周日程」，顾问会把计划拆解成每天的任务</text>
+    <view class="empty-btn" bindtap="goChat">去对话 →</view>
+  </view>
+  <block wx:else>
+    <!-- 周历条 -->
+    <view class="week-bar">
+      <view class="week-range">{{weekRange}}</view>
+      <view class="week-cells">
+        <view
+          wx:for="{{week}}"
+          wx:key="date"
+          class="wcell {{item.isToday ? 'today' : ''}}"
+        >
+          <text class="wcell-dow">{{item.weekday}}</text>
+          <view class="wcell-dot {{item.total ? (item.rate >= 100 ? 'done' : 'part') : 'none'}}">
+            <text class="wcell-num">{{item.total ? item.done : '·'}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 周末复盘横幅 -->
+    <view wx:if="{{showReviewCta}}" class="review-cta" bindtap="onReviewTap">
+      <view class="cta-left">
+        <text class="cta-icon">📊</text>
+        <view class="cta-text">
+          <text class="cta-title">本周复盘时间到</text>
+          <text class="cta-sub">AI 已结合执行情况生成复盘与下周建议</text>
+        </view>
+      </view>
+      <text class="cta-go">{{reviewing ? '生成中…' : '去复盘 →'}}</text>
+    </view>
+
+    <view class="summary">
+      <text>本周完成 {{doneCount}}/{{totalCount}}</text>
+      <text class="summary-hint">点击任务可勾选完成</text>
+    </view>
+
+    <view class="day-group" wx:for="{{groups}}" wx:key="day_index">
+      <view class="day-head">
+        <text class="day-name">{{item.day_name}}</text>
+        <text class="day-date" wx:if="{{item.dateLabel}}">{{item.dateLabel}}</text>
+        <text class="day-today" wx:if="{{item.isToday}}">今天</text>
+        <text class="day-done" wx:if="{{item.tasks.length}}">已完成 {{item.doneCount}}/{{item.tasks.length}}</text>
+      </view>
+      <task-card
+        wx:for="{{item.tasks}}"
+        wx:for-item="t"
+        wx:key="id"
+        task="{{t}}"
+        dayName="{{item.day_name}}"
+        bind:toggle="onTaskToggle"
+      ></task-card>
+    </view>
+  </block>
+</view>
