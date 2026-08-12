@@ -32,6 +32,12 @@ const DEV_UPLOAD_TIMEOUT = 20000
 const PROD_UPLOAD_TIMEOUT = 60000
 /** getBase() 解密总超时：避免 prod 场景下 showModal 等用户操作阻塞初始化整 3s 还没拿到 base → 快速降级 */
 const GET_BASE_RESOLVE_TIMEOUT = 3000
+/**
+ * 流式（SSE）请求超时：分块连接本身会持续较长时间，且后端有心跳保活，
+ * 因此使用远大于一次性请求的超时（微信 wx.request timeout 上限约 60s）。
+ * 配合后端 SSE 心跳注释行，避免 WAServiceMainContext 的 Error: timeout。
+ */
+const STREAM_TIMEOUT = 60000
 
 /** 按环境返回默认请求超时（毫秒） */
 const defaultTimeoutMs = (): number => (detectEnvKind() === 'dev' ? DEV_TIMEOUT : PROD_TIMEOUT)
@@ -693,7 +699,7 @@ export function stream(opts: StreamOptions): StreamHandle {
         method: opts.method || 'POST',
         data: opts.data,
         header,
-        timeout: opts.timeout || defaultTimeoutMs(),
+        timeout: opts.timeout || STREAM_TIMEOUT,
         enableChunked: true,
 
         success(res: { statusCode?: number; data?: any }) {

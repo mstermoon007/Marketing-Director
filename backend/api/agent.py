@@ -13,6 +13,8 @@ Agent 对话接口（后端大脑入口）
 
 from __future__ import annotations
 
+import asyncio
+import contextlib
 import json
 
 from fastapi import APIRouter, Depends
@@ -93,18 +95,54 @@ async def agent_chat_stream(
     session_id = req.session_id or f"{user_id}:default"
     controller = get_controller()
 
+    # SSE 心跳间隔：微信小程序对分块请求的 timeout 按「相邻分块空闲间隔」计时，
+    # Agent 在 runner 执行（LLM/RAG/工具编排）期间不会产出任何 SSE 事件，连接会长时间静默，
+    # 极易触发 WAServiceMainContext 的 Error: timeout（dev 10s / prod 30s）。
+    # 每隔几秒下发一条 SSE 注释行（以 ":" 开头，前端解析器会忽略），保活连接。
+    SSE_HEARTBEAT_INTERVAL = 8  # 秒，必须小于任一环境的 timeout 下限
+
     async def event_generator():
+        queue: asyncio.Queue = asyncio.Queue()
+
+        async def _producer() -> None:
+            # 在独立 task 中跑 controller.chat_stream，事件经队列转发，
+            # 既保留顺序，又允许主生成器在无事件时插入心跳。
+            try:
+                async for evt in controller.chat_stream(
+                    session_id=session_id,
+                    user_id=user_id,
+                    message=req.message,
+                    business_id=req.business_id or None,
+                    files=req.files or None,
+                ):
+                    await queue.put(("event", evt))
+            except Exception as e:  # 统一为 error 事件下推
+                await queue.put(("error", str(e)))
+            finally:
+                await queue.put(("stop", None))
+
+        prod_task = asyncio.ensure_future(_producer())
         try:
-            async for evt in controller.chat_stream(
-                session_id=session_id,
-                user_id=user_id,
-                message=req.message,
-                business_id=req.business_id or None,
-                files=req.files or None,
-            ):
-                yield f"data: {json.dumps(evt, ensure_ascii=False)}\n\n"
-        except Exception as e:
-            yield f"data: {json.dumps({'type': 'error', 'message': str(e)}, ensure_ascii=False)}\n\n"
+            while True:
+                try:
+                    kind, payload = await asyncio.wait_for(
+                        queue.get(), timeout=SSE_HEARTBEAT_INTERVAL
+                    )
+                except asyncio.TimeoutError:
+                    # 空闲超时：下发心跳注释行，避免微信侧连接被掐断
+                    yield ": heartbeat\n\n"
+                    continue
+
+                if kind == "stop":
+                    break
+                if kind == "error":
+                    yield f"data: {json.dumps({'type': 'error', 'message': payload}, ensure_ascii=False)}\n\n"
+                    break
+                yield f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+        finally:
+            prod_task.cancel()
+            with contextlib.suppress(asyncio.CancelledError, Exception):
+                await prod_task
 
     return StreamingResponse(
         event_generator(),
