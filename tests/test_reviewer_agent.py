@@ -12,9 +12,9 @@
 """
 
 import pytest
-from src.agents.reviewer import ReviewAgent
-from src.models.review import ReviewReport, MetricComparison
-from src.utils.document_parser import (
+from backend.agents.reviewer import ReviewAgent
+from backend.models.review import ReviewReport, MetricComparison
+from backend.utils.document_parser import (
     ParsedData, is_image_file, is_csv_file,
     parse_csv_content, parse_csv_file, merge_parsed_data,
 )

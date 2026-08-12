@@ -1,5 +1,5 @@
 {
-  "miniprogramRoot": "miniapp/",
+  "miniprogramRoot": "frontend/",
   "setting": {
     "es6": true,
     "postcss": true,
@@ -23,6 +23,6 @@
     "ignore": [],
     "include": []
   },
-  "appid": "wxREPLACE_WITH_YOUR_APPID_HERE",
+  "appid": "wx5745d82035da53bf",
   "editorSetting": {}
 }

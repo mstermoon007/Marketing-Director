@@ -1,22 +1,41 @@
+# =========================================================================
+# 部署锁定清单 —— 必须与 pyproject.toml [project].dependencies 保持同集合
+# 校验：python scripts/check_dependency_drift.py
+# 本文件只锁版本，不新增/删减包；增删依赖请先改 pyproject.toml
+# =========================================================================
+
 # ── 核心框架 ──
 fastapi==0.115.6
 uvicorn[standard]==0.34.0
 pydantic==2.10.5
 
 # ── 数据库 ──
-SQLAlchemy==2.0.36
+# [asyncio] extra 提供 greenlet，异步引擎必需
+SQLAlchemy[asyncio]==2.0.36
 aiosqlite==0.20.0
 
-# ── LLM ──
+# ── LLM / Agent ──
 openai==1.58.1
+langgraph==1.2.10
+# 代码在 src/agent_core/tools.py:482 直接 import，必须显式锁定，
+# 不能依赖 langgraph 传递引入（上游换版本即断）
+langchain-core==1.5.3
+chromadb==1.5.9
 
 # ── 模板 ──
 jinja2==3.1.4
 
 # ── 工具 ──
+# 无直接 import：FastAPI 解析 UploadFile/File/Form 的运行时依赖
 python-multipart==0.0.19
 
-# ── 测试 ──
+# ── 网络 ──
+# 运行时依赖（src/api/auth.py:15），非仅测试用
+httpx==0.28.1
+
+# ── 安全 ──
+PyJWT==2.9.0
+
+# ── 测试（部署环境可不装：pip install -e ".[dev]"）──
 pytest==8.3.4
 pytest-asyncio==0.25.0
-httpx==0.28.1

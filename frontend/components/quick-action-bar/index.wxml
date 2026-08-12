@@ -1,0 +1,9 @@
+<view class="quick-bar" wx:if="{{actions.length}}">
+  <view
+    class="chip"
+    wx:for="{{actions}}"
+    wx:key="index"
+    data-index="{{index}}"
+    bindtap="onTap"
+  >{{item.label}}</view>
+</view>

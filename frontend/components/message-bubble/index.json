@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "styleIsolation": "shared",
+  "usingComponents": {
+    "markdown-view": "../markdown-view/index",
+    "thinking-indicator": "../thinking-indicator/index"
+  }
+}

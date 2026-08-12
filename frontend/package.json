@@ -1,0 +1,24 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "AI营销战略智能体小程序前端代码",
+  "main": "app.js",
+  "scripts": {
+    "build": "./node_modules/typescript/bin/tsc",
+    "clean": "find . -name '*.js' -not -path './node_modules/*' -not -name 'project.config.js' -not -name 'check.js' -delete && find . -name '*.js.map' -not -path './node_modules/*' -delete",
+    "rebuild": "npm run clean && npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "wechat-miniprogram",
+    "frontend",
+    "typescript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/wechat-miniprogram": "^3.4.10",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "数据看板",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "radar-chart": "/components/radar-chart/index",
+    "progress-bar": "/components/progress-bar/index",
+    "task-card": "/components/task-card/index"
+  }
+}

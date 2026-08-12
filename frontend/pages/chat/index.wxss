@@ -1,0 +1,116 @@
+.chat-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #0a0e1a;
+}
+.msg-scroll {
+  flex: 1;
+  padding: 0 14px;
+}
+.msg-list {
+  padding-top: 12px;
+}
+.bottom-pad {
+  height: 12px;
+}
+/* 多轮澄清引导 */
+.clarify-box {
+  margin: 4px 0 10px;
+  padding: 10px 12px;
+  background: rgba(47, 107, 255, 0.08);
+  border: 1px dashed #2c3c5e;
+  border-radius: 12px;
+}
+.clarify-tip {
+  display: block;
+  font-size: 12px;
+  color: #8ea4c8;
+  margin-bottom: 8px;
+}
+.clarify-chip {
+  font-size: 13px;
+  color: #cfe0ff;
+  background: #16223c;
+  border: 1px solid #28395c;
+  border-radius: 10px;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+.clarify-chip:active {
+  background: #1d2c4d;
+}
+.attachments {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px 0;
+  flex-wrap: wrap;
+}
+.attach {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #16223c;
+  border: 1px solid #28395c;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: #cfe0ff;
+}
+.attach-del {
+  color: #ff7a7a;
+  font-weight: 700;
+}
+.input-bar {
+  background: #0d1424;
+  border-top: 1px solid #1b2742;
+  padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+}
+.input-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+.input {
+  flex: 1;
+  min-height: 40px;
+  max-height: 120px;
+  background: #141d33;
+  border: 1px solid #28395c;
+  border-radius: 12px;
+  padding: 9px 12px;
+  color: #eaf1ff;
+  font-size: 15px;
+}
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tool-btn {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #16223c;
+  border: 1px solid #28395c;
+  border-radius: 10px;
+  font-size: 18px;
+}
+.send-btn {
+  height: 38px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #2f6bff;
+  color: #fff;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.send-btn.disabled {
+  opacity: 0.5;
+}

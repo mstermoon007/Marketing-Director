@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "季度作战路线图",
-  "usingComponents": {
-    "progress-bar": "/components/progress-bar/index",
-    "phase-timeline": "/components/phase-timeline/index",
-    "empty-state": "/components/empty-state/index"
-  }
-}

@@ -1,0 +1,24 @@
+# 依赖 / 大目录
+node_modules
+frontend
+.git
+**/__pycache__
+**/*.pyc
+*.egg-info
+.venv
+
+# 环境 / 工具配置
+.env
+.env.local
+.cloudbase
+.codebuddy
+.agents
+.mcp.json
+.rules
+.roo
+.workbuddy
+lingma
+
+# data：除知识库种子卡片外全部排除（app.db / chroma_db / uploads 为运行时生成）
+data/
+!data/marketing_knowledge_cards.jsonl

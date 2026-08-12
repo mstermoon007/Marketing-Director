@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "诊断报告",
+  "usingComponents": {
+    "radar-chart": "/components/radar-chart/index"
+  }
+}

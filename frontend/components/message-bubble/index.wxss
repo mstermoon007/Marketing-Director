@@ -1,0 +1,117 @@
+.bubble-row {
+  display: flex;
+  margin: 10px 0;
+}
+.bubble-row.user {
+  justify-content: flex-end;
+}
+.agent-wrap {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+}
+.user-bubble {
+  max-width: 78%;
+  background: #2f6bff;
+  border-radius: 14px 14px 4px 14px;
+  padding: 10px 14px;
+}
+.user-text {
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.6;
+  word-break: break-word;
+}
+.agent-bubble {
+  max-width: 92%;
+  background: #141d33;
+  border: 1px solid #23304d;
+  border-radius: 14px 14px 14px 4px;
+  padding: 12px 14px;
+}
+.sys {
+  align-self: center;
+  background: rgba(91, 141, 239, 0.12);
+  color: #9fb0cc;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  margin: 4px auto;
+}
+.thinking-slot {
+  margin-top: 8px;
+}
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.tool {
+  font-size: 12px;
+  color: #9fd0ff;
+  background: #10203a;
+  border: 1px solid #234;
+  border-radius: 8px;
+  padding: 2px 8px;
+}
+.card-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: #0f1830;
+  border: 1px dashed #2c3c5e;
+  border-radius: 10px;
+}
+.card-kind {
+  font-size: 13px;
+  color: #ffd479;
+  font-weight: 600;
+}
+.card-hint {
+  font-size: 12px;
+  color: #7f8eaa;
+}
+.card-chip:active {
+  background: #16223f;
+}
+.bubble-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+.intent-chip {
+  display: inline-block;
+  font-size: 12px;
+  color: #cfe0ff;
+  background: #1b2742;
+  padding: 2px 10px;
+  border-radius: 20px;
+}
+.fb-bar {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+.fb-btn {
+  font-size: 14px;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: #10203a;
+  border: 1px solid #23304d;
+  opacity: 0.55;
+}
+.fb-btn.on {
+  opacity: 1;
+  border-color: #ffd479;
+  background: rgba(255, 212, 121, 0.14);
+}
+.fb-btn.off {
+  opacity: 1;
+  border-color: #ff7b7b;
+  background: rgba(255, 123, 123, 0.14);
+}

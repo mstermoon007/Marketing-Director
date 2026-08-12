@@ -10,9 +10,9 @@
 """
 
 import pytest
-from src.agents.diagnosis import DiagnosisAgent
-from src.models.diagnosis import DiagnosisReport, Problem
-from src.prompts.loader import load_prompt, list_available_prompts
+from backend.agents.diagnosis import DiagnosisAgent
+from backend.models.diagnosis import DiagnosisReport, Problem
+from backend.prompts.loader import load_prompt, list_available_prompts
 from tests.fixtures.industries import ALL_INDUSTRIES
 from tests.conftest import make_profile
 

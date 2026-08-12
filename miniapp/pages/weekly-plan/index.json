@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "本周任务",
-  "usingComponents": {
-    "week-calendar": "/components/week-calendar/index",
-    "task-card": "/components/task-card/index",
-    "empty-state": "/components/empty-state/index"
-  }
-}

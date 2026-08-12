@@ -17,7 +17,7 @@ import pytest
 import hashlib
 from pathlib import Path
 from typing import Optional
-from src.prompts.loader import (
+from backend.prompts.loader import (
     load_prompt,
     load_prompt_with_skill,
     list_available_prompts,
@@ -88,7 +88,7 @@ class TestPromptSnapshots:
         elif prompt_path.startswith("executor/"):
             if "day_template" in prompt_path:
                 # day_template 是 executor 内部的 day_level_prompt
-                from src.prompts.loader import _jinja
+                from backend.prompts.loader import _jinja
                 # 用模板引擎直接渲染
                 rendered = _jinja(
                     prompt_path,
@@ -100,7 +100,7 @@ class TestPromptSnapshots:
                     yesterday_feedback="",
                 )
             else:
-                from src.prompts.loader import _jinja
+                from backend.prompts.loader import _jinja
                 rendered = _jinja(
                     prompt_path,
                     business_context=ctx,
@@ -110,7 +110,7 @@ class TestPromptSnapshots:
                     yesterday_feedback="",
                 )
         elif prompt_path.startswith("reviewer/"):
-            from src.prompts.loader import _jinja
+            from backend.prompts.loader import _jinja
             rendered = _jinja(
                 prompt_path,
                 goals_context="本周目标：短视频5条 + 线下客户10组",
@@ -165,7 +165,7 @@ class TestPromptPresence:
 
     def test_industry_prompt_mapping_has_all(self):
         """诊断行业映射：所有 DiagnosisAgent 用到的模板必须存在"""
-        from src.agents.diagnosis import INDUSTRY_PROMPT_MAP
+        from backend.agents.diagnosis import INDUSTRY_PROMPT_MAP
 
         available = set(list_available_prompts())
         for key, prompt in INDUSTRY_PROMPT_MAP.items():

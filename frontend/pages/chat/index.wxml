@@ -1,0 +1,76 @@
+<view class="chat-page">
+  <!-- 消息列表 -->
+  <scroll-view
+    class="msg-scroll"
+    scroll-y
+    scroll-into-view="{{toView}}"
+    scroll-with-animation
+  >
+    <view class="msg-list">
+      <message-bubble
+        wx:for="{{messages}}"
+        wx:key="id"
+        id="{{item.id}}"
+        role="{{item.role}}"
+        content="{{item.content}}"
+        intent="{{item.intent}}"
+        thinkingSteps="{{item.thinkingSteps}}"
+        toolCalls="{{item.toolCalls}}"
+        card="{{item.card}}"
+        streaming="{{item.streaming}}"
+        msgId="{{item.id}}"
+        feedback="{{feedbackMap[item.id] || 0}}"
+        bind:cardtap="onCardTap"
+        bind:feedback="onFeedback"
+      ></message-bubble>
+
+      <!-- 多轮澄清：Agent 需要更多信息时的一键补全引导 -->
+      <view wx:if="{{clarifyChips.length}}" class="clarify-box">
+        <text class="clarify-tip">可以这样回答 👇</text>
+        <view
+          class="clarify-chip"
+          wx:for="{{clarifyChips}}"
+          wx:for-item="chip"
+          wx:key="*this"
+          data-text="{{chip}}"
+          bindtap="onClarifyTap"
+        >{{chip}}</view>
+      </view>
+    </view>
+    <view class="bottom-pad"></view>
+  </scroll-view>
+
+  <!-- 快捷操作 -->
+  <quick-action-bar actions="{{quickActions}}" bind:select="onQuickSelect"></quick-action-bar>
+
+  <!-- 输入栏 -->
+  <view class="input-bar">
+    <view class="attachments" wx:if="{{attachments.length}}">
+      <view class="attach" wx:for="{{attachments}}" wx:key="path" data-index="{{index}}" bindtap="onRemoveAttach">
+        <text class="attach-icon">{{item.type === 'image' ? '🖼️' : '📎'}}</text>
+        <text class="attach-name">{{item.name}}</text>
+        <text class="attach-del">×</text>
+      </view>
+    </view>
+    <view class="input-row">
+      <textarea
+        class="input"
+        value="{{inputText}}"
+        bindinput="onInput"
+        placeholder="说说你的生意，或发送资料让顾问分析…"
+        auto-height
+        maxlength="2000"
+        confirm-type="send"
+        bindconfirm="send"
+      ></textarea>
+      <view class="tools">
+        <view class="tool-btn" bindtap="onPickImage">🖼️</view>
+        <view class="tool-btn" bindtap="onPickFile">📎</view>
+        <view
+          class="send-btn {{agentStatus.streaming || uploading ? 'disabled' : ''}}"
+          bindtap="send"
+        >{{uploading ? '上传中' : '发送'}}</view>
+      </view>
+    </view>
+  </view>
+</view>

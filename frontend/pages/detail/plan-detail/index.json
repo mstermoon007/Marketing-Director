@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "计划详情",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "progress-bar": "/components/progress-bar/index",
+    "task-card": "/components/task-card/index"
+  }
+}

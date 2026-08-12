@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "上传截图复盘",
-  "usingComponents": {
-    "card": "/components/card/index"
-  }
-}

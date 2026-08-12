@@ -1,8 +1,0 @@
-{
-  "navigationBarTitleText": "营销诊断报告",
-  "usingComponents": {
-    "health-score": "/components/health-score/index",
-    "radar-chart": "/components/radar-chart/index",
-    "empty-state": "/components/empty-state/index"
-  }
-}

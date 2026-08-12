@@ -1,0 +1,220 @@
+.plan {
+  padding: 14px;
+  background: #0a0e1a;
+  min-height: 100vh;
+}
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding-top: 120px;
+}
+.empty-title {
+  font-size: 18px;
+  color: #eaf1ff;
+  font-weight: 700;
+}
+.empty-sub {
+  font-size: 13px;
+  color: #7f8eaa;
+  text-align: center;
+  max-width: 260px;
+  line-height: 1.6;
+}
+.empty-btn {
+  margin-top: 8px;
+  background: #2f6bff;
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+.overall {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #141d33;
+  border: 1px solid #23304d;
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.overall-num {
+  font-size: 36px;
+  font-weight: 800;
+  color: #07c160;
+}
+.overall-label {
+  font-size: 13px;
+  color: #9fb0cc;
+  margin-top: 4px;
+}
+.day-block {
+  background: #141d33;
+  border: 1px solid #23304d;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+.day-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.day-name {
+  font-size: 16px;
+  color: #eaf1ff;
+  font-weight: 700;
+}
+.day-date {
+  font-size: 12px;
+  color: #7f8eaa;
+}
+.tasks {
+  margin-top: 10px;
+}
+
+/* ============ 计划模式（可微调 + 确认排期） ============ */
+.plan-head {
+  background: linear-gradient(135deg, #16223c 0%, #141d33 100%);
+  border: 1px solid #23304d;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.plan-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.badge {
+  font-size: 12px;
+  color: #0a0e1a;
+  background: #ffd479;
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-weight: 600;
+}
+.badge-ghost {
+  background: #1b2742;
+  color: #cfe0ff;
+}
+.badge-ok {
+  background: #07c160;
+  color: #fff;
+}
+.plan-theme {
+  display: block;
+  font-size: 18px;
+  color: #eaf1ff;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.goals {
+  margin-top: 8px;
+}
+.goal {
+  display: block;
+  font-size: 13px;
+  color: #9fb0cc;
+  line-height: 1.7;
+}
+.edit-tip {
+  display: block;
+  margin-top: 10px;
+  font-size: 12px;
+  color: #6f7f9d;
+}
+.day-focus {
+  display: block;
+  font-size: 12px;
+  color: #9fd0ff;
+  margin-bottom: 8px;
+}
+.ptask {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 0;
+  border-top: 1px solid #1b2742;
+}
+.ptask-slot {
+  flex-shrink: 0;
+  width: 88px;
+  font-size: 12px;
+  color: #9fd0ff;
+  background: #10203a;
+  border: 1px solid #23304d;
+  border-radius: 8px;
+  padding: 4px 6px;
+  text-align: center;
+  line-height: 1.4;
+}
+.ptask-body {
+  flex: 1;
+  min-width: 0;
+}
+.ptask-title {
+  display: block;
+  font-size: 14px;
+  color: #eaf1ff;
+  line-height: 1.6;
+}
+.ptask-how {
+  display: block;
+  font-size: 12px;
+  color: #7f8eaa;
+  line-height: 1.6;
+  margin-top: 2px;
+}
+.ptask-edit {
+  flex-shrink: 0;
+  font-size: 14px;
+  color: #4d5f80;
+  padding-top: 2px;
+}
+
+/* 底部操作条 */
+.action-bar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  gap: 8px;
+  padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, rgba(10, 14, 26, 0) 0%, #0a0e1a 30%);
+}
+.btn {
+  flex: 1;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.btn-primary {
+  background: #2f6bff;
+  color: #fff;
+  flex: 1.4;
+}
+.btn-warn {
+  background: rgba(255, 212, 121, 0.16);
+  border: 1px solid #ffd479;
+  color: #ffd479;
+}
+.btn-ghost {
+  background: #16223c;
+  border: 1px solid #28395c;
+  color: #9fb0cc;
+  flex: 0.8;
+}
+.btn.disabled {
+  opacity: 0.5;
+}
+.bottom-pad {
+  height: 8px;
+}

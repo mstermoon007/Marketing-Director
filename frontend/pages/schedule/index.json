@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "每周日程",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "task-card": "/components/task-card/index"
+  }
+}

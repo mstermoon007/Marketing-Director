@@ -1,0 +1,3 @@
+<view class="md-view">
+  <rich-text nodes="{{html}}"></rich-text>
+</view>

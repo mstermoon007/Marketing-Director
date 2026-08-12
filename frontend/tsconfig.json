@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    /* 基本环境：微信小程序 runtime */
+    "target": "ES2017",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "lib": ["ES2020", "DOM"],
+    "rootDir": ".",
+    "typeRoots": ["./typings", "./node_modules/@types"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@/components/*": ["./components/*"],
+      "@/pages/*": ["./pages/*"],
+      "@/utils/*": ["./utils/*"],
+      "@/types/*": ["./types/*"],
+      "@/api/*": ["./api/*"]
+    },
+
+    /* ---------------------------------------------------------
+     * Strictness（GitHub 项目推荐）
+     *   - master switch: strict = true
+     *   - 下列3项由于存量代码原因，暂关闭，可在迭代中逐步开启：
+     *       noImplicitAny / strictNullChecks / strictFunctionTypes
+     * --------------------------------------------------------- */
+    "strict": true,
+    "alwaysStrict": true,
+    "noImplicitThis": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": false,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+
+    /* Lint 级别（GitHub 规范推荐） */
+    "noUnusedLocals": false,          // 兼容 WX 小程序声明型 TS 页面结构
+    "noUnusedParameters": false,      // 兼容生命周期参数不用场景
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+
+    /* Interop / ESM */
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+
+    /* 编译产物：输出到同目录，微信开发者工具读取 .js 文件 */
+    "noEmit": false,
+    "declaration": false,
+    "sourceMap": false,
+    "outDir": ".",
+    "rootDir": "."
+  },
+  "include": [
+    "./app.ts",
+    "./**/*.ts",
+    "./typings/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "miniprogram_npm",
+    "dist",
+    "**/*.js"
+  ]
+}

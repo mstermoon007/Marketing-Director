@@ -10,17 +10,19 @@ import json
 import uuid
 from datetime import date
 
-from src.models.business import BusinessProfile
-from src.models.execution import SevenDayPlan
-from src.services.pipeline import (
+from sqlalchemy import select
+
+from backend.models.business import BusinessProfile
+from backend.models.execution import SevenDayPlan
+from backend.services.pipeline import (
     load_business_profile,
     load_diagnosis_report,
     load_execution_plan,
     run_full_pipeline,
     run_weekly_review,
 )
-from src.db.models import (
-    SyncSession, BusinessRecord, ExecutionPlanRecord, ReviewRecord, init_db,
+from backend.db.models import (
+    AsyncSessionLocal, BusinessRecord, ExecutionPlanRecord, ReviewRecord, init_db,
 )
 
 from tests.fixtures.industries import ALL_INDUSTRIES
@@ -36,9 +38,8 @@ def _make_bid(base: str) -> str:
     return f"pipeline_{base}_{uuid.uuid4().hex[:8]}"
 
 
-def _save_profile_to_db(profile: BusinessProfile) -> str:
-    session = SyncSession()
-    try:
+async def _save_profile_to_db(profile: BusinessProfile) -> str:
+    async with AsyncSessionLocal() as session:
         rec = BusinessRecord(
             id=profile.id,
             business_name=profile.business_name,
@@ -54,16 +55,13 @@ def _save_profile_to_db(profile: BusinessProfile) -> str:
             biggest_pain=profile.biggest_pain,
         )
         session.add(rec)
-        session.commit()
-        session.refresh(rec)
+        await session.commit()
+        await session.refresh(rec)
         return rec.id
-    finally:
-        session.close()
 
 
-def _save_plan_to_db(plan: SevenDayPlan) -> str:
-    session = SyncSession()
-    try:
+async def _save_plan_to_db(plan: SevenDayPlan) -> str:
+    async with AsyncSessionLocal() as session:
         rec = ExecutionPlanRecord(
             diagnosis_id=plan.diagnosis_id,
             business_id=plan.business_id,
@@ -74,11 +72,9 @@ def _save_plan_to_db(plan: SevenDayPlan) -> str:
             days=plan.to_dict()["days"],
         )
         session.add(rec)
-        session.commit()
-        session.refresh(rec)
+        await session.commit()
+        await session.refresh(rec)
         return rec.id
-    finally:
-        session.close()
 
 
 @pytest.fixture(autouse=True, scope="module")
@@ -92,23 +88,26 @@ def _init_db_once():
 
 class TestPipelineLoaders:
 
-    def test_load_business_profile_ok(self):
+    @pytest.mark.asyncio
+    async def test_load_business_profile_ok(self):
         p = make_profile("家装")
         p.id = _make_bid("loader_ok")
-        bid = _save_profile_to_db(p)
+        bid = await _save_profile_to_db(p)
 
-        loaded = load_business_profile(bid)
+        loaded = await load_business_profile(bid)
         assert loaded.id == bid
         assert loaded.industry == "家装"
         assert loaded.business_name == p.business_name
 
-    def test_load_business_profile_missing_raises(self):
+    @pytest.mark.asyncio
+    async def test_load_business_profile_missing_raises(self):
         with pytest.raises(ValueError, match="企业信息不存在"):
-            load_business_profile("nonexistent_id_xyz")
+            await load_business_profile("nonexistent_id_xyz")
 
-    def test_load_diagnosis_report_missing_returns_none(self):
+    @pytest.mark.asyncio
+    async def test_load_diagnosis_report_missing_returns_none(self):
         # 未生成诊断时返回 None，而不是抛错
-        assert load_diagnosis_report("nonexistent_biz") is None
+        assert await load_diagnosis_report("nonexistent_biz") is None
 
 
 # ──────────────────────────────────────────────
@@ -128,7 +127,7 @@ class TestRunFullPipeline:
         industry = "家装"
         p = make_profile(industry)
         p.id = _make_bid("pipeline_full")
-        bid = _save_profile_to_db(p)
+        bid = await _save_profile_to_db(p)
 
         patched_llm.set_responses(
             diagnosis=ALL_INDUSTRIES[industry]["diagnosis_resp"],
@@ -148,19 +147,19 @@ class TestRunFullPipeline:
 
         assert diag["business_id"] == bid
         assert 0 <= diag["overall_score"] <= 100
-        assert len(diag["top3_problems"]) >= 1
+        assert len(diag["top_issues"]) >= 1
 
         assert plan["diagnosis_id"]  # 诊断 ID 被关联
         assert plan["business_id"] == bid
         assert len(plan["days"]) == 7  # 必须 7 天
 
         # Step 3: 持久化校验 — load_* 能读到刚写入的数据
-        loaded_diag = load_diagnosis_report(bid)
+        loaded_diag = await load_diagnosis_report(bid)
         assert loaded_diag is not None
         assert loaded_diag.id == diag["id"]
         assert loaded_diag.overall_score == diag["overall_score"]
 
-        loaded_plan = load_execution_plan(plan["id"])
+        loaded_plan = await load_execution_plan(plan["id"])
         assert loaded_plan.id == plan["id"]
         assert len(loaded_plan.days) == 7
 
@@ -169,12 +168,10 @@ class TestRunFullPipeline:
         """
         无 API Key / LLM 失败：fallback 到本地规则引擎
         run_full_pipeline 仍能产出有效报告和计划，不抛异常。
-
-        模拟方式：让 LLM 抛错（让 Agent.run 中的 try/except 触发 fallback）
         """
         p = make_profile("餐饮")
         p.id = _make_bid("pipeline_fallback")
-        bid = _save_profile_to_db(p)
+        bid = await _save_profile_to_db(p)
 
         # 设置 mock 让 LLM 抛出异常，触发 fallback
         async def _raise(*args, **kwargs):
@@ -203,7 +200,7 @@ class TestRunWeeklyReview:
         industry = "家装"
         p = make_profile(industry)
         p.id = _make_bid("review_csv")
-        bid = _save_profile_to_db(p)
+        bid = await _save_profile_to_db(p)
 
         # Mock 诊断 + 计划
         patched_llm.set_responses(
@@ -232,17 +229,13 @@ class TestRunWeeklyReview:
         assert "vs_target" in rev
         assert len(rev["suggestions"]) >= 1
 
-        # DB 里能查到
-        session = SyncSession()
-        try:
-            recs = (
-                session.query(ReviewRecord)
-                .filter_by(plan_id=plan_id)
-                .all()
+        # DB 里能查到（异步查询）
+        async with AsyncSessionLocal() as session:
+            result_q = await session.execute(
+                select(ReviewRecord).filter_by(plan_id=plan_id)
             )
+            recs = result_q.scalars().all()
             assert len(recs) >= 1
-        finally:
-            session.close()
 
     @pytest.mark.asyncio
     async def test_weekly_review_plan_missing_raises(self):

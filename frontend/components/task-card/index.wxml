@@ -1,0 +1,16 @@
+<view class="task {{checked ? 'done' : ''}}" bindtap="onToggle">
+  <view class="check {{checked ? 'on' : ''}}">
+    <text wx:if="{{checked}}">✓</text>
+  </view>
+  <view class="body">
+    <view class="title-row">
+      <text class="title">{{task.title}}</text>
+      <text class="status">{{statusLabel}}</text>
+    </view>
+    <view class="meta">
+      <text class="time" wx:if="{{task.time_slot}}">🕒 {{task.time_slot}}</text>
+      <text class="day" wx:if="{{dayName}}">· {{dayName}}</text>
+    </view>
+    <view class="how" wx:if="{{task.how_to}}">{{task.how_to}}</view>
+  </view>
+</view>

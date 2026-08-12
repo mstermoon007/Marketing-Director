@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "营销顾问",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "message-bubble": "/components/message-bubble/index",
+    "quick-action-bar": "/components/quick-action-bar/index",
+    "thinking-indicator": "/components/thinking-indicator/index"
+  }
+}

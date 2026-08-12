@@ -36,7 +36,8 @@
 *.gif       binary
 *.ico       binary
 *.webp      binary
-*.svg       text  # SVG 是 XML，允许 diff
+*.svg       text
+# SVG 是 XML，允许 diff
 *.mp3       binary
 *.mp4       binary
 *.woff      binary
@@ -55,7 +56,7 @@
 # ------------------------- GitHub linguist 分类 ---------------------------
 # 让仓库语言占比更真实（忽略 vendor / 产物 / Markdown 文档）
 *.md                    linguist-detectable=false
-miniapp/node_modules/*  linguist-vendored
+frontend/node_modules/*  linguist-vendored
 dist/*                  linguist-generated=true
 build/*                 linguist-generated=true
 __pycache__/*           linguist-vendored

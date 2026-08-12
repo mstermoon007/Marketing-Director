@@ -1,0 +1,17 @@
+.quick-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 12px;
+}
+.chip {
+  font-size: 13px;
+  color: #cfe0ff;
+  background: #16223c;
+  border: 1px solid #28395c;
+  border-radius: 18px;
+  padding: 6px 14px;
+}
+.chip:active {
+  background: #1f3052;
+}

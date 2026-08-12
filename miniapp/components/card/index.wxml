@@ -1,4 +1,0 @@
-<view class="card" style="padding:{{padding}};">
-  <view wx:if="{{title}}" class="card-title">{{title}}</view>
-  <slot></slot>
-</view>

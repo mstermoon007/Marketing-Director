@@ -1,0 +1,248 @@
+/* ============================================================
+   全局样式 - AI营销战略执行智能体 · 深色主题 V3.0
+   配色参考: #0A0E1A 背景 / #141B2E 卡片 / #3B82F6 主强调
+   ============================================================ */
+page {
+  /* ---------- 深色主题色板 ---------- */
+  --bg: #0A0E1A;              /* 页面背景 */
+  --bg-deep: #05080F;         /* 最深处背景 */
+  --card: #141B2E;            /* 卡片容器 */
+  --card-border: #26304A;     /* 卡片描边/分隔 */
+  --bar-bg: #26304A;          /* 进度条底色 */
+
+  /* 主色与功能色 */
+  --accent: #3B82F6;          /* 蓝色 主强调 */
+  --accent-light: #60A5FA;
+  --green: #34D399;           /* 绿色 完成/正向 */
+  --cyan: #22D3EE;            /* 青色 */
+  --pink: #F472B6;            /* 粉色 */
+  --purple: #A78BFA;          /* 紫色 */
+  --yellow: #FBBF24;          /* 黄色 警告/逾期 */
+
+  /* 文字层次 */
+  --text: #F5F7FA;            /* 主文字 */
+  --text-2: #8B95A8;          /* 次级文字 */
+  --text-3: #5B6678;          /* 辅助/提示文字 */
+
+  /* ---------- 字号系统 ---------- */
+  --fs-xs: 22rpx;   /* 11px 辅助标签 */
+  --fs-sm: 26rpx;   /* 13px 次级文字 */
+  --fs-md: 28rpx;   /* 14px 正文 */
+  --fs-lg: 30rpx;   /* 15px 小标题 */
+  --fs-xl: 34rpx;   /* 17px 大标题 */
+  --fs-xxl: 44rpx;  /* 22px 页面头 */
+  --fs-display: 96rpx; /* 48px 大分数 */
+
+  /* ---------- 间距系统 ---------- */
+  --sp-xs: 8rpx;
+  --sp-sm: 16rpx;
+  --sp-md: 24rpx;
+  --sp-lg: 32rpx;
+  --sp-xl: 40rpx;
+  --sp-2xl: 48rpx;
+
+  /* ---------- 圆角系统 ---------- */
+  --r-xs: 8rpx;
+  --r-sm: 12rpx;
+  --r-md: 16rpx;
+  --r-lg: 20rpx;
+  --r-xl: 28rpx;
+  --r-pill: 999rpx;
+
+  /* 基础渲染 */
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', 'Microsoft YaHei', sans-serif;
+  font-size: var(--fs-md);
+  line-height: 1.6;
+}
+
+/* ============================================================
+   全局通用基类
+   ============================================================ */
+
+/* 页面容器 */
+.page {
+  min-height: 100vh;
+  background:
+    radial-gradient(1200rpx 800rpx at 30% 10%, rgba(59,130,246,0.10), transparent 60%),
+    radial-gradient(1000rpx 700rpx at 80% 90%, rgba(167,139,250,0.08), transparent 60%),
+    var(--bg);
+  padding-bottom: 180rpx;
+  box-sizing: border-box;
+}
+
+/* 内容滚动区 (模拟 .content in HTML) */
+.content-scroll {
+  padding: 32rpx 40rpx 48rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 36rpx;
+}
+
+/* ---------- 卡片容器 ---------- */
+.card {
+  background: var(--card);
+  border-radius: var(--r-lg);
+  padding: 32rpx 40rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0,0,0,0.25);
+  border: 1rpx solid rgba(255,255,255,0.03);
+}
+.card.round-16 { border-radius: var(--r-md); padding: 32rpx; }
+
+/* ---------- 按钮 ---------- */
+/* 主CTA按钮 - 52px高 圆角14px */
+.cta-btn {
+  height: 104rpx;
+  border-radius: 28rpx;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 32rpx;
+  font-weight: 600;
+  letter-spacing: 1rpx;
+  box-shadow: 0 8rpx 24rpx rgba(59,130,246,0.35);
+}
+.cta-btn[disabled],
+.cta-btn.disabled {
+  background: var(--bar-bg);
+  color: var(--text-3);
+  box-shadow: none;
+}
+
+/* 次按钮 (描边) */
+.ai-btn {
+  height: 104rpx;
+  border-radius: 28rpx;
+  background: var(--card);
+  border: 1rpx solid var(--card-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+}
+.ai-btn .lab {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* ---------- 标题头 (页面头部) ---------- */
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.page-header .h {
+  font-size: var(--fs-xxl);
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+.page-header .s {
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+/* ---------- 进度条通用 ---------- */
+.bar-bg {
+  width: 100%;
+  height: 16rpx;
+  border-radius: 8rpx;
+  background: var(--bar-bg);
+  overflow: hidden;
+}
+.bar-bg.h-12 { height: 12rpx; border-radius: 6rpx; }
+.bar-fill {
+  height: 100%;
+  border-radius: 8rpx;
+  background: var(--accent);
+  transition: width 0.6s ease;
+}
+
+/* ---------- 标签/Pill ---------- */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 56rpx;
+  padding: 0 24rpx;
+  border-radius: 28rpx;
+  background: var(--bg);
+  border: 1rpx solid var(--card-border);
+}
+.pill .t {
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+.pill.accent { border-color: rgba(59,130,246,0.4); }
+.pill.accent .t { color: var(--accent-light); }
+
+/* 阶段胶囊Tag (攻/守/升) */
+.tag-phase {
+  width: 56rpx;
+  height: 40rpx;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+/* ---------- 任务行样式 ---------- */
+.task-row {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  margin-top: 24rpx;
+}
+.task-check {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 12rpx;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.task-check.done { background: var(--accent); }
+.task-check.empty { background: transparent; border: 2rpx solid var(--card-border); }
+.task-text { flex: 1; display: flex; flex-direction: column; gap: 4rpx; min-width: 0; }
+.task-text .tt { font-size: var(--fs-md); color: var(--text); }
+.task-text .ts { font-size: var(--fs-xs); color: var(--text-2); }
+.task-text .ts.green { color: var(--green); }
+.task-text .ts.yellow { color: var(--yellow); }
+
+/* ---------- 状态文字色 ---------- */
+.text-green { color: var(--green); }
+.text-yellow { color: var(--yellow); }
+.text-accent { color: var(--accent-light); }
+.text-sub { color: var(--text-2); }
+.text-mute { color: var(--text-3); }
+
+/* ---------- 加载 Spinner ---------- */
+.loading-wrap {
+  padding: 200rpx 48rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+}
+.loading-spinner {
+  width: 64rpx;
+  height: 64rpx;
+  border: 6rpx solid var(--bar-bg);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: var(--fs-md); color: var(--text-2); }
+
+/* 底部安全区占位 */
+.safe-bottom { height: calc(160rpx + env(safe-area-inset-bottom)); }

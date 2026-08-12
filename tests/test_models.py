@@ -5,10 +5,10 @@
 """
 
 from datetime import date
-from src.models.business import BusinessProfile
-from src.models.diagnosis import DiagnosisReport, Problem
-from src.models.execution import SevenDayPlan, DayPlan, Task
-from src.models.review import ReviewReport, MetricComparison
+from backend.models.business import BusinessProfile
+from backend.models.diagnosis import DiagnosisReport, Problem
+from backend.models.execution import SevenDayPlan, DayPlan, Task
+from backend.models.review import ReviewReport, MetricComparison
 
 
 # ──────────────────────────────────────────────
@@ -121,8 +121,8 @@ class TestDiagnosisReport:
         d = report.to_dict()
         assert d["overall_score"] == 72
         assert d["business_id"] == "biz_1"
-        assert isinstance(d["top3_problems"], list)
-        assert d["top3_problems"][0]["severity"] == "major"
+        assert isinstance(d["top_issues"], list)
+        assert d["top_issues"][0]["level"] == "medium"  # major severity → medium level
 
 
 # ──────────────────────────────────────────────

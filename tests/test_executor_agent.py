@@ -13,9 +13,9 @@
 
 import pytest
 from datetime import date
-from src.agents.executor import ExecutorAgent
-from src.models.execution import SevenDayPlan
-from src.prompts.loader import load_prompt
+from backend.agents.executor import ExecutorAgent
+from backend.models.execution import SevenDayPlan
+from backend.prompts.loader import load_prompt
 from tests.fixtures.industries import ALL_INDUSTRIES
 from tests.conftest import make_profile, make_diagnosis
 
@@ -27,7 +27,7 @@ from tests.conftest import make_profile, make_diagnosis
 class TestExecutorPrompt:
 
     def test_prompt_template_exists(self):
-        from src.prompts.loader import list_available_prompts
+        from backend.prompts.loader import list_available_prompts
         prompts = list_available_prompts()
         assert "executor/system.txt" in prompts
 

@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ai-marketing-strategy-agent"
-version = "0.3.0"
+version = "1.0.0"
 description = "AI企业营销战略执行智能体 — FastAPI 后端 + 微信小程序前端"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -39,23 +39,47 @@ classifiers = [
     "Topic :: Office/Business",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
+# -------------------------------------------------------------------------
+# 运行时依赖 —— 与 src/ 下 import 语句严格一一对应（AST 全量扫描校验）
+# 校验方式：python scripts/check_dependency_drift.py
+# 每一项后注明「导入名 ← 引用位置」，隐式依赖单独标注理由，禁止无主依赖。
+# -------------------------------------------------------------------------
 dependencies = [
-    "fastapi>=0.110",
-    "uvicorn[standard]>=0.27",
-    "pydantic>=2.0",
-    "httpx>=0.27",
-    "python-dotenv>=1.0",
+    # Web 框架与服务
+    "fastapi>=0.110",              # fastapi        ← src/api/*.py（14 处）
+    "uvicorn[standard]>=0.27",     # uvicorn        ← src/api/main.py:116（__main__ 启动入口）
+    "pydantic>=2.0",               # pydantic       ← src/api/*.py、src/models/*.py（11 处）
+    "python-multipart>=0.0.19",    # 隐式依赖：无直接 import，FastAPI 解析 UploadFile/File/Form
+    #                                所需（src/api/task.py、review.py、loops.py），缺失即 500
+    "httpx>=0.27",                 # httpx          ← src/api/auth.py:15
+
+    # 数据库
+    "SQLAlchemy[asyncio]>=2.0.36", # sqlalchemy     ← src/db/models.py 等（15 处）
+    "aiosqlite>=0.20.0",           # 隐式依赖：无直接 import，SQLAlchemy 按 DATABASE_URL 的
+    #                                "sqlite+aiosqlite://" 通过 entry point 加载异步驱动
+    #                                （src/config/settings.py:20）
+
+    # LLM / Agent
+    "openai>=1.58.1",              # openai         ← src/services/llm.py:18、
+    #                                src/agent_core/embeddings.py:137（try/except 软导入）
+    "langgraph>=1.0",              # langgraph      ← src/agent_core/graph.py:21
+    "langchain-core>=0.3",         # langchain_core ← src/agent_core/tools.py:482（函数内延迟导入）
+    "chromadb>=1.5",               # chromadb       ← src/agent_core/_chroma.py:15、embeddings.py:26
+
+    # 模板与安全
+    "jinja2>=3.1.4",               # jinja2         ← src/prompts/loader.py:11
+    "PyJWT>=2.8.0",                # jwt            ← src/api/auth.py:16
 ]
 
 [project.optional-dependencies]
+# 开发依赖 —— CLI 工具链（ruff/black/mypy/pytest-cov）不产生 import，按工具用途保留
 dev = [
-    "pytest>=8.0",
-    "pytest-asyncio>=0.23",
-    "pytest-cov>=5.0",
-    "snapshottest>=0.6",
-    "ruff>=0.4.0",
-    "black>=24.0",
-    "mypy>=1.0",
+    "pytest>=8.0",          # pytest         ← tests/*.py（9 处）
+    "pytest-asyncio>=0.23", # pytest_asyncio ← tests/test_loops.py:9
+    "pytest-cov>=5.0",      # CLI 插件：覆盖率统计（--cov），无 import
+    "ruff>=0.4.0",          # CLI 工具：lint，无 import
+    "black>=24.0",          # CLI 工具：格式化，无 import
+    "mypy>=1.0",            # CLI 工具：类型检查，无 import
 ]
 
 [project.urls]
@@ -79,7 +103,7 @@ skip-string-normalization = false
 line-length = 100
 target-version = "py39"
 preview = true
-src = ["src", "tests"]
+src = ["backend", "tests"]
 
 [tool.ruff.lint]
 select = [
@@ -119,7 +143,7 @@ exclude = [
 
 [tool.ruff.lint.isort]
 # 与 black 兼容的 isort 配置
-known-first-party = ["src", "tests", "agents", "api", "config", "db", "models", "services", "prompts", "skills", "utils"]
+known-first-party = ["backend", "tests", "agents", "api", "config", "db", "models", "services", "prompts", "skills", "utils"]
 case-sensitive = true
 force-single-line = false
 force-wrap-aliases = true
@@ -157,11 +181,12 @@ exclude = [
 # ==============================================================
 [tool.pytest.ini_options]
 minversion = "8.0"
-pythonpath = ["src", "tests", "."]
+pythonpath = ["backend", "tests", "."]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers --tb=short -q"
 asyncio_mode = "auto"
 markers = [
+    "asyncio: marks tests as asynchronous",
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "integration: marks integration tests (require live services)",
     "snapshot: marks snapshot tests",

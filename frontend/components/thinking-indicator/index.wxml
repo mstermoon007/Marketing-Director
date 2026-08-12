@@ -1,0 +1,13 @@
+<view class="thinking">
+  <view class="dots">
+    <view class="dot {{active ? 'on' : ''}}"></view>
+    <view class="dot {{active ? 'on' : ''}}"></view>
+    <view class="dot {{active ? 'on' : ''}}"></view>
+  </view>
+  <view class="steps" wx:if="{{steps.length}}">
+    <view class="step" wx:for="{{steps}}" wx:key="index">
+      <text class="tick">✓</text>
+      <text class="text">{{item}}</text>
+    </view>
+  </view>
+</view>

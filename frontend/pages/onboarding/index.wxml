@@ -1,0 +1,9 @@
+<view class="onboard">
+  <view class="logo">📈</view>
+  <view class="title">AI 营销战略顾问</view>
+  <view class="subtitle">像和真人顾问聊天一样，完成诊断、计划、日程与复盘</view>
+  <view class="login-btn {{logging ? 'disabled' : ''}}" bindtap="onLogin">
+    {{logging ? '登录中…' : '微信登录，开始对话'}}
+  </view>
+  <view class="tip">登录仅用于保存你的对话与计划，数据本地加密</view>
+</view>

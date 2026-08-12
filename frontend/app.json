@@ -1,0 +1,52 @@
+{
+  "pages": [
+    "pages/chat/index",
+    "pages/dashboard/index",
+    "pages/schedule/index",
+    "pages/onboarding/index"
+  ],
+  "subpackages": [
+    {
+      "root": "pages/detail",
+      "pages": [
+        "diagnosis-detail/index",
+        "review-detail/index",
+        "plan-detail/index"
+      ]
+    }
+  ],
+  "lazyCodeLoading": "requiredComponents",
+  "window": {
+    "navigationBarTitleText": "AI 营销顾问",
+    "navigationBarBackgroundColor": "#0A0E1A",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#0A0E1A",
+    "backgroundTextStyle": "light",
+    "enablePullDownRefresh": false
+  },
+  "tabBar": {
+    "color": "#8B95A8",
+    "selectedColor": "#5B8DEF",
+    "backgroundColor": "#0D1424",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/chat/index",
+        "text": "对话"
+      },
+      {
+        "pagePath": "pages/dashboard/index",
+        "text": "看板"
+      },
+      {
+        "pagePath": "pages/schedule/index",
+        "text": "日程"
+      }
+    ]
+  },
+  "networkTimeout": {
+    "request": 60000,
+    "uploadFile": 60000
+  },
+  "sitemapLocation": "sitemap.json"
+}

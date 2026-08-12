@@ -19,11 +19,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt ./
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-COPY src ./src
+COPY backend ./backend
 COPY data ./data
 RUN mkdir -p /app/data/chroma_db
 
 EXPOSE 8000
 
 # CloudRun 容器模式会注入 PORT；本地/默认回退 8000
-CMD ["sh", "-c", "uvicorn src.api.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["sh", "-c", "uvicorn backend.api.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

@@ -8,7 +8,7 @@ Prompt 模板测试
 4. 模板版本号存在
 """
 
-from src.prompts.loader import load_prompt, load_raw_prompt, list_available_prompts, validate_template_structure
+from backend.prompts.loader import load_prompt, load_raw_prompt, list_available_prompts, validate_template_structure
 
 
 class TestPromptTemplates:

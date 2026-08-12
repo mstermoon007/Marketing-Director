@@ -1,0 +1,2901 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "AI营销战略执行智能体",
+    "description": "用AI帮小企业把营销战略翻译成每天的执行动作",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Root",
+        "description": "根路径：返回应用名称与版本。\n\nReturns\n-------\ndict\n    包含 name 与 version 的字典。\n\nExamples\n--------\n>>> resp = await root()\n>>> \"name\" in resp and \"version\" in resp\nTrue",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Root  Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "description": "健康检查接口。\n\nReturns\n-------\ndict\n    固定返回 ``{\"status\": \"ok\"}``。",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Health Check Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/business": {
+      "post": {
+        "tags": [
+          "企业信息"
+        ],
+        "summary": "Create Business",
+        "description": "创建企业信息档案。",
+        "operationId": "create_business_api_business_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BusinessCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/business/create": {
+      "post": {
+        "tags": [
+          "企业信息"
+        ],
+        "summary": "Create Business V3",
+        "description": "[V3.0 别名] 创建企业信息档案。",
+        "operationId": "create_business_v3_api_business_create_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BusinessCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/business/info": {
+      "get": {
+        "tags": [
+          "企业信息"
+        ],
+        "summary": "Get Business Info",
+        "description": "[V1.0] 获取企业信息（无路径参数版）。",
+        "operationId": "get_business_info_api_business_info_get",
+        "parameters": [
+          {
+            "name": "business_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Business Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/business/{business_id}": {
+      "get": {
+        "tags": [
+          "企业信息"
+        ],
+        "summary": "Get Business",
+        "description": "查询企业信息。",
+        "operationId": "get_business_api_business__business_id__get",
+        "parameters": [
+          {
+            "name": "business_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Business Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BusinessResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agent/chat": {
+      "post": {
+        "tags": [
+          "Agent 对话"
+        ],
+        "summary": "Agent Chat",
+        "description": "与营销 Agent 对话一轮。",
+        "operationId": "agent_chat_api_agent_chat_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentChatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentHistoryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agent/history": {
+      "get": {
+        "tags": [
+          "Agent 对话"
+        ],
+        "summary": "Agent History",
+        "description": "读取某会话的对话历史。",
+        "operationId": "agent_history_api_agent_history_get",
+        "parameters": [
+          {
+            "name": "session_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Session Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentHistoryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agent/chat/stream": {
+      "post": {
+        "tags": [
+          "Agent 对话"
+        ],
+        "summary": "Agent Chat Stream",
+        "description": "流式对话（SSE）。\n\n逐段返回 ``data: {json}\\n\\n`` 事件：intent / thinking / tool / done / error。\n前端用 ``wx.request({enableChunked:true})`` 解析分块，实时渲染 Agent 思考过程。",
+        "operationId": "agent_chat_stream_api_agent_chat_stream_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentChatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/diagnosis/start": {
+      "post": {
+        "tags": [
+          "诊断"
+        ],
+        "summary": "Start Diagnosis V3",
+        "description": "[V1.0] 启动诊断（文档6.2节规范）。\n\n接收完整业务参数，若 business_id 不存在则新建企业记录，然后启动诊断。\n内部：3次Agent重试 + 本地规则引擎兜底。",
+        "operationId": "start_diagnosis_v3_api_diagnosis_start_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DiagnosisStartRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosisResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/diagnosis/{business_id}": {
+      "post": {
+        "tags": [
+          "诊断"
+        ],
+        "summary": "Run Diagnosis",
+        "description": "触发AI诊断。\n\n委托给 DiagnosisAgent 执行 AI 逻辑，API 层只负责 DB 读写和异常处理。",
+        "operationId": "run_diagnosis_api_diagnosis__business_id__post",
+        "parameters": [
+          {
+            "name": "business_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Business Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosisResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "诊断"
+        ],
+        "summary": "Get Diagnosis",
+        "description": "查看最新诊断报告。",
+        "operationId": "get_diagnosis_api_diagnosis__business_id__get",
+        "parameters": [
+          {
+            "name": "business_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Business Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosisResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/diagnosis/latest": {
+      "get": {
+        "tags": [
+          "诊断"
+        ],
+        "summary": "Get Latest Diagnosis V3",
+        "description": "[V1.0] 获取最新诊断报告（无路径参数版）。",
+        "operationId": "get_latest_diagnosis_v3_api_diagnosis_latest_get",
+        "parameters": [
+          {
+            "name": "business_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Business Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosisResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/execution/{diagnosis_id}": {
+      "post": {
+        "tags": [
+          "执行计划"
+        ],
+        "summary": "Generate Plan",
+        "description": "生成7天执行清单（核心接口）。",
+        "operationId": "generate_plan_api_execution__diagnosis_id__post",
+        "parameters": [
+          {
+            "name": "diagnosis_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Diagnosis Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeneratePlanRequest",
+                "default": {
+                  "start_date": "2026-08-10"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecutionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/execution/{plan_id}": {
+      "get": {
+        "tags": [
+          "执行计划"
+        ],
+        "summary": "Get Plan",
+        "description": "查看7天执行计划。",
+        "operationId": "get_plan_api_execution__plan_id__get",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecutionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/plan/{plan_id}/confirm": {
+      "post": {
+        "tags": [
+          "闭环业务"
+        ],
+        "summary": "Confirm Plan",
+        "description": "确认计划 → 标记 confirmed 并自动排期落库 todos。",
+        "operationId": "confirm_plan_api_plan__plan_id__confirm_post",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanConfirmResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/plan/{plan_id}/edit": {
+      "post": {
+        "tags": [
+          "闭环业务"
+        ],
+        "summary": "Edit Plan",
+        "description": "微调计划中的任务（标题/时段/做法/清单），写回计划的 days JSON。",
+        "operationId": "edit_plan_api_plan__plan_id__edit_post",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanEditRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Edit Plan Api Plan  Plan Id  Edit Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/plan/{plan_id}/regenerate": {
+      "post": {
+        "tags": [
+          "闭环业务"
+        ],
+        "summary": "Regenerate Plan",
+        "description": "基于同一企业重新生成计划（结合已有记忆/反馈）。",
+        "operationId": "regenerate_plan_api_plan__plan_id__regenerate_post",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Regenerate Plan Api Plan  Plan Id  Regenerate Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/schedule/checkin": {
+      "put": {
+        "tags": [
+          "闭环业务"
+        ],
+        "summary": "Checkin Todo",
+        "description": "任务完成打卡 / 修改状态，落库 todos（闭环：完成标记反馈至复盘 Agent）。",
+        "operationId": "checkin_todo_api_schedule_checkin_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckinRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Checkin Todo Api Schedule Checkin Put"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/schedule/sync": {
+      "post": {
+        "tags": [
+          "闭环业务"
+        ],
+        "summary": "Sync Schedule",
+        "description": "把排期结果同步落库（用于「安排本周日程」快捷指令或确认后补录）。",
+        "operationId": "sync_schedule_api_schedule_sync_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScheduleSyncRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Sync Schedule Api Schedule Sync Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/schedule": {
+      "get": {
+        "tags": [
+          "闭环业务"
+        ],
+        "summary": "Get Schedule",
+        "description": "读取当前企业已落库的排期待办（跨会话持久，反映打卡状态）。",
+        "operationId": "get_schedule_api_schedule_get",
+        "parameters": [
+          {
+            "name": "business_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Business Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Schedule Api Schedule Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/files/upload": {
+      "post": {
+        "tags": [
+          "闭环业务"
+        ],
+        "summary": "Files Upload",
+        "description": "通用文件暂存：小程序本地临时路径 → 服务端可读路径。\n\n返回的 ``file_path`` 可直接放进 ``/agent/chat`` 或 ``/agent/chat/stream``\n的 ``files`` 字段——这是「对话里发数据 → Agent 真能读到」的关键一步，\n否则小程序传过来的只是设备本地临时路径，服务端根本打不开。",
+        "operationId": "files_upload_api_files_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_files_upload_api_files_upload_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Files Upload Api Files Upload Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/metrics/upload": {
+      "post": {
+        "tags": [
+          "闭环业务"
+        ],
+        "summary": "Metrics Upload",
+        "description": "上传截图/CSV → 解析为结构化指标 → 落库 metrics → 返回 KPI。",
+        "operationId": "metrics_upload_api_metrics_upload_post",
+        "parameters": [
+          {
+            "name": "business_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Business Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_metrics_upload_api_metrics_upload_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Metrics Upload Api Metrics Upload Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/review/trigger": {
+      "post": {
+        "tags": [
+          "闭环业务"
+        ],
+        "summary": "Review Trigger",
+        "description": "生成本周复盘报告 + 下周建议，并写入 ReviewRecord。\n\n优先使用用户上传的指标作为实际值；若无上传数据则提示先上传。",
+        "operationId": "review_trigger_api_review_trigger_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewTriggerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Review Trigger Api Review Trigger Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/review/{review_id}/apply": {
+      "post": {
+        "tags": [
+          "闭环业务"
+        ],
+        "summary": "Review Apply",
+        "description": "把复盘建议直接应用到下周：重新生成计划并自动排期。",
+        "operationId": "review_apply_api_review__review_id__apply_post",
+        "parameters": [
+          {
+            "name": "review_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Review Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewApplyRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Review Apply Api Review  Review Id  Apply Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agent/feedback": {
+      "post": {
+        "tags": [
+          "闭环业务"
+        ],
+        "summary": "Agent Feedback",
+        "description": "采集用户对 Agent 产出的反馈（赞/踩/计划修改），更新策略有效性评分。",
+        "operationId": "agent_feedback_api_agent_feedback_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedbackRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Agent Feedback Api Agent Feedback Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/review/{plan_id}/upload": {
+      "post": {
+        "tags": [
+          "复盘"
+        ],
+        "summary": "Upload Single File",
+        "description": "逐文件上传到暂存区（适配微信小程序 wx.uploadFile）。",
+        "operationId": "upload_single_file_api_review__plan_id__upload_post",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_single_file_api_review__plan_id__upload_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/review/{plan_id}/generate": {
+      "post": {
+        "tags": [
+          "复盘"
+        ],
+        "summary": "Generate Review Report",
+        "description": "使用已暂存的文件（或请求体传入的文件路径）生成复盘报告。",
+        "operationId": "generate_review_report_api_review__plan_id__generate_post",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/GenerateRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Req"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/review/{plan_id}": {
+      "post": {
+        "tags": [
+          "复盘"
+        ],
+        "summary": "Create Review Legacy",
+        "description": "[兼容旧版] 一次性上传多文件并生成复盘报告。",
+        "operationId": "create_review_legacy_api_review__plan_id__post",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_create_review_legacy_api_review__plan_id__post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "复盘"
+        ],
+        "summary": "Get Review",
+        "description": "查看最新复盘报告。",
+        "operationId": "get_review_api_review__plan_id__get",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/review/submit": {
+      "post": {
+        "tags": [
+          "复盘"
+        ],
+        "summary": "Submit Review V3",
+        "description": "[V1.0] 提交复盘报告（文档6.2节规范）。",
+        "operationId": "submit_review_v3_api_review_submit_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewSubmitRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/review/latest": {
+      "get": {
+        "tags": [
+          "复盘"
+        ],
+        "summary": "Get Latest Review V3",
+        "description": "[V1.0] 获取最新复盘报告。",
+        "operationId": "get_latest_review_v3_api_review_latest_get",
+        "parameters": [
+          {
+            "name": "business_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Business Id"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "认证"
+        ],
+        "summary": "Login",
+        "description": "微信小程序登录。\n\n流程：\n  1. 接收 wx.login() 返回的 code\n  2. 调用微信 jscode2session 获取 openid\n  3. 用 openid 生成 user_id\n  4. 签发标准 JWT（HS256 + 环境变量密钥）\n\nParameters\n----------\nreq : LoginRequest\n    登录请求体，包含微信小程序code。\n\nReturns\n-------\nAuthResponse\n    认证响应，data 包含 token（标准JWT）、user_id、openid。\n\nRaises\n------\nHTTPException\n    - 422: code 为空。\n    - 401: 微信 code 校验失败。\n    - 502: 微信服务不可用。",
+        "operationId": "login_api_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/verify": {
+      "get": {
+        "tags": [
+          "认证"
+        ],
+        "summary": "Verify Auth",
+        "description": "验证当前 token 是否有效。\n\n需要 Authorization: Bearer <token> header。\n有效则返回 user_id，无效则返回 401。",
+        "operationId": "verify_auth_api_auth_verify_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/roadmap/current": {
+      "get": {
+        "tags": [
+          "路线图"
+        ],
+        "summary": "Get Current Roadmap",
+        "description": "[V1.0] 获取当前季度路线图（文档6.3.3节）。",
+        "operationId": "get_current_roadmap_api_roadmap_current_get",
+        "parameters": [
+          {
+            "name": "business_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Business Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoadmapResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/plan/weekly": {
+      "get": {
+        "tags": [
+          "周计划"
+        ],
+        "summary": "Get Weekly Plan V3",
+        "description": "[V1.0] 获取周执行计划（文档6.3.4节 SevenDayPlan 结构）。",
+        "operationId": "get_weekly_plan_v3_api_plan_weekly_get",
+        "parameters": [
+          {
+            "name": "week_number",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 12,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "周数 1-12（对应季度12周）",
+              "default": 1,
+              "title": "Week Number"
+            },
+            "description": "周数 1-12（对应季度12周）"
+          },
+          {
+            "name": "business_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Business Id"
+            }
+          },
+          {
+            "name": "diagnosis_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Diagnosis Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/task/detail": {
+      "get": {
+        "tags": [
+          "任务"
+        ],
+        "summary": "Get Task Detail",
+        "description": "[V1.0] 获取任务详情 + 执行日志。",
+        "operationId": "get_task_detail_api_task_detail_get",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "任务ID",
+              "title": "Task Id"
+            },
+            "description": "任务ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/task/checkin": {
+      "post": {
+        "tags": [
+          "任务"
+        ],
+        "summary": "Task Checkin",
+        "description": "[V1.0] 任务打卡。",
+        "operationId": "task_checkin_api_task_checkin_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TaskCheckinRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/task/upload": {
+      "post": {
+        "tags": [
+          "任务"
+        ],
+        "summary": "Task Upload",
+        "description": "[V1.0] 上传任务执行记录（multipart）。\n\n支持：\n  - 图片文件（PNG/JPG/GIF/WEBP）\n  - 文本文件（TXT/MD/CSV）\n  - 纯文字备注（不传文件也可以）\n\n安全加固：\n  - uuid 文件名，拒绝原始文件名\n  - magic byte 校验，防止扩展名伪装\n  - UPLOAD_DIR 绝对路径，防止目录穿透",
+        "operationId": "task_upload_api_task_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_task_upload_api_task_upload_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dashboard": {
+      "get": {
+        "tags": [
+          "工作台"
+        ],
+        "summary": "Get Dashboard",
+        "description": "[V1.0] 获取工作台概览（文档6.3.7节）。",
+        "operationId": "get_dashboard_api_dashboard_get",
+        "parameters": [
+          {
+            "name": "business_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "企业ID（可选）",
+              "title": "Business Id"
+            },
+            "description": "企业ID（可选）"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AgentChatRequest": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "用户自然语言输入"
+          },
+          "session_id": {
+            "type": "string",
+            "title": "Session Id",
+            "description": "会话ID；留空则用 用户ID:default",
+            "default": ""
+          },
+          "business_id": {
+            "type": "string",
+            "title": "Business Id",
+            "description": "可选企业ID；留空时复用会话已绑定企业",
+            "default": ""
+          },
+          "files": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Files",
+            "description": "上传文件路径列表（复盘用）"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "AgentChatRequest",
+        "description": "Agent 对话请求。"
+      },
+      "AgentHistoryResponse": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "default": 0
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "ok"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "title": "AgentHistoryResponse",
+        "description": "通用响应。"
+      },
+      "AuthResponse": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "description": "响应状态码，0表示成功",
+            "default": 0
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "响应消息",
+            "default": "ok"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data",
+            "description": "响应数据载荷"
+          }
+        },
+        "type": "object",
+        "title": "AuthResponse",
+        "description": "认证统一响应格式。"
+      },
+      "Body_create_review_legacy_api_review__plan_id__post": {
+        "properties": {
+          "files": {
+            "items": {
+              "type": "string",
+              "contentMediaType": "application/octet-stream"
+            },
+            "type": "array",
+            "title": "Files"
+          }
+        },
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "title": "Body_create_review_legacy_api_review__plan_id__post"
+      },
+      "Body_files_upload_api_files_upload_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_files_upload_api_files_upload_post"
+      },
+      "Body_metrics_upload_api_metrics_upload_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_metrics_upload_api_metrics_upload_post"
+      },
+      "Body_task_upload_api_task_upload_post": {
+        "properties": {
+          "task_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Task Id"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "file": {
+            "anyOf": [
+              {
+                "type": "string",
+                "contentMediaType": "application/octet-stream"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "title": "Body_task_upload_api_task_upload_post"
+      },
+      "Body_upload_single_file_api_review__plan_id__upload_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_single_file_api_review__plan_id__upload_post"
+      },
+      "BusinessCreateRequest": {
+        "properties": {
+          "business_name": {
+            "type": "string",
+            "title": "Business Name",
+            "description": "企业名称"
+          },
+          "industry": {
+            "type": "string",
+            "title": "Industry",
+            "description": "行业"
+          },
+          "city": {
+            "type": "string",
+            "title": "City",
+            "description": "所在城市"
+          },
+          "product_desc": {
+            "type": "string",
+            "title": "Product Desc",
+            "description": "产品/服务描述",
+            "default": ""
+          },
+          "price_range": {
+            "type": "string",
+            "title": "Price Range",
+            "description": "价格区间",
+            "default": ""
+          },
+          "target_customers": {
+            "type": "string",
+            "title": "Target Customers",
+            "description": "目标客户",
+            "default": ""
+          },
+          "competitors": {
+            "type": "string",
+            "title": "Competitors",
+            "description": "竞争对手",
+            "default": ""
+          },
+          "current_channels": {
+            "type": "string",
+            "title": "Current Channels",
+            "description": "当前获客方式",
+            "default": ""
+          },
+          "monthly_revenue": {
+            "type": "string",
+            "title": "Monthly Revenue",
+            "description": "月营业额",
+            "default": ""
+          },
+          "team_size": {
+            "type": "string",
+            "title": "Team Size",
+            "description": "团队规模",
+            "default": ""
+          },
+          "biggest_pain": {
+            "type": "string",
+            "title": "Biggest Pain",
+            "description": "最大痛点",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "business_name",
+          "industry",
+          "city"
+        ],
+        "title": "BusinessCreateRequest",
+        "description": "创建企业信息请求。\n\nParameters\n----------\nbusiness_name : str\n    企业名称（必填）。\nindustry : str\n    所属行业（必填）。\ncity : str\n    所在城市（必填）。\nproduct_desc : str\n    产品/服务描述。\nprice_range : str\n    价格区间。\ntarget_customers : str\n    目标客户群体。\ncompetitors : str\n    竞争对手分析。\ncurrent_channels : str\n    当前获客方式。\nmonthly_revenue : str\n    月营业额。\nteam_size : str\n    团队规模。\nbiggest_pain : str\n    最大营销痛点。"
+      },
+      "BusinessResponse": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "description": "响应状态码，0表示成功",
+            "default": 0
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "响应消息",
+            "default": "ok"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data",
+            "description": "响应数据载荷"
+          }
+        },
+        "type": "object",
+        "title": "BusinessResponse",
+        "description": "企业信息统一响应格式。"
+      },
+      "CheckinRequest": {
+        "properties": {
+          "todo_id": {
+            "type": "string",
+            "title": "Todo Id"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "images": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Images"
+          }
+        },
+        "type": "object",
+        "required": [
+          "todo_id"
+        ],
+        "title": "CheckinRequest"
+      },
+      "DashboardResponse": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "description": "响应状态码，0表示成功",
+            "default": 0
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "响应消息",
+            "default": "ok"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data",
+            "description": "响应数据载荷"
+          }
+        },
+        "type": "object",
+        "title": "DashboardResponse",
+        "description": "工作台统一响应格式。"
+      },
+      "DiagnosisResponse": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "description": "响应状态码，0表示成功",
+            "default": 0
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "响应消息",
+            "default": "ok"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data",
+            "description": "响应数据载荷"
+          }
+        },
+        "type": "object",
+        "title": "DiagnosisResponse",
+        "description": "诊断统一响应格式。"
+      },
+      "DiagnosisStartRequest": {
+        "properties": {
+          "business_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Id",
+            "description": "企业ID（可选，无则新建）"
+          },
+          "company_name": {
+            "type": "string",
+            "title": "Company Name",
+            "description": "企业名称"
+          },
+          "industry": {
+            "type": "string",
+            "title": "Industry",
+            "description": "行业"
+          },
+          "city": {
+            "type": "string",
+            "title": "City",
+            "description": "所在城市"
+          },
+          "team_size": {
+            "type": "string",
+            "title": "Team Size",
+            "description": "团队规模",
+            "default": ""
+          },
+          "main_product": {
+            "type": "string",
+            "title": "Main Product",
+            "description": "主营产品/服务描述",
+            "default": ""
+          },
+          "price_range": {
+            "type": "string",
+            "title": "Price Range",
+            "description": "价格区间",
+            "default": ""
+          },
+          "target_customer": {
+            "type": "string",
+            "title": "Target Customer",
+            "description": "目标客户",
+            "default": ""
+          },
+          "current_channels": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Current Channels",
+            "description": "当前获客渠道列表"
+          },
+          "monthly_budget": {
+            "type": "string",
+            "title": "Monthly Budget",
+            "description": "月度营销预算",
+            "default": ""
+          },
+          "biggest_pain": {
+            "type": "string",
+            "title": "Biggest Pain",
+            "description": "最大痛点",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "company_name",
+          "industry",
+          "city"
+        ],
+        "title": "DiagnosisStartRequest",
+        "description": "[V1.0] 诊断启动请求体（完整业务参数）。"
+      },
+      "ExecutionResponse": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "description": "响应状态码，0表示成功",
+            "default": 0
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "响应消息",
+            "default": "ok"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data",
+            "description": "响应数据载荷"
+          }
+        },
+        "type": "object",
+        "title": "ExecutionResponse",
+        "description": "执行计划统一响应格式。"
+      },
+      "FeedbackRequest": {
+        "properties": {
+          "target_type": {
+            "type": "string",
+            "title": "Target Type"
+          },
+          "target_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Id"
+          },
+          "rating": {
+            "type": "integer",
+            "title": "Rating",
+            "default": 0
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "business_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Id"
+          },
+          "card_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Card Ids",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "target_type"
+        ],
+        "title": "FeedbackRequest"
+      },
+      "GeneratePlanRequest": {
+        "properties": {
+          "start_date": {
+            "type": "string",
+            "title": "Start Date",
+            "description": "计划起始日期（ISO格式）"
+          }
+        },
+        "type": "object",
+        "title": "GeneratePlanRequest",
+        "description": "生成执行计划请求体。"
+      },
+      "GenerateRequest": {
+        "properties": {
+          "files": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Files",
+            "description": "可选文件路径列表，默认使用暂存文件"
+          }
+        },
+        "type": "object",
+        "title": "GenerateRequest",
+        "description": "生成复盘报告请求体。"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "LoginRequest": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code",
+            "description": "微信小程序登录code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "title": "LoginRequest",
+        "description": "登录请求（微信小程序code）。\n\nParameters\n----------\ncode : str\n    微信小程序登录code，由 wx.login() 返回。"
+      },
+      "PlanConfirmResponse": {
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "title": "Ok",
+            "default": true
+          },
+          "plan_id": {
+            "type": "string",
+            "title": "Plan Id",
+            "default": ""
+          },
+          "schedule": {
+            "items": {},
+            "type": "array",
+            "title": "Schedule",
+            "default": []
+          }
+        },
+        "type": "object",
+        "title": "PlanConfirmResponse"
+      },
+      "PlanEditItem": {
+        "properties": {
+          "day_index": {
+            "type": "integer",
+            "title": "Day Index"
+          },
+          "task_index": {
+            "type": "integer",
+            "title": "Task Index"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "time_slot": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Time Slot"
+          },
+          "how_to": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "How To"
+          },
+          "checklist": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checklist"
+          }
+        },
+        "type": "object",
+        "required": [
+          "day_index",
+          "task_index"
+        ],
+        "title": "PlanEditItem"
+      },
+      "PlanEditRequest": {
+        "properties": {
+          "edits": {
+            "items": {
+              "$ref": "#/components/schemas/PlanEditItem"
+            },
+            "type": "array",
+            "title": "Edits",
+            "default": []
+          }
+        },
+        "type": "object",
+        "title": "PlanEditRequest"
+      },
+      "PlanResponse": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "description": "响应状态码，0表示成功",
+            "default": 0
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "响应消息",
+            "default": "ok"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data",
+            "description": "响应数据载荷"
+          }
+        },
+        "type": "object",
+        "title": "PlanResponse",
+        "description": "周计划统一响应格式。"
+      },
+      "ReviewApplyRequest": {
+        "properties": {
+          "business_id": {
+            "type": "string",
+            "title": "Business Id",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "ReviewApplyRequest"
+      },
+      "ReviewResponse": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "description": "响应状态码，0表示成功",
+            "default": 0
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "响应消息",
+            "default": "ok"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data",
+            "description": "响应数据载荷"
+          }
+        },
+        "type": "object",
+        "title": "ReviewResponse",
+        "description": "复盘统一响应格式。"
+      },
+      "ReviewSubmitRequest": {
+        "properties": {
+          "review_type": {
+            "type": "string",
+            "title": "Review Type",
+            "description": "复盘类型：weekly/daily/monthly",
+            "default": "weekly"
+          },
+          "week_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Week Number",
+            "description": "周数",
+            "default": 1
+          },
+          "plan_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Id",
+            "description": "关联执行计划ID（可选）"
+          },
+          "business_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Business Id",
+            "description": "企业ID（可选）"
+          },
+          "completed_tasks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Completed Tasks",
+            "description": "已完成任务列表"
+          },
+          "incomplete_tasks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Incomplete Tasks",
+            "description": "未完成任务列表"
+          },
+          "key_takeaway": {
+            "type": "string",
+            "title": "Key Takeaway",
+            "description": "核心收获",
+            "default": ""
+          },
+          "difficulties": {
+            "type": "string",
+            "title": "Difficulties",
+            "description": "遇到的困难",
+            "default": ""
+          },
+          "images": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Images",
+            "description": "图片URL列表"
+          },
+          "numbers": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Numbers",
+            "description": "业务数据，如{'新增客户':5, '咨询量':20}"
+          }
+        },
+        "type": "object",
+        "title": "ReviewSubmitRequest",
+        "description": "[V1.0] 复盘提交请求体。"
+      },
+      "ReviewTriggerRequest": {
+        "properties": {
+          "business_id": {
+            "type": "string",
+            "title": "Business Id",
+            "default": ""
+          },
+          "week_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Week Number"
+          }
+        },
+        "type": "object",
+        "title": "ReviewTriggerRequest"
+      },
+      "RoadmapResponse": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "description": "响应状态码，0表示成功",
+            "default": 0
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "响应消息",
+            "default": "ok"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data",
+            "description": "响应数据载荷"
+          }
+        },
+        "type": "object",
+        "title": "RoadmapResponse",
+        "description": "路线图统一响应格式。"
+      },
+      "ScheduleSyncRequest": {
+        "properties": {
+          "business_id": {
+            "type": "string",
+            "title": "Business Id",
+            "default": ""
+          },
+          "plan_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Id"
+          },
+          "days": {
+            "items": {},
+            "type": "array",
+            "title": "Days",
+            "default": []
+          }
+        },
+        "type": "object",
+        "title": "ScheduleSyncRequest"
+      },
+      "TaskCheckinRequest": {
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "title": "Task Id",
+            "description": "任务ID"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes",
+            "description": "打卡文字备注"
+          },
+          "images": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Images",
+            "description": "图片URL列表（可选，可先用/upload上传拿到URL）"
+          }
+        },
+        "type": "object",
+        "required": [
+          "task_id"
+        ],
+        "title": "TaskCheckinRequest",
+        "description": "打卡请求体。"
+      },
+      "TaskResponse": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code",
+            "description": "响应状态码，0表示成功",
+            "default": 0
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "响应消息",
+            "default": "ok"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data",
+            "description": "响应数据载荷"
+          }
+        },
+        "type": "object",
+        "title": "TaskResponse",
+        "description": "任务统一响应格式。"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

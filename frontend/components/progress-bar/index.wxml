@@ -1,0 +1,7 @@
+<view class="pb">
+  <view wx:if="{{label}}" class="pb-label">{{label}}</view>
+  <view class="pb-track">
+    <view class="pb-fill" style="width:{{width}};background:{{color}};"></view>
+  </view>
+  <text class="pb-pct">{{width}}</text>
+</view>

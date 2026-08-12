@@ -1,32 +1,32 @@
 {
   "name": "AI营销战略执行智能体",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "用AI帮小企业把营销战略翻译成每天的执行动作，完成「输入企业信息→诊断报告→7天执行清单→截图复盘」闭环。",
   "stack": {
     "backend": {
       "framework": "FastAPI",
       "python": "3.13",
       "database": "SQLite (aiosqlite)",
-      "entry": "src/api/main.py",
+      "entry": "backend/api/main.py",
       "host": "0.0.0.0",
       "port": 8000
     },
     "frontend": {
       "type": "微信小程序",
-      "root": "miniapp/",
+      "root": "frontend/",
       "libVersion": "3.0.0"
     },
     "llm": {
       "text": "DeepSeek V3 (deepseek-chat)",
       "vision": "GPT-4o (截图解析)",
-      "prompt_templates": "src/prompts/"
+      "prompt_templates": "backend/prompts/"
     }
   },
   "modules": [
     {
       "id": "diagnosis",
       "name": "AI诊断Agent",
-      "file": "src/agents/diagnosis.py",
+      "file": "backend/agents/diagnosis.py",
       "model": "DeepSeek V3",
       "description": "输入企业信息，输出诊断报告（评分+问题+策略方向），一次调用完成。",
       "input": "BusinessProfile（行业/城市/产品/价格/客户/痛点等11字段）",
@@ -35,7 +35,7 @@
     {
       "id": "executor",
       "name": "执行引擎Agent（核心壁垒）",
-      "file": "src/agents/executor.py",
+      "file": "backend/agents/executor.py",
       "model": "DeepSeek V3",
       "description": "将诊断策略方向翻译为7天可执行的任务清单。5步翻译：策略分解→子任务生成→7天排期→执行细节→目标设定。",
       "input": "BusinessProfile + DiagnosisReport.strategy_summary",
@@ -50,7 +50,7 @@
     {
       "id": "reviewer",
       "name": "数据复盘Agent",
-      "file": "src/agents/reviewer.py",
+      "file": "backend/agents/reviewer.py",
       "model": "GPT-4o (图片) + DeepSeek V3 (文本)",
       "description": "通过截图/CSV上传+多模态解析，不依赖平台API。对比目标完成度，给出优化建议。",
       "input": "SevenDayPlan + 截图/CSV文件",
@@ -70,10 +70,10 @@
     { "method": "GET",  "path": "/health", "description": "健康检查" }
   ],
   "data_models": [
-    "src/models/business.py   — BusinessProfile（11字段企业档案）",
-    "src/models/diagnosis.py  — DiagnosisReport + Problem（诊断报告）",
-    "src/models/execution.py  — SevenDayPlan + DayPlan + Task（7天任务清单）",
-    "src/models/review.py     — ReviewReport + MetricComparison（复盘报告）"
+    "backend/models/business.py   — BusinessProfile（11字段企业档案）",
+    "backend/models/diagnosis.py  — DiagnosisReport + Problem（诊断报告）",
+    "backend/models/execution.py  — SevenDayPlan + DayPlan + Task（7天任务清单）",
+    "backend/models/review.py     — ReviewReport + MetricComparison（复盘报告）"
   ],
   "uploads": {
     "max_size_mb": 20,

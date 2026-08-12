@@ -54,7 +54,10 @@ coverage/
 project.private.config.json
 .check-result.json
 check-report.json
-miniapp/check-report.json  # 兼容路径
+frontend/check-report.json  # 兼容路径
+
+# TypeScript 编译产物（frontend 目录下的 .js 由 .ts 编译生成，不入库）
+frontend/**/*.js
 
 # ----------------------------- Python -----------------------------------
 __pycache__/
@@ -107,12 +110,14 @@ IPython/
 
 # ----------------------------- Env / Secrets（禁止入库！） ----------------
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
 *.pem
 *.key
+*.secret
 credentials.json
 client_secret.json
+secrets*.json
 .vault
 
 # ----------------------------- App Data ---------------------------------
@@ -129,3 +134,7 @@ uploads/
 *.old
 *.log
 logs/
+
+# ----------------------------- Generated data / vector store -----------------------------
+# Chroma 向量库为本地生成产物（embedding 缓存），不入库
+data/chroma_db/
