@@ -112,8 +112,11 @@ app.include_router(plan_router, prefix="/api", tags=["周计划"])
 app.include_router(task_router, prefix="/api", tags=["任务"])
 app.include_router(dashboard_router, prefix="/api", tags=["工作台"])
 
-# 静态文件挂载：使上传文件可通过 /uploads/ 路径直接访问
-app.mount("/uploads", StaticFiles(directory=str(PROJECT_ROOT / "data")), name="uploads")
+# 静态文件挂载：仅暴露上传目录（data/uploads），绝不挂载 data/ 根目录，
+# 否则会连带暴露 SQLite 数据库（app.db）等敏感文件。
+_UPLOAD_DIR = (PROJECT_ROOT / "data" / "uploads").resolve()
+_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=str(_UPLOAD_DIR)), name="uploads")
 
 
 if __name__ == "__main__":

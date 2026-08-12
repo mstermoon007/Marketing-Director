@@ -76,7 +76,9 @@ class BusinessResponse(BaseModel):
 
 
 @router.post("/business", response_model=BusinessResponse)
-async def create_business(req: BusinessCreateRequest) -> BusinessResponse:
+async def create_business(
+    req: BusinessCreateRequest, user: dict = Depends(get_current_user)
+) -> BusinessResponse:
     """创建企业信息档案。"""
     profile = BusinessProfile(**req.model_dump())
     if not profile.is_complete():
@@ -85,7 +87,7 @@ async def create_business(req: BusinessCreateRequest) -> BusinessResponse:
             detail="必填字段不完整：企业名称、行业、城市、产品描述、目标客户",
         )
 
-    record = BusinessRecord(**req.model_dump())
+    record = BusinessRecord(**req.model_dump(), user_id=user["user_id"])
     async with AsyncSessionLocal() as session:
         try:
             session.add(record)
@@ -116,20 +118,23 @@ async def create_business_v3(req: BusinessCreateRequest) -> BusinessResponse:
 @router.get("/business/info", response_model=BusinessResponse)
 async def get_business_info(
     business_id: Optional[str] = None,
+    user: dict = Depends(get_current_user),
 ) -> BusinessResponse:
     """[V3.0] 获取企业信息（无路径参数版）。"""
     async with AsyncSessionLocal() as session:
         try:
             if business_id:
                 result = await session.execute(
-                    select(BusinessRecord).filter_by(id=business_id)
+                    select(BusinessRecord).filter_by(id=business_id, user_id=user["user_id"])
                 )
                 record = result.scalar_one_or_none()
                 if not record:
                     raise HTTPException(status_code=404, detail="企业不存在")
             else:
                 result = await session.execute(
-                    select(BusinessRecord).order_by(BusinessRecord.created_at.desc())
+                    select(BusinessRecord)
+                    .filter_by(user_id=user["user_id"])
+                    .order_by(BusinessRecord.created_at.desc())
                 )
                 record = result.scalars().first()
                 if not record:
@@ -160,12 +165,14 @@ async def get_business_info(
 
 
 @router.get("/business/{business_id}", response_model=BusinessResponse)
-async def get_business(business_id: str) -> BusinessResponse:
+async def get_business(
+    business_id: str, user: dict = Depends(get_current_user)
+) -> BusinessResponse:
     """查询企业信息。"""
     async with AsyncSessionLocal() as session:
         try:
             result = await session.execute(
-                select(BusinessRecord).filter_by(id=business_id)
+                select(BusinessRecord).filter_by(id=business_id, user_id=user["user_id"])
             )
             record = result.scalar_one_or_none()
             if not record:

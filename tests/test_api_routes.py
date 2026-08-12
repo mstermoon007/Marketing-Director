@@ -22,7 +22,7 @@ from backend.db.models import AsyncSessionLocal, BusinessRecord
 
 # ── 测试用户 ──
 TEST_USER = "api_test_user"
-TEST_TOKEN = create_access_token({"user_id": TEST_USER, "openid": "test_openid"})
+TEST_TOKEN = create_access_token(TEST_USER, "test_openid")
 
 
 @pytest.fixture
@@ -77,8 +77,7 @@ class TestAuthRoutes:
         resp = client.get("/api/auth/verify", headers=auth_headers)
         assert resp.status_code == 200
         data = resp.json()
-        user_data = data.get("data", {}).get("user_id", {})
-        assert user_data.get("user_id") == TEST_USER
+        assert data["data"]["user_id"] == TEST_USER
 
 
 # ═══════════════════════════════════════════════════════════════════

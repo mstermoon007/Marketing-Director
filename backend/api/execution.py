@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 
 from backend.agents.executor import ExecutorAgent
+from backend.api._authz import require_owned_diagnosis, require_owned_plan
 from backend.api.auth import get_current_user
 from backend.db.models import (
     AsyncSessionLocal,
@@ -89,10 +90,14 @@ def _record_to_diagnosis(record: DiagnosisRecord) -> DiagnosisReport:
 async def generate_plan(
     diagnosis_id: str,
     req: GeneratePlanRequest = GeneratePlanRequest(),
+    user: dict = Depends(get_current_user),
 ) -> ExecutionResponse:
     """生成7天执行清单（核心接口）。"""
     async with AsyncSessionLocal() as session:
         try:
+            # 对象级授权：诊断及其所属企业必须归属当前用户（防 IDOR）
+            await require_owned_diagnosis(session, diagnosis_id, user["user_id"])
+
             result = await session.execute(
                 select(DiagnosisRecord).filter_by(id=diagnosis_id)
             )
@@ -155,10 +160,16 @@ async def generate_plan(
 
 
 @router.get("/execution/{plan_id}", response_model=ExecutionResponse)
-async def get_plan(plan_id: str) -> ExecutionResponse:
+async def get_plan(
+    plan_id: str,
+    user: dict = Depends(get_current_user),
+) -> ExecutionResponse:
     """查看7天执行计划。"""
     async with AsyncSessionLocal() as session:
         try:
+            # 对象级授权：计划及其所属企业必须归属当前用户（防 IDOR）
+            await require_owned_plan(session, plan_id, user["user_id"])
+
             result = await session.execute(
                 select(ExecutionPlanRecord).filter_by(id=plan_id)
             )

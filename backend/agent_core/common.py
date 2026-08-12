@@ -41,8 +41,21 @@ def detect_industry(text: str) -> Optional[str]:
 
 
 # ── 从文本创建企业档案 ──
-async def create_business_from_text(text: str, industry: Optional[str] = None) -> str:
-    """基于自然语言创建企业档案，返回 business_id。"""
+async def create_business_from_text(
+    text: str, industry: Optional[str] = None, user_id: Optional[str] = None
+) -> str:
+    """基于自然语言创建企业档案，返回 business_id。
+
+    Parameters
+    ----------
+    text : str
+        用户输入的自然语言描述。
+    industry : Optional[str]
+        行业（可选，缺省自动识别）。
+    user_id : Optional[str]
+        归属用户 ID。务必传入当前 JWT 用户，否则企业档案无所有者，
+        后续对象级授权（防 IDOR）会拒绝访问。
+    """
     from backend.db.models import gen_id
 
     industry = industry or detect_industry(text) or "其他"
@@ -57,6 +70,7 @@ async def create_business_from_text(text: str, industry: Optional[str] = None) -
     async with AsyncSessionLocal() as session:
         session.add(BusinessRecord(
             id=bid,
+            user_id=user_id,
             business_name=business_name,
             industry=industry,
             city=city,

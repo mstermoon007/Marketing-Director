@@ -31,7 +31,9 @@ async def run_schedule(state: dict, memory, kb) -> dict:
     if not business_id:
         industry = detect_industry(user_msg)
         if industry:
-            business_id = await create_business_from_text(user_msg, industry)
+            business_id = await create_business_from_text(
+                user_msg, industry, user_id=state["user_id"]
+            )
             state["business_id"] = business_id
 
     if not business_id:

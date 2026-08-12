@@ -16,6 +16,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 
+from backend.api._authz import require_business
 from backend.api.auth import get_current_user
 from backend.db.models import (
     AsyncSessionLocal,
@@ -124,32 +125,39 @@ def _build_week_completion(days: list[dict]) -> list[dict]:
 @router.get("/dashboard", response_model=DashboardResponse)
 async def get_dashboard(
     business_id: Optional[str] = Query(None, description="企业ID（可选）"),
+    user: dict = Depends(get_current_user),
 ) -> DashboardResponse:
     """[V1.0] 获取工作台概览（文档6.3.7节）。"""
     async with AsyncSessionLocal() as session:
         try:
-            diag_stmt = select(DiagnosisRecord)
+            # 对象级授权：确定归属当前用户的企业范围，杜绝跨用户查看（防 IDOR）
             if business_id:
-                diag_stmt = diag_stmt.filter_by(business_id=business_id)
+                await require_business(session, business_id, user["user_id"])
+                scoped_business_id = business_id
+            else:
+                biz_row = (
+                    await session.execute(
+                        select(BusinessRecord)
+                        .filter_by(user_id=user["user_id"])
+                        .order_by(BusinessRecord.created_at.desc())
+                    )
+                ).scalars().first()
+                scoped_business_id = biz_row.id if biz_row else None
+
+            diag_stmt = select(DiagnosisRecord)
+            if scoped_business_id:
+                diag_stmt = diag_stmt.filter_by(business_id=scoped_business_id)
             diag_stmt = diag_stmt.order_by(DiagnosisRecord.created_at.desc())
             result = await session.execute(diag_stmt)
             diag_record = result.scalars().first()
 
-            actual_business_id = business_id
+            actual_business_id = scoped_business_id
             strategy_summary = ""
             this_week_focus = ""
             if diag_record:
                 actual_business_id = diag_record.business_id
                 strategy_summary = diag_record.strategy_summary or ""
                 this_week_focus = diag_record.this_week_focus or ""
-
-            if not actual_business_id:
-                result = await session.execute(
-                    select(BusinessRecord).order_by(BusinessRecord.created_at.desc())
-                )
-                business_record = result.scalars().first()
-                if business_record:
-                    actual_business_id = business_record.id
 
             plan_stmt = select(ExecutionPlanRecord)
             if actual_business_id:

@@ -23,6 +23,7 @@ from sqlalchemy import select
 
 from backend.agent_core.learning import record_feedback
 from backend.agent_core.tools import calculate_kpi, persist_todos, upload_and_parse_data
+from backend.api._authz import require_business
 from backend.api.auth import get_current_user
 from backend.api.review import _generate_safe_filename, _safe_write_file
 from backend.config.settings import app_config
@@ -101,21 +102,21 @@ class FeedbackRequest(BaseModel):
 # 辅助
 # ──────────────────────────────────────────────
 async def _resolve_business(user_id: str, business_id: str | None) -> Optional[str]:
-    """解析当前用户归属的企业 ID。"""
-    if business_id:
-        return business_id
+    """解析当前用户归属的企业 ID（严格按所有者过滤，禁止越权）。"""
     async with AsyncSessionLocal() as session:
+        if business_id:
+            rec = (
+                await session.execute(
+                    select(BusinessRecord).filter_by(id=business_id, user_id=user_id)
+                )
+            ).scalar_one_or_none()
+            return rec.id if rec else None
         rec = (
             await session.execute(
                 select(BusinessRecord)
                 .filter_by(user_id=user_id)
                 .order_by(BusinessRecord.created_at.desc())
             )
-        ).scalars().first()
-        if rec:
-            return rec.id
-        rec = (
-            await session.execute(select(BusinessRecord).order_by(BusinessRecord.created_at.desc()))
         ).scalars().first()
         return rec.id if rec else None
 
@@ -148,6 +149,8 @@ async def confirm_plan(plan_id: str, user: dict = Depends(get_current_user)) -> 
         ).scalar_one_or_none()
         if not plan:
             return PlanConfirmResponse(ok=False, plan_id=plan_id)
+        # 对象级授权：计划所属企业必须归属当前用户
+        await require_business(session, plan.business_id, user_id)
         plan.status = "confirmed"
         plan.confirmed_at = _utcnow()
         days = plan.days or []
@@ -165,12 +168,14 @@ async def edit_plan(
     plan_id: str, req: PlanEditRequest, user: dict = Depends(get_current_user)
 ) -> dict:
     """微调计划中的任务（标题/时段/做法/清单），写回计划的 days JSON。"""
+    user_id = user["user_id"]
     async with AsyncSessionLocal() as session:
         plan = (
             await session.execute(select(ExecutionPlanRecord).filter_by(id=plan_id))
         ).scalar_one_or_none()
         if not plan:
             return {"ok": False, "error": "计划不存在"}
+        await require_business(session, plan.business_id, user_id)
         days = plan.days or []
         for e in req.edits:
             day = next((d for d in days if d.get("day_index") == e.day_index), None)
@@ -196,12 +201,14 @@ async def edit_plan(
 @router.post("/plan/{plan_id}/regenerate")
 async def regenerate_plan(plan_id: str, user: dict = Depends(get_current_user)) -> dict:
     """基于同一企业重新生成计划（结合已有记忆/反馈）。"""
+    user_id = user["user_id"]
     async with AsyncSessionLocal() as session:
         plan = (
             await session.execute(select(ExecutionPlanRecord).filter_by(id=plan_id))
         ).scalar_one_or_none()
         if not plan:
             return {"ok": False, "error": "计划不存在"}
+        await require_business(session, plan.business_id, user_id)
         business_id = plan.business_id
     from backend.agent_core.tools import generate_plan
 
@@ -217,9 +224,12 @@ async def regenerate_plan(plan_id: str, user: dict = Depends(get_current_user)) 
 @router.put("/schedule/checkin")
 async def checkin_todo(req: CheckinRequest, user: dict = Depends(get_current_user)) -> dict:
     """任务完成打卡 / 修改状态，落库 todos（闭环：完成标记反馈至复盘 Agent）。"""
+    user_id = user["user_id"]
     async with AsyncSessionLocal() as session:
         todo = (
-            await session.execute(select(TodoRecord).filter_by(id=req.todo_id))
+            await session.execute(
+                select(TodoRecord).filter_by(id=req.todo_id, user_id=user_id)
+            )
         ).scalar_one_or_none()
         if not todo:
             return {"ok": False, "error": "任务不存在"}

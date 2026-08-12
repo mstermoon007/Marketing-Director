@@ -39,7 +39,9 @@ async def run_plan(state: dict, memory, kb) -> dict:
                 "告诉我后我会先诊断再生成 7 天执行计划。"
             )
             return state
-        business_id = await create_business_from_text(user_msg, industry)
+        business_id = await create_business_from_text(
+            user_msg, industry, user_id=state["user_id"]
+        )
         state["business_id"] = business_id
 
     res = await generate_plan(business_id)

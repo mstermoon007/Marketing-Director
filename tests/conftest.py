@@ -489,6 +489,32 @@ class _StubController:
             self._session_bids[session_id] = f"biz_{_uuid.uuid4().hex[:8]}"
         return self._session_bids[session_id]
 
+    async def _ensure_business(self, bid: str, user_id: str | None) -> None:
+        """幂等地持久化企业档案（归属当前用户），与真实 Agent 行为一致。
+
+        真实 Agent 在诊断阶段会落库 BusinessRecord 并写入 user_id；
+        本桩此前只返回 business_id 字符串、不落库，导致对象级授权（防 IDOR）
+        校验时查不到归属企业。此处补齐落库，使闭环测试能正确验证授权。
+        """
+        from sqlalchemy import select
+
+        from backend.db.models import AsyncSessionLocal, BusinessRecord
+
+        async with AsyncSessionLocal() as session:
+            existing = (
+                await session.execute(select(BusinessRecord).filter_by(id=bid))
+            ).scalar_one_or_none()
+            if existing:
+                return
+            session.add(BusinessRecord(
+                id=bid,
+                user_id=user_id,
+                business_name="测试企业（桩）",
+                industry="餐饮",
+                city="成都",
+            ))
+            await session.commit()
+
     def _diagnosis_data(self, bid: str) -> dict:
         return {
             "diagnosis": {
@@ -534,6 +560,7 @@ class _StubController:
 
     async def chat(self, session_id, user_id, message, **_kwargs):
         intent, bid, response = self._classify(session_id, message)
+        await self._ensure_business(bid, user_id)
         data: dict = {}
         if intent == "diagnose":
             data = self._diagnosis_data(bid)
@@ -550,6 +577,7 @@ class _StubController:
 
     async def chat_stream(self, session_id, user_id, message, **_kwargs):
         intent, bid, response = self._classify(session_id, message)
+        await self._ensure_business(bid, user_id)
         data: dict = {}
         if intent == "diagnose":
             data = self._diagnosis_data(bid)

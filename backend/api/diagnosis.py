@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 
 from backend.agents.diagnosis import DiagnosisAgent
+from backend.api._authz import require_business
 from backend.api.auth import get_current_user
 from backend.db.models import AsyncSessionLocal, BusinessRecord, DiagnosisRecord
 from backend.models.business import BusinessProfile
@@ -100,7 +101,9 @@ async def _run_diagnosis_with_fallback(profile: BusinessProfile):
 
 
 @router.post("/diagnosis/start", response_model=DiagnosisResponse)
-async def start_diagnosis_v3(req: DiagnosisStartRequest) -> DiagnosisResponse:
+async def start_diagnosis_v3(
+    req: DiagnosisStartRequest, user: dict = Depends(get_current_user)
+) -> DiagnosisResponse:
     """[V3.0] 启动诊断（文档6.2节规范）。
 
     接收完整业务参数，若 business_id 不存在则新建企业记录，然后启动诊断。
@@ -109,6 +112,8 @@ async def start_diagnosis_v3(req: DiagnosisStartRequest) -> DiagnosisResponse:
     async with AsyncSessionLocal() as session:
         try:
             if req.business_id:
+                # 对象级授权：传入的企业必须归属当前用户
+                await require_business(session, req.business_id, user["user_id"])
                 result = await session.execute(
                     select(BusinessRecord).filter_by(id=req.business_id)
                 )
@@ -119,6 +124,7 @@ async def start_diagnosis_v3(req: DiagnosisStartRequest) -> DiagnosisResponse:
             if not req.business_id:
                 record = BusinessRecord(
                     id=uuid.uuid4().hex,
+                    user_id=user["user_id"],
                     business_name=req.company_name,
                     industry=req.industry,
                     city=req.city,
@@ -198,13 +204,17 @@ async def start_diagnosis_v3(req: DiagnosisStartRequest) -> DiagnosisResponse:
 
 
 @router.post("/diagnosis/{business_id}", response_model=DiagnosisResponse)
-async def run_diagnosis(business_id: str) -> DiagnosisResponse:
+async def run_diagnosis(
+    business_id: str, user: dict = Depends(get_current_user)
+) -> DiagnosisResponse:
     """触发AI诊断。
 
     委托给 DiagnosisAgent 执行 AI 逻辑，API 层只负责 DB 读写和异常处理。
     """
     async with AsyncSessionLocal() as session:
         try:
+            # 对象级授权：企业必须归属当前用户
+            await require_business(session, business_id, user["user_id"])
             result = await session.execute(
                 select(BusinessRecord).filter_by(id=business_id)
             )
@@ -258,10 +268,24 @@ async def run_diagnosis(business_id: str) -> DiagnosisResponse:
 @router.get("/diagnosis/latest", response_model=DiagnosisResponse)
 async def get_latest_diagnosis_v3(
     business_id: Optional[str] = None,
+    user: dict = Depends(get_current_user),
 ) -> DiagnosisResponse:
     """[V3.0] 获取最新诊断报告（无路径参数版）。"""
     async with AsyncSessionLocal() as session:
         try:
+            # 鉴权：未指定 business_id 时取当前用户最新企业
+            if not business_id:
+                biz = (
+                    await session.execute(
+                        select(BusinessRecord)
+                        .filter_by(user_id=user["user_id"])
+                        .order_by(BusinessRecord.created_at.desc())
+                    )
+                ).scalars().first()
+                business_id = biz.id if biz else None
+            elif business_id:
+                await require_business(session, business_id, user["user_id"])
+
             stmt = select(DiagnosisRecord)
             if business_id:
                 stmt = stmt.filter_by(business_id=business_id)

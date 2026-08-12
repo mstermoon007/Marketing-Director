@@ -154,7 +154,9 @@ async def get_task_detail(
     try:
         async with AsyncSessionLocal() as session:
             todo = (
-                await session.execute(select(TodoRecord).filter_by(id=task_id))
+                await session.execute(
+                    select(TodoRecord).filter_by(id=task_id, user_id=user["user_id"])
+                )
             ).scalar_one_or_none()
 
             if not todo:
@@ -193,7 +195,9 @@ async def task_checkin(
     try:
         async with AsyncSessionLocal() as session:
             todo = (
-                await session.execute(select(TodoRecord).filter_by(id=req.task_id))
+                await session.execute(
+                    select(TodoRecord).filter_by(id=req.task_id, user_id=user["user_id"])
+                )
             ).scalar_one_or_none()
 
             if not todo:

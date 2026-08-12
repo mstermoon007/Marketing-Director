@@ -41,7 +41,9 @@ async def run_diagnose(state: dict, memory, kb) -> dict:
                 "④ 目前最大的痛点是什么？"
             )
             return state
-        business_id = await create_business_from_text(user_msg, industry)
+        business_id = await create_business_from_text(
+            user_msg, industry, user_id=state["user_id"]
+        )
         state["business_id"] = business_id
 
     res = await diagnose_business(business_id)

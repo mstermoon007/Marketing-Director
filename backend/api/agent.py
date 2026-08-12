@@ -25,6 +25,7 @@ from backend.agent_core import get_controller
 from backend.agent_core.config import agent_core_config
 from backend.agent_core.state import INTENT_LABELS
 from backend.api.auth import get_current_user
+from backend.utils.security import assert_safe_file_list
 
 
 router = APIRouter()
@@ -51,7 +52,8 @@ class AgentHistoryResponse(BaseModel):
 async def agent_chat(req: AgentChatRequest, user: dict = Depends(get_current_user)) -> AgentHistoryResponse:
     """与营销 Agent 对话一轮。"""
     user_id = user["user_id"]
-    session_id = req.session_id or f"{user_id}:default"
+    # 会话按所有者命名空间化，防止用户 A 用客户端 session_id 读取用户 B 的对话历史
+    session_id = f"{user_id}:{req.session_id or 'default'}"
 
     controller = get_controller()
     result = await controller.chat(
@@ -59,7 +61,7 @@ async def agent_chat(req: AgentChatRequest, user: dict = Depends(get_current_use
         user_id=user_id,
         message=req.message,
         business_id=req.business_id or None,
-        files=req.files or None,
+        files=assert_safe_file_list(req.files) or None,
     )
     return AgentHistoryResponse(data={
         "response": result["response"],
@@ -76,7 +78,7 @@ async def agent_history(
     session_id: str = "", user: dict = Depends(get_current_user)
 ) -> AgentHistoryResponse:
     """读取某会话的对话历史。"""
-    sid = session_id or f"{user['user_id']}:default"
+    sid = f"{user['user_id']}:{session_id or 'default'}"
     controller = get_controller()
     history = controller.memory.get_history(sid, limit=agent_core_config.history_window)
     return AgentHistoryResponse(data={"session_id": sid, "history": history})
@@ -92,7 +94,8 @@ async def agent_chat_stream(
     前端用 ``wx.request({enableChunked:true})`` 解析分块，实时渲染 Agent 思考过程。
     """
     user_id = user["user_id"]
-    session_id = req.session_id or f"{user_id}:default"
+    # 会话按所有者命名空间化，防止用户 A 用客户端 session_id 读取用户 B 的对话历史
+    session_id = f"{user_id}:{req.session_id or 'default'}"
     controller = get_controller()
 
     # SSE 心跳间隔：微信小程序对分块请求的 timeout 按「相邻分块空闲间隔」计时，
@@ -113,7 +116,7 @@ async def agent_chat_stream(
                     user_id=user_id,
                     message=req.message,
                     business_id=req.business_id or None,
-                    files=req.files or None,
+                    files=assert_safe_file_list(req.files) or None,
                 ):
                     await queue.put(("event", evt))
             except Exception as e:  # 统一为 error 事件下推

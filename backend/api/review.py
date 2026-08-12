@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 
 from backend.agents.reviewer import ReviewAgent
+from backend.api._authz import require_business, require_owned_plan
 from backend.api.auth import get_current_user
 from backend.config.settings import PROJECT_ROOT, app_config
 from backend.db.models import (
@@ -27,6 +28,7 @@ from backend.db.models import (
 )
 from backend.models.execution import DayPlan, SevenDayPlan, Task
 from backend.utils.document_parser import is_csv_file, is_image_file
+from backend.utils.security import assert_safe_file_list
 
 
 logger = logging.getLogger(__name__)
@@ -337,8 +339,16 @@ def _record_to_plan(record: ExecutionPlanRecord) -> SevenDayPlan:
 
 
 @router.post("/review/{plan_id}/upload", response_model=ReviewResponse)
-async def upload_single_file(plan_id: str, file: UploadFile = File(...)) -> ReviewResponse:
+async def upload_single_file(
+    plan_id: str,
+    file: UploadFile = File(...),
+    user: dict = Depends(get_current_user),
+) -> ReviewResponse:
     """逐文件上传到暂存区（适配微信小程序 wx.uploadFile）。"""
+    # 对象级授权：仅允许向当前用户自己的计划上传文件（防 IDOR）
+    async with AsyncSessionLocal() as session:
+        await require_owned_plan(session, plan_id, user["user_id"])
+
     if not file.filename:
         raise HTTPException(status_code=422, detail="缺少文件名")
     if not is_image_file(file.filename) and not is_csv_file(file.filename):
@@ -376,12 +386,20 @@ async def upload_single_file(plan_id: str, file: UploadFile = File(...)) -> Revi
 
 @router.post("/review/{plan_id}/generate", response_model=ReviewResponse)
 async def generate_review_report(
-    plan_id: str, req: Optional[GenerateRequest] = None
+    plan_id: str,
+    req: Optional[GenerateRequest] = None,
+    user: dict = Depends(get_current_user),
 ) -> ReviewResponse:
     """使用已暂存的文件（或请求体传入的文件路径）生成复盘报告。"""
+    # 对象级授权：计划必须归属当前用户
+    async with AsyncSessionLocal() as session:
+        await require_owned_plan(session, plan_id, user["user_id"])
+
+    # 文件路径需限制在允许的上传目录内（防 LFI）；请求体传入的路径尤其需要校验
+    body_files = assert_safe_file_list(req.files) if (req and req.files) else []
     saved_paths = (
-        list(req.files)
-        if req and req.files
+        list(body_files)
+        if body_files
         else list(_staged_uploads.get(plan_id, []))
     )
 
@@ -447,8 +465,13 @@ async def generate_review_report(
 async def create_review_legacy(
     plan_id: str,
     files: list[UploadFile] = File(...),
+    user: dict = Depends(get_current_user),
 ) -> ReviewResponse:
     """[兼容旧版] 一次性上传多文件并生成复盘报告。"""
+    # 对象级授权：计划必须归属当前用户
+    async with AsyncSessionLocal() as session:
+        await require_owned_plan(session, plan_id, user["user_id"])
+
     if not files:
         raise HTTPException(status_code=422, detail="请上传至少一个文件")
 
@@ -524,7 +547,10 @@ async def create_review_legacy(
 
 
 @router.post("/review/submit", response_model=ReviewResponse)
-async def submit_review_v3(req: ReviewSubmitRequest) -> ReviewResponse:
+async def submit_review_v3(
+    req: ReviewSubmitRequest,
+    user: dict = Depends(get_current_user),
+) -> ReviewResponse:
     """[V3.0] 提交复盘报告（文档6.2节规范）。"""
     async with AsyncSessionLocal() as session:
         try:
@@ -533,6 +559,8 @@ async def submit_review_v3(req: ReviewSubmitRequest) -> ReviewResponse:
             plan_id = req.plan_id
 
             if plan_id:
+                # 对象级授权：计划必须归属当前用户（防 IDOR）
+                await require_owned_plan(session, plan_id, user["user_id"])
                 result = await session.execute(
                     select(ExecutionPlanRecord).filter_by(id=plan_id)
                 )
@@ -541,6 +569,8 @@ async def submit_review_v3(req: ReviewSubmitRequest) -> ReviewResponse:
                     plan = _record_to_plan(plan_record)
                     business_id = business_id or plan_record.business_id
             elif business_id:
+                # 对象级授权：企业必须归属当前用户（防 IDOR）
+                await require_business(session, business_id, user["user_id"])
                 result = await session.execute(
                     select(ExecutionPlanRecord)
                     .filter_by(business_id=business_id)
@@ -604,10 +634,17 @@ async def submit_review_v3(req: ReviewSubmitRequest) -> ReviewResponse:
 async def get_latest_review_v3(
     business_id: Optional[str] = None,
     plan_id: Optional[str] = None,
+    user: dict = Depends(get_current_user),
 ) -> ReviewResponse:
     """[V3.0] 获取最新复盘报告。"""
     async with AsyncSessionLocal() as session:
         try:
+            # 对象级授权：客户端传入的 plan_id / business_id 必须归属当前用户（防 IDOR）
+            if plan_id:
+                await require_owned_plan(session, plan_id, user["user_id"])
+            elif business_id:
+                await require_business(session, business_id, user["user_id"])
+
             stmt = select(ReviewRecord)
             if plan_id:
                 stmt = stmt.filter_by(plan_id=plan_id)
@@ -642,10 +679,16 @@ async def get_latest_review_v3(
 
 
 @router.get("/review/{plan_id}", response_model=ReviewResponse)
-async def get_review(plan_id: str) -> ReviewResponse:
+async def get_review(
+    plan_id: str,
+    user: dict = Depends(get_current_user),
+) -> ReviewResponse:
     """查看最新复盘报告。"""
     async with AsyncSessionLocal() as session:
         try:
+            # 对象级授权：计划必须归属当前用户（防 IDOR）
+            await require_owned_plan(session, plan_id, user["user_id"])
+
             result = await session.execute(
                 select(ReviewRecord)
                 .filter_by(plan_id=plan_id)

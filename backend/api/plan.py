@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 
 from backend.agents.executor import ExecutorAgent
+from backend.api._authz import require_business, require_owned_diagnosis
 from backend.api.auth import get_current_user
 from backend.db.models import (
     AsyncSessionLocal,
@@ -218,16 +219,20 @@ async def get_weekly_plan_v3(
     week_number: Optional[int] = Query(1, ge=1, le=12, description="周数 1-12（对应季度12周）"),
     business_id: Optional[str] = None,
     diagnosis_id: Optional[str] = None,
+    user: dict = Depends(get_current_user),
 ) -> PlanResponse:
     """[V1.0] 获取周执行计划（文档6.3.4节 SevenDayPlan 结构）。"""
     async with AsyncSessionLocal() as session:
         try:
+            # 对象级授权：客户端传入的 business_id / diagnosis_id 必须归属当前用户（防 IDOR）
             if diagnosis_id:
+                await require_owned_diagnosis(session, diagnosis_id, user["user_id"])
                 result = await session.execute(
                     select(DiagnosisRecord).filter_by(id=diagnosis_id)
                 )
                 diag_record = result.scalar_one_or_none()
             elif business_id:
+                await require_business(session, business_id, user["user_id"])
                 result = await session.execute(
                     select(DiagnosisRecord)
                     .filter_by(business_id=business_id)
@@ -235,15 +240,29 @@ async def get_weekly_plan_v3(
                 )
                 diag_record = result.scalars().first()
             else:
-                result = await session.execute(
-                    select(DiagnosisRecord).order_by(DiagnosisRecord.created_at.desc())
-                )
-                diag_record = result.scalars().first()
+                # 未指定时，仅取当前用户自己的最新企业对应的诊断
+                biz = (
+                    await session.execute(
+                        select(BusinessRecord)
+                        .filter_by(user_id=user["user_id"])
+                        .order_by(BusinessRecord.created_at.desc())
+                    )
+                ).scalars().first()
+                diag_record = None
+                if biz:
+                    result = await session.execute(
+                        select(DiagnosisRecord)
+                        .filter_by(business_id=biz.id)
+                        .order_by(DiagnosisRecord.created_at.desc())
+                    )
+                    diag_record = result.scalars().first()
 
             if not diag_record:
                 logger.warning("无诊断记录，尝试使用最新企业+规则模板")
                 result = await session.execute(
-                    select(BusinessRecord).order_by(BusinessRecord.created_at.desc())
+                    select(BusinessRecord)
+                    .filter_by(user_id=user["user_id"])
+                    .order_by(BusinessRecord.created_at.desc())
                 )
                 business_record = result.scalars().first()
                 if not business_record:
