@@ -13,10 +13,9 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
-
-from backend.api.auth import get_current_user
 from sqlalchemy import select
 
+from backend.api.auth import get_current_user
 from backend.db.models import AsyncSessionLocal, BusinessRecord
 from backend.models.business import BusinessProfile
 

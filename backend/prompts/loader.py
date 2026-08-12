@@ -128,7 +128,7 @@ def load_prompt_with_skill(
     from backend.skills import get_skill_injection
 
     # 优先使用显式传入的 skill_content（测试/注入场景），否则从磁盘加载行业技能
-    if "skill_content" in variables and variables["skill_content"]:
+    if variables.get("skill_content"):
         variables["skill_context"] = variables.pop("skill_content")
     else:
         skill_context = get_skill_injection(industry)

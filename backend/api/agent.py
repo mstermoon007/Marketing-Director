@@ -14,9 +14,8 @@ Agent 对话接口（后端大脑入口）
 from __future__ import annotations
 
 import json
-from typing import Optional
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
@@ -104,7 +103,7 @@ async def agent_chat_stream(
                 files=req.files or None,
             ):
                 yield f"data: {json.dumps(evt, ensure_ascii=False)}\n\n"
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             yield f"data: {json.dumps({'type': 'error', 'message': str(e)}, ensure_ascii=False)}\n\n"
 
     return StreamingResponse(

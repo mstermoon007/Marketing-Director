@@ -10,14 +10,13 @@ from __future__ import annotations
 
 import logging
 from datetime import date, timedelta
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
-
-from backend.api.auth import get_current_user
 from sqlalchemy import select
 
+from backend.api.auth import get_current_user
 from backend.db.models import (
     AsyncSessionLocal,
     BusinessRecord,
@@ -58,7 +57,7 @@ def _get_weekday_label(weekday_idx: int) -> str:
     return labels[weekday_idx] if 0 <= weekday_idx < 7 else ""
 
 
-def _extract_tasks_from_days(days: List[dict], today_idx: Optional[int]) -> List[dict]:
+def _extract_tasks_from_days(days: list[dict], today_idx: Optional[int]) -> list[dict]:
     """从计划 days 中抽取当天（或第一个非空）的任务。"""
     if not days:
         return []
@@ -74,7 +73,7 @@ def _extract_tasks_from_days(days: List[dict], today_idx: Optional[int]) -> List
         else []
     )
 
-    result: List[dict] = []
+    result: list[dict] = []
     for idx, t in enumerate(tasks):
         if isinstance(t, dict):
             task_id = t.get("task_id") or f"task_{idx + 1}"
@@ -93,9 +92,9 @@ def _extract_tasks_from_days(days: List[dict], today_idx: Optional[int]) -> List
     return result
 
 
-def _build_week_completion(days: List[dict]) -> List[dict]:
+def _build_week_completion(days: list[dict]) -> list[dict]:
     """构造7天完成度数组（无真实打卡数据时用占位）。"""
-    result: List[dict] = []
+    result: list[dict] = []
     today = date.today().weekday()
     for i in range(7):
         total = 0
@@ -159,7 +158,7 @@ async def get_dashboard(
             result = await session.execute(plan_stmt)
             plan_record = result.scalars().first()
 
-            plan_days: List[dict] = []
+            plan_days: list[dict] = []
             start_date = None
             theme = ""
             plan_id = ""

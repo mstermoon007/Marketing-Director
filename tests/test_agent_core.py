@@ -23,9 +23,13 @@ from sqlalchemy import select
 from backend.agent_core import get_controller
 from backend.agent_core.intent import classify_intent
 from backend.agent_core.memory import MemoryStore
-from backend.agent_core.tools import calculate_kpi, diagnose_business, schedule_task, search_marketing_knowledge
-from backend.db.models import AsyncSessionLocal, BusinessRecord
-from backend.db.models import gen_id
+from backend.agent_core.tools import (
+    calculate_kpi,
+    diagnose_business,
+    schedule_task,
+    search_marketing_knowledge,
+)
+from backend.db.models import AsyncSessionLocal, BusinessRecord, gen_id
 
 
 # ── calculate_kpi ──
@@ -193,6 +197,7 @@ async def test_chat_stream_events():
 def test_agent_chat_stream_requires_auth():
     """未带 JWT 访问流式端点应被拒绝（401/403）。"""
     from fastapi.testclient import TestClient
+
     from backend.api.main import app
 
     with TestClient(app) as client:
@@ -203,20 +208,20 @@ def test_agent_chat_stream_requires_auth():
 def test_agent_chat_stream_sse_format():
     """带 JWT 访问流式端点：返回 text/event-stream，且每个分块为 `data: {json}` 格式。"""
     from fastapi.testclient import TestClient
+
     from backend.api.auth import create_access_token
     from backend.api.main import app
 
     token = create_access_token("test_user_sse")
-    with TestClient(app) as client:
-        with client.stream(
-            "POST",
-            "/api/agent/chat/stream",
-            json={"message": "餐饮怎么用短视频引流"},
-            headers={"Authorization": f"Bearer {token}"},
-        ) as resp:
-            assert resp.status_code == 200
-            assert "text/event-stream" in resp.headers.get("content-type", "")
-            body = "".join(chunk for chunk in resp.iter_text())
+    with TestClient(app) as client, client.stream(
+        "POST",
+        "/api/agent/chat/stream",
+        json={"message": "餐饮怎么用短视频引流"},
+        headers={"Authorization": f"Bearer {token}"},
+    ) as resp:
+        assert resp.status_code == 200
+        assert "text/event-stream" in resp.headers.get("content-type", "")
+        body = "".join(chunk for chunk in resp.iter_text())
 
     frames = [f for f in body.split("\n\n") if f.strip()]
     assert frames, "SSE 未产出任何事件"

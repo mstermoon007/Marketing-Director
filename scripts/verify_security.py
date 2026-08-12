@@ -11,10 +11,10 @@
   7. CORS 不泄露凭据
 """
 import asyncio
+import io
 import os
 import sys
-import io
-import tempfile
+
 
 # 设置开发环境变量（JWT_SECRET_KEY 必须设置，不允许常量回退）
 os.environ.setdefault("DEBUG", "true")
@@ -23,7 +23,8 @@ os.environ.setdefault("JWT_SECRET_KEY", "verify-test-secret-key-min-32-chars-lon
 # 确保 src 在 path 中
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from httpx import AsyncClient, ASGITransport
+from httpx import ASGITransport, AsyncClient
+
 from backend.api.auth import create_access_token
 from backend.api.main import app
 
@@ -31,20 +32,20 @@ from backend.api.main import app
 async def run_verification():
     results = []
     transport = ASGITransport(app=app)
-    
+
     # 直接签发 token（替代旧 mock 登录，不再依赖 WeChat code2session）
     test_token = create_access_token(
         user_id="verify-test-user-001",
         openid="verification_test_openid",
     )
-    
+
     async with AsyncClient(transport=transport, base_url="http://test") as client:
-        
+
         # ── 1. 健康检查 ──
         resp = await client.get("/health")
         ok = resp.status_code == 200 and resp.json().get("status") == "ok"
         results.append(("健康检查 /health", ok, f"status={resp.status_code}"))
-        
+
         # ── 2. JWT 401 — 无 token 访问受保护端点 ──
         resp = await client.get("/api/auth/verify")
         ok = resp.status_code == 401
@@ -53,7 +54,7 @@ async def run_verification():
             ok,
             f"status={resp.status_code}, detail={resp.json().get('detail', '')}"
         ))
-        
+
         # ── 3. JWT 401 — 伪造 token ──
         resp = await client.get(
             "/api/auth/verify",
@@ -65,7 +66,7 @@ async def run_verification():
             ok,
             f"status={resp.status_code}, detail={resp.json().get('detail', '')}"
         ))
-        
+
         # ── 4. JWT 验证 — 有效 token ──
         resp = await client.get(
             "/api/auth/verify",
@@ -77,7 +78,7 @@ async def run_verification():
             ok,
             f"status={resp.status_code}"
         ))
-        
+
         # ── 5. 业务路由 401 — 无 token 访问 /api/diagnosis/start ──
         resp = await client.post("/api/diagnosis/start", json={
             "company_name": "验证测试店铺",
@@ -92,7 +93,7 @@ async def run_verification():
             ok,
             f"status={resp.status_code}, detail={resp.json().get('detail', '')}"
         ))
-        
+
         # ── 6. 业务路由 401 — 无 token 访问 /api/business/create ──
         resp = await client.post("/api/business/create", json={
             "company_name": "测试门店",
@@ -105,7 +106,7 @@ async def run_verification():
             ok,
             f"status={resp.status_code}, detail={resp.json().get('detail', '')}"
         ))
-        
+
         # ── 7. 业务路由 401 — 无 token 访问 /api/dashboard ──
         resp = await client.get("/api/dashboard")
         ok = resp.status_code == 401
@@ -114,7 +115,7 @@ async def run_verification():
             ok,
             f"status={resp.status_code}, detail={resp.json().get('detail', '')}"
         ))
-        
+
         # ── 8. 业务路由 401 — 无 token 访问 /api/roadmap/current ──
         resp = await client.get("/api/roadmap/current")
         ok = resp.status_code == 401
@@ -123,7 +124,7 @@ async def run_verification():
             ok,
             f"status={resp.status_code}, detail={resp.json().get('detail', '')}"
         ))
-        
+
         # ── 9. 业务路由 401 — 无 token 访问 /api/task/detail ──
         resp = await client.get("/api/task/detail")
         ok = resp.status_code == 401
@@ -132,7 +133,7 @@ async def run_verification():
             ok,
             f"status={resp.status_code}, detail={resp.json().get('detail', '')}"
         ))
-        
+
         # ── 10. 业务路由 401 — 无 token 访问 /api/review/latest ──
         resp = await client.get("/api/review/latest")
         ok = resp.status_code == 401
@@ -141,7 +142,7 @@ async def run_verification():
             ok,
             f"status={resp.status_code}, detail={resp.json().get('detail', '')}"
         ))
-        
+
         # ── 11. 业务路由 401 — 无 token 访问 /api/execution/{id} ──
         resp = await client.post("/api/execution/test-nonexistent", json={})
         ok = resp.status_code == 401
@@ -150,7 +151,7 @@ async def run_verification():
             ok,
             f"status={resp.status_code}, detail={resp.json().get('detail', '')}"
         ))
-        
+
         # ── 12. 业务路由 401 — 无 token 访问 /api/plan/weekly ──
         resp = await client.get("/api/plan/weekly")
         ok = resp.status_code == 401
@@ -159,7 +160,7 @@ async def run_verification():
             ok,
             f"status={resp.status_code}, detail={resp.json().get('detail', '')}"
         ))
-        
+
         # ── 13. Agent 端点 JWT 401 — 无 token 访问 /api/agent/chat ──
         resp = await client.post(
             "/api/agent/chat",
@@ -233,7 +234,7 @@ async def run_verification():
             traversal_blocked,
             f"status={resp.status_code}"
         ))
-        
+
         # ── 18. magic byte 校验 ──
         fake_content = b"This is not an image, just text"
         resp = await client.post(
@@ -247,7 +248,7 @@ async def run_verification():
             magic_ok,
             f"status={resp.status_code}"
         ))
-        
+
         # ── 19. CORS 不泄露凭据 ──
         resp = await client.options(
             "/health",
@@ -263,18 +264,18 @@ async def run_verification():
             cors_ok,
             f"allow_origin={allow_origin or '(none)'}"
         ))
-    
+
     return results
 
 
 def main():
     import subprocess as _sp
-    
+
     print("=" * 60)
     print("  JWT 鉴权漂移清零验证")
     print("=" * 60)
     print()
-    
+
     # ── 0. 子进程验证：零 mock 残留（无 JWT_SECRET_KEY 启动必须报错）──
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_dir = os.path.dirname(script_dir)
@@ -299,10 +300,10 @@ def main():
     print(f"  {'✅ PASS' if no_fallback_ok else '❌ FAIL'}  零 mock 残留: 无 JWT_SECRET_KEY 启动报错")
     print(f"         {'JWT_SECRET_KEY 强制要求已生效' if no_fallback_ok else '仍有常量回退风险: ' + stdout_str.strip()[:120]}")
     sub_ok = no_fallback_ok
-    
+
     print()
     results = asyncio.run(run_verification())
-    
+
     passed = int(sub_ok)
     failed = 0 if sub_ok else 1
     for name, ok, detail in results:
@@ -313,11 +314,11 @@ def main():
             passed += 1
         else:
             failed += 1
-    
+
     print()
     print(f"  结果: {passed} passed, {failed} failed, {len(results)} + 1(sub) total")
     print("=" * 60)
-    
+
     return 0 if failed == 0 else 1
 
 

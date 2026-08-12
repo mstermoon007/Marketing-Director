@@ -22,7 +22,11 @@ from backend.agent_core.common import (
     load_latest_plan_targets,
     render_review,
 )
-from backend.agent_core.tools import calculate_kpi, search_marketing_knowledge, upload_and_parse_data
+from backend.agent_core.tools import (
+    calculate_kpi,
+    search_marketing_knowledge,
+    upload_and_parse_data,
+)
 
 
 def _build_review_summary(kpi: dict, numbers: dict, targets: dict) -> str:

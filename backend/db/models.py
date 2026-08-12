@@ -21,7 +21,6 @@ from sqlalchemy import (
     String,
     Text,
     inspect,
-    select,
     text,
 )
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -189,7 +188,7 @@ def _run_migrations(conn) -> None:
     inspector = inspect(conn)
     existing = set(inspector.get_table_names())
 
-    _ALTERS = {
+    ALTERS = {
         "businesses": [("user_id", "VARCHAR")],
         "execution_plans": [
             ("status", "VARCHAR"),
@@ -198,7 +197,7 @@ def _run_migrations(conn) -> None:
         ],
         "reviews": [("week_number", "INTEGER")],
     }
-    for table, cols in _ALTERS.items():
+    for table, cols in ALTERS.items():
         if table not in existing:
             continue
         present = {c["name"] for c in inspector.get_columns(table)}

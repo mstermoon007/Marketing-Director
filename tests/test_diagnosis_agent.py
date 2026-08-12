@@ -10,11 +10,12 @@
 """
 
 import pytest
+
 from backend.agents.diagnosis import DiagnosisAgent
 from backend.models.diagnosis import DiagnosisReport, Problem
-from backend.prompts.loader import load_prompt, list_available_prompts
-from tests.fixtures.industries import ALL_INDUSTRIES
+from backend.prompts.loader import list_available_prompts, load_prompt
 from tests.conftest import make_profile
+from tests.fixtures.industries import ALL_INDUSTRIES
 
 
 # ──────────────────────────────────────────────

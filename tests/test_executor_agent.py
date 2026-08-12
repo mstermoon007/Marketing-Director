@@ -11,13 +11,15 @@
 7. 7天结构完整性验证
 """
 
-import pytest
 from datetime import date
+
+import pytest
+
 from backend.agents.executor import ExecutorAgent
 from backend.models.execution import SevenDayPlan
 from backend.prompts.loader import load_prompt
+from tests.conftest import make_diagnosis, make_profile
 from tests.fixtures.industries import ALL_INDUSTRIES
-from tests.conftest import make_profile, make_diagnosis
 
 
 # ──────────────────────────────────────────────

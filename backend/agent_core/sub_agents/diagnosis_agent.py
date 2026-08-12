@@ -64,7 +64,7 @@ async def run_diagnose(state: dict, memory, kb) -> dict:
     memory.save_profile(
         state["user_id"],
         f"行业：{industry}；需求：诊断营销健康度。最近诊断评分 {report.get('overall_score')}。"
-        f"策略方向：{report.get('strategy_summary','')}",
+        f"策略方向：{report.get('strategy_summary', '')}",
         {"industry": industry or "", "business_id": business_id},
     )
 

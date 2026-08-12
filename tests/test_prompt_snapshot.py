@@ -13,14 +13,16 @@ Prompt 回归快照测试（开发思路文档 §6 Phase 2 要求）
 
 from __future__ import annotations
 
-import pytest
 import hashlib
 from pathlib import Path
 from typing import Optional
+
+import pytest
+
 from backend.prompts.loader import (
+    list_available_prompts,
     load_prompt,
     load_prompt_with_skill,
-    list_available_prompts,
 )
 from tests.fixtures.industries import ALL_INDUSTRIES
 

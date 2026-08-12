@@ -8,7 +8,7 @@ LangGraph 状态图的共享状态（AgentState）。所有节点读取并局部
 
 from __future__ import annotations
 
-from typing import Optional, TypedDict
+from typing import TypedDict
 
 
 # 意图常量

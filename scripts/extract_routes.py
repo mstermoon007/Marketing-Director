@@ -14,6 +14,7 @@ import json
 import sys
 from pathlib import Path
 
+
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from backend.api.main import app
@@ -45,9 +46,9 @@ def extract_routes():
 
 def print_table(routes):
     """格式化打印端点表格。"""
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print(f"  API 端点清单（共 {len(routes)} 个接口）")
-    print(f"{'='*80}")
+    print(f"{'=' * 80}")
     print(f"{'方法':<8} {'路径':<45} {'说明':<30} {'标签'}")
     print("-" * 80)
     for r in routes:

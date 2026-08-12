@@ -5,13 +5,20 @@ Pipeline 端到端测试（开发思路文档 §6 Phase 2 要求）
 输入企业信息 → AI 诊断报告 → 7 天执行清单 → 截图复盘报告
 """
 
-import pytest
 import json
 import uuid
 from datetime import date
 
+import pytest
 from sqlalchemy import select
 
+from backend.db.models import (
+    AsyncSessionLocal,
+    BusinessRecord,
+    ExecutionPlanRecord,
+    ReviewRecord,
+    init_db,
+)
 from backend.models.business import BusinessProfile
 from backend.models.execution import SevenDayPlan
 from backend.services.pipeline import (
@@ -21,12 +28,8 @@ from backend.services.pipeline import (
     run_full_pipeline,
     run_weekly_review,
 )
-from backend.db.models import (
-    AsyncSessionLocal, BusinessRecord, ExecutionPlanRecord, ReviewRecord, init_db,
-)
-
-from tests.fixtures.industries import ALL_INDUSTRIES
 from tests.conftest import make_profile
+from tests.fixtures.industries import ALL_INDUSTRIES
 
 
 # ──────────────────────────────────────────────

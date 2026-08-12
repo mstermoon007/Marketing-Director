@@ -4,40 +4,66 @@ pytest 全局配置和 fixtures
 核心：MockLLMProvider 替代真实 LLM 调用，让测试不依赖 API Key。
 数据库隔离：每次运行使用独立临时数据库，不污染 data/app.db。
 """
-
-import sys
-import json
 import atexit
+import importlib as _importlib
+import importlib.util as _ilu
+import json
+import os as _os
 import shutil
+import sys
+import sys as _sys
 import tempfile
-import pytest
+import time as _time
+import uuid as _uuid
+from datetime import (
+    date as _date,
+    datetime as _datetime,
+    timedelta as _timedelta,
+)
+from logging import getLogger as _getLogger
 from pathlib import Path
 from unittest.mock import patch
+
+
+# ── 测试环境隔离：必须在任何 backend.* import 之前设置环境变量 ──
+#   backend.config.settings 在模块加载时即读取 DATABASE_URL / JWT_SECRET_KEY，
+#   若延后设置，app_config 单例会缓存空值导致 JWT / DB 初始化失败。
+_test_db_dir = tempfile.mkdtemp(prefix="pytest_marketing_")
+_test_db_path = f"sqlite+aiosqlite:///{_test_db_dir}/test.db"
+atexit.register(lambda: shutil.rmtree(_test_db_dir, ignore_errors=True))
+
+_os.environ["DATABASE_URL"] = _test_db_path
+_os.environ.setdefault("JWT_SECRET_KEY", "pytest-only-jwt-secret-do-not-use-in-prod")
+
+import pytest
+
+from backend.agent_core.state import (
+    INTENT_CHAT,
+    INTENT_DIAGNOSE,
+    INTENT_PLAN,
+    INTENT_REVIEW,
+    INTENT_SCHEDULE,
+)
+from backend.db.models import init_db as _init_db_func
+from backend.models.business import BusinessProfile
+from backend.models.diagnosis import DiagnosisReport
+from backend.models.execution import SevenDayPlan
+from backend.models.review import ReviewReport
+from tests.fixtures.industries import ALL_INDUSTRIES
+
 
 # 确保项目根目录在 path 中
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-# ── 测试数据库隔离：创建临时目录，强制覆盖 DATABASE_URL ──
-#   必须在任何 backend.* import 之前执行，因为 settings.py 在模块加载时评估 DATABASE_URL。
-_test_db_dir = tempfile.mkdtemp(prefix="pytest_marketing_")
-_test_db_path = f"sqlite+aiosqlite:///{_test_db_dir}/test.db"
-atexit.register(lambda: shutil.rmtree(_test_db_dir, ignore_errors=True))
-
-import os as _os
-_os.environ["DATABASE_URL"] = _test_db_path
-_os.environ.setdefault("JWT_SECRET_KEY", "pytest-only-jwt-secret-do-not-use-in-prod")
-
 # 初始化测试数据库表结构
-from backend.db.models import init_db as _init_db_func
+
 
 _init_db_func()
 
 # ── Fake module helper + stub backend.agent_core ──
 #   避免导入 chromadb/langgraph 等未安装重依赖，使 API 路由集成测试可正常加载。
 #   agent_core 测试通过 test_agent_core.py 顶层的 conftest override 注入真实函数 stub。
-
-import sys as _sys
 
 
 def _fake_module(name: str, **attrs):
@@ -69,7 +95,8 @@ async def _fake_get_controller():
 
 
 # 先加载 state.py（无重依赖），避免父模块 stub 阻断子模块解析
-import importlib as _importlib
+
+
 _state_spec = _importlib.util.spec_from_file_location(
     "backend.agent_core.state",
     str(PROJECT_ROOT / "backend" / "agent_core" / "state.py"),
@@ -98,13 +125,11 @@ for _sub in ("controller", "graph", "tools", "knowledge", "_chroma", "embeddings
 #   以下函数直接复制自 src/agent_core/tools.py / intent.py / memory.py，
 #   仅去掉 langgraph/chromadb 等重依赖，保证 agent_core 测试可用。
 
-from logging import getLogger as _getLogger
+
 _log = _getLogger("conftest.stub")
 
 # -- classify_intent（规则匹配，与原版一致） --
-from backend.agent_core.state import (
-    INTENT_CHAT, INTENT_DIAGNOSE, INTENT_PLAN, INTENT_REVIEW, INTENT_SCHEDULE,
-)
+
 
 _REVIEW_KW = ["复盘", "回顾", "总结上周", "上周", "本周总结", "对比", "达成", "上传截图", "上传数据", "上传文件", "截图", "看看数据"]
 _DIAGNOSE_KW = ["诊断", "把脉", "打分", "健康度", "体检", "分析一下", "问题在哪", "哪里有问题", "什么问题", "现状", "诊断报告"]
@@ -131,7 +156,6 @@ def _stub_classify_intent(text, pending_intent=None):
 _sys.modules["backend.agent_core.intent"].classify_intent = _stub_classify_intent
 
 # -- calculate_kpi（纯函数，与原版完全一致） --
-from typing import Optional as _Optional
 
 
 def _stub_calculate_kpi(numbers, targets=None, previous=None):
@@ -190,6 +214,7 @@ def _stub_calculate_kpi(numbers, targets=None, previous=None):
 
 _sys.modules["backend.agent_core.tools"].calculate_kpi = _stub_calculate_kpi
 
+
 # -- search_marketing_knowledge（简化 stub：返回固定卡片） --
 async def _stub_search_knowledge(query, category=None, top_k=None):
     cards = [
@@ -203,9 +228,11 @@ async def _stub_search_knowledge(query, category=None, top_k=None):
 
 _sys.modules["backend.agent_core.tools"].search_marketing_knowledge = _stub_search_knowledge
 
+
 # -- diagnose_business（简化 stub：离线规则评分） --
 async def _stub_diagnose_business(business_id):
     from sqlalchemy import select
+
     from backend.db.models import AsyncSessionLocal, BusinessRecord, DiagnosisRecord
 
     async with AsyncSessionLocal() as s:
@@ -225,13 +252,15 @@ async def _stub_diagnose_business(business_id):
 _sys.modules["backend.agent_core.tools"].diagnose_business = _stub_diagnose_business
 
 # -- schedule_task（完全复制原版，无重依赖） --
-from datetime import date as _date, datetime as _datetime, timedelta as _timedelta
+
+
 _SLOTS = ["上午", "下午", "晚上"]
 
 
 async def _stub_schedule_task(business_id, items=None, days=7, start_date=None, goal=None):
     if not items:
         from sqlalchemy import select
+
         from backend.db.models import AsyncSessionLocal, ExecutionPlanRecord
         async with AsyncSessionLocal() as session:
             plan_rec = (await session.execute(
@@ -286,11 +315,13 @@ async def _stub_schedule_task(business_id, items=None, days=7, start_date=None, 
 
 _sys.modules["backend.agent_core.tools"].schedule_task = _stub_schedule_task
 
+
 # -- persist_todos（复制自 src/agent_core/tools.py，纯 DB，无重依赖）--
 #   loops.py 的 confirm_plan 调用它把计划落库为 todos；保持与真实实现一致的契约。
 async def _stub_persist_todos(business_id, user_id, plan_id, day_groups):
-    import json as _json
-    from backend.db.models import AsyncSessionLocal, TodoRecord, select
+    from sqlalchemy import select
+
+    from backend.db.models import AsyncSessionLocal, TodoRecord
 
     rows = []
     for g in day_groups or []:
@@ -317,7 +348,7 @@ async def _stub_persist_todos(business_id, user_id, plan_id, day_groups):
                 time_slot=t.get("time_slot") if isinstance(t, dict) else None,
                 status="pending",
                 how_to=how_to,
-                checklist=_json.dumps(checklist, ensure_ascii=False) if isinstance(checklist, list) else None,
+                checklist=json.dumps(checklist, ensure_ascii=False) if isinstance(checklist, list) else None,
             ))
 
     async with AsyncSessionLocal() as session:
@@ -380,7 +411,7 @@ _sys.modules["backend.agent_core.tools"].upload_and_parse_data = _stub_upload_an
 # -- 持续学习：注入真实 record_feedback / get_strategy_scores / apply_strategy_scores --
 #   learning.py 仅依赖 sqlalchemy + db.models（无 chromadb/langgraph 重依赖），可直接加载。
 #   loops.py 的 /agent/feedback 调用 record_feedback，需保留真实 DB 落库逻辑。
-import importlib.util as _ilu
+
 
 _learn_spec = _ilu.spec_from_file_location(
     "backend.agent_core._learning_real",
@@ -393,8 +424,6 @@ _sys.modules["backend.agent_core.learning"].get_strategy_scores = _learn_mod.get
 _sys.modules["backend.agent_core.learning"].apply_strategy_scores = _learn_mod.apply_strategy_scores
 
 # -- MemoryStore（简化 stub，无 ChromaDB） --
-import time as _time
-import uuid as _uuid
 
 
 class _StubMemoryStore:
@@ -427,7 +456,6 @@ _sys.modules["backend.agent_core.memory"].MemoryStore = _StubMemoryStore
 _MEM_INST = _StubMemoryStore()
 
 # -- get_controller（简化 stub，支持 chat / chat_stream / memory） --
-import json as _json
 
 
 _INTENT_LABELS = {
@@ -510,8 +538,8 @@ class _StubController:
         if intent == "diagnose":
             data = self._diagnosis_data(bid)
         elif intent == "plan":
-            _plan_id, days, data = self._plan_data(bid)
-            await self._persist_stub_plan(bid, _plan_id, days)
+            plan_id, days, data = self._plan_data(bid)
+            await self._persist_stub_plan(bid, plan_id, days)
 
         # 写入记忆库
         self.memory.append_history(session_id, user_id, "user", message)
@@ -526,8 +554,8 @@ class _StubController:
         if intent == "diagnose":
             data = self._diagnosis_data(bid)
         elif intent == "plan":
-            _plan_id, days, data = self._plan_data(bid)
-            await self._persist_stub_plan(bid, _plan_id, days)
+            plan_id, days, data = self._plan_data(bid)
+            await self._persist_stub_plan(bid, plan_id, days)
 
         yield {"type": "intent", "intent": intent, "intent_label": _INTENT_LABELS.get(intent, intent)}
         yield {"type": "thinking", "content": "正在分析..."}
@@ -549,13 +577,6 @@ _sys.modules["backend.agent_core"].get_controller = _stub_get_controller
 
 # 在所有 LLM 测试中，模拟 API Key 已配置 → LLM 路径会被走（实际调用被 Mock 替代）
 _os.environ.setdefault("DEEPSEEK_API_KEY", "sk-test-dummy-for-pytest")
-
-from backend.models.business import BusinessProfile
-from backend.models.diagnosis import DiagnosisReport
-from backend.models.execution import SevenDayPlan
-from backend.models.review import ReviewReport
-
-from tests.fixtures.industries import ALL_INDUSTRIES
 
 
 # ──────────────────────────────────────────────
@@ -667,7 +688,7 @@ def patched_llm(mock_llm):
     """
     from backend.config.settings import llm_config
 
-    _orig_key = llm_config.text_api_key
+    orig_key = llm_config.text_api_key
     llm_config.text_api_key = _os.environ.get("DEEPSEEK_API_KEY", "sk-test-dummy-for-pytest")
     try:
         with patch("backend.services.llm._llm_provider", mock_llm):
@@ -677,7 +698,7 @@ def patched_llm(mock_llm):
                         with patch("backend.agents.reviewer.get_llm_provider", return_value=mock_llm):
                             yield mock_llm
     finally:
-        llm_config.text_api_key = _orig_key
+        llm_config.text_api_key = orig_key
 
 
 @pytest.fixture(params=list(ALL_INDUSTRIES.keys()))

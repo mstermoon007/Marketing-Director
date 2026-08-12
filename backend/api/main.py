@@ -14,17 +14,17 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from backend.api.auth import router as auth_router
 from backend.api.agent import router as agent_router
+from backend.api.auth import router as auth_router
 from backend.api.business import router as business_router
 from backend.api.dashboard import router as dashboard_router
 from backend.api.diagnosis import router as diagnosis_router
 from backend.api.execution import router as execution_router
+from backend.api.loops import router as loops_router
 from backend.api.plan import router as plan_router
 from backend.api.review import router as review_router
 from backend.api.roadmap import router as roadmap_router
 from backend.api.task import router as task_router
-from backend.api.loops import router as loops_router
 from backend.config.settings import PROJECT_ROOT, app_config
 from backend.db.models import init_db
 

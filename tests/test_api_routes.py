@@ -9,17 +9,15 @@ API 路由层集成测试
 使用 httpx.ASGITransport（异步） + 数据库隔离（conftest.py 中已设置临时 DB）。
 """
 
-import io
-import json
-import pytest
-from unittest.mock import patch, AsyncMock
+from unittest.mock import patch
 
+import pytest
 from fastapi.testclient import TestClient
 
-from backend.api.main import app
 from backend.api.auth import create_access_token
-from backend.db.models import AsyncSessionLocal, BusinessRecord, ExecutionPlanRecord
+from backend.api.main import app
 from backend.config.settings import app_config
+from backend.db.models import AsyncSessionLocal, BusinessRecord
 
 
 # ── 测试用户 ──

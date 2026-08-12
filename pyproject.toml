@@ -122,10 +122,15 @@ select = [
     "RUF",  # Ruff specific
 ]
 ignore = [
-    "E501",      # line-too-long → 交给 black 控制
-    "B008",      # function-calls-in-default-arguments（Pydantic / FastAPI 常见模式）
-    "A003",      # shadow-builtin（保留 class / id 等常见业务字段）
-    "N806",      # non-lowercase-variable-in-function（兼容测试用例的 CAPS fixture）
+    "line-too-long",      # line-too-long → 交给 black 控制
+    "function-call-in-default-argument",      # function-calls-in-default-arguments（Pydantic / FastAPI 常见模式）
+    "builtin-attribute-shadowing",      # shadow-builtin（保留 class / id 等常见业务字段）
+    "non-lowercase-variable-in-function",      # non-lowercase-variable-in-function（兼容测试用例的 CAPS fixture）
+    # 中文全角标点（，。：（）等）在中文字符串 / 文档 / 注释中是正确且有意的用法，
+    # RUF001/002/003 会对其全部误报，对中文项目属于伪阳性，故关闭。
+    "ambiguous-unicode-character-string",    # ambiguous-unicode-character-string
+    "ambiguous-unicode-character-docstring",    # ambiguous-unicode-character-docstring
+    "ambiguous-unicode-character-comment",    # ambiguous-unicode-character-comment
 ]
 # 文件级别排除
 exclude = [
@@ -139,7 +144,23 @@ exclude = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["S101", "S311", "PLR2004"]  # 测试允许 assert + 假随机数
+# 测试文件：async 测试替身需保持 async 签名（pytest-asyncio / 替身被生产异步代码 await），
+# 浮点精确比较是有意断言，mutable-class-default 与 SIM 规则为无害风格项。
+"tests/*" = [
+    "assert",
+    "suspicious-non-cryptographic-random-usage",
+    "magic-value-comparison",
+    "unused-async",    # RUF029（测试替身需保留 async 签名）
+    "float-equality-comparison",    # RUF069（测试中的精确断言是有意的）
+    "mutable-class-default",    # RUF012（测试数据类无害）
+    "collapsible-if",    # SIM102（测试可读性强于压平）
+    "multiple-with-statements",    # SIM117（测试可读性强于合并）
+]
+# conftest 必须在导入 backend 应用模块之前设置 DATABASE_URL / JWT_SECRET_KEY，
+# 因此模块级 import 无法全部置于文件顶部，豁免 E402。
+"tests/conftest.py" = ["module-import-not-at-top-of-file"]
+# ChromaDB EmbeddingFunction 接口约定以 `input` 作为参数名，重命名会破坏契约。
+"backend/agent_core/embeddings.py" = ["builtin-argument-shadowing"]
 
 [tool.ruff.lint.isort]
 # 与 black 兼容的 isort 配置

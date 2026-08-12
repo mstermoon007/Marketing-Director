@@ -104,10 +104,10 @@ def format_cards(cards: list[dict], max_cards: int = 3) -> str:
     lines = []
     for i, c in enumerate(cards[:max_cards], 1):
         lines.append(
-            f"【方法{i}】{c.get('name','')}（类别：{c.get('category','')}｜行业：{c.get('industry','')}｜渠道：{c.get('channel','')}）\n"
-            f"  原理：{c.get('principle','')}\n"
-            f"  可衡量 KPI：{c.get('kpi','')}\n"
-            f"  正文：{c.get('content','')}"
+            f"【方法{i}】{c.get('name', '')}（类别：{c.get('category', '')}｜行业：{c.get('industry', '')}｜渠道：{c.get('channel', '')}）\n"
+            f"  原理：{c.get('principle', '')}\n"
+            f"  可衡量 KPI：{c.get('kpi', '')}\n"
+            f"  正文：{c.get('content', '')}"
         )
     return "\n".join(lines)
 
@@ -127,8 +127,8 @@ def render_diagnosis(report: dict, cards_text: str) -> str:
     for i, p in enumerate(problems, 1):
         if isinstance(p, dict):
             prob_lines.append(
-                f"  {i}. [{p.get('severity','')}] {p.get('description','')}\n"
-                f"     马上能做：{p.get('quick_fix','')}"
+                f"  {i}. [{p.get('severity', '')}] {p.get('description', '')}\n"
+                f"     马上能做：{p.get('quick_fix', '')}"
             )
         else:
             prob_lines.append(f"  {i}. {p}")
@@ -162,7 +162,7 @@ def render_plan(plan: dict, schedule: dict | None, cards_text: str) -> str:
     out += f"\n📅 7 天计划（共 {len(days)} 天）：\n"
     for d in days:
         if isinstance(d, dict):
-            out += f"  · {d.get('day_label','')}：{d.get('focus','')}（{len(d.get('tasks',[]))} 个任务）\n"
+            out += f"  · {d.get('day_label', '')}：{d.get('focus', '')}（{len(d.get('tasks', []))} 个任务）\n"
     if schedule and schedule.get("ok"):
         out += f"\n⏰ 已生成每日提醒（共 {len(schedule.get('reminders', []))} 条），每天 09:00 推送当天任务。\n"
     if cards_text:
@@ -173,7 +173,7 @@ def render_plan(plan: dict, schedule: dict | None, cards_text: str) -> str:
 
 def render_schedule(schedule: dict) -> str:
     if not schedule.get("ok"):
-        return f"⚠️ {schedule.get('error','无法排期')}"
+        return f"⚠️ {schedule.get('error', '无法排期')}"
     out = f"⏰ {schedule.get('goal') or '本周任务'} 排期如下（共 {schedule.get('total_tasks')} 个任务）：\n\n"
     for day in schedule.get("schedule", []):
         out += f"【{day.get('date')} 第{day.get('day_index')}天】\n"
@@ -186,7 +186,7 @@ def render_schedule(schedule: dict) -> str:
 
 
 def render_review(kpi: dict, cards_text: str, summary_text: str) -> str:
-    out = f"📈 复盘结果：\n{kpi.get('summary','')}\n\n"
+    out = f"📈 复盘结果：\n{kpi.get('summary', '')}\n\n"
     rows = kpi.get("rows", [])
     if rows:
         out += "指标明细：\n"

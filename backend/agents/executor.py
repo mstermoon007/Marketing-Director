@@ -20,7 +20,7 @@ Step 5: 目标设定 → 设量化目标，为复盘准备基线
 
 import json
 import logging
-from datetime import date as DateType
+from datetime import date
 from typing import Optional
 
 from backend.models.business import BusinessProfile
@@ -60,7 +60,7 @@ class ExecutorAgent:
         self,
         profile: BusinessProfile,
         diagnosis: DiagnosisReport,
-        start_date: Optional[DateType] = None,
+        start_date: Optional[date] = None,
     ) -> SevenDayPlan:
         """
         生成7天执行清单
@@ -77,7 +77,7 @@ class ExecutorAgent:
             ValueError: 多次重试后仍无法通过约束验证
         """
         if start_date is None:
-            start_date = DateType.today()
+            start_date = date.today()
 
         logger.info(
             "ExecutorAgent.start | business=%s | strategy=%s",
@@ -278,7 +278,7 @@ class ExecutorAgent:
 async def run_executor(
     profile: BusinessProfile,
     diagnosis: DiagnosisReport,
-    start_date: Optional[DateType] = None,
+    start_date: Optional[date] = None,
 ) -> SevenDayPlan:
     """便捷函数：生成7天执行清单"""
     agent = ExecutorAgent()

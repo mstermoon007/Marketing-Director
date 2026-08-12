@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 营销知识库语料生成器
 ================================
@@ -25,6 +24,7 @@ from __future__ import annotations
 import json
 import random
 from pathlib import Path
+
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 OUT_PATH = PROJECT_ROOT / "data" / "marketing_knowledge_cards.jsonl"

@@ -5,10 +5,10 @@
 验证：计划确认→排期落库、任务打卡、数据上传解析、复盘触发、反馈更新策略分。
 """
 
-import pytest
 import pytest_asyncio
 from fastapi.testclient import TestClient
 
+from backend.agent_core.tools import calculate_kpi
 from backend.api.auth import create_access_token
 from backend.api.main import app
 from backend.db.models import (
@@ -18,7 +18,6 @@ from backend.db.models import (
     MetricRecord,
     StrategyScoreRecord,
 )
-from backend.agent_core.tools import calculate_kpi
 
 
 USER = "loop_test_user"

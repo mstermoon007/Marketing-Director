@@ -53,7 +53,7 @@ def build_agent_graph(memory, kb):
     """构建并编译 Agent 状态图。"""
     g = StateGraph(AgentState)
 
-    async def _classify(s):
+    def _classify(s):
         return {**s, "intent": classify_intent(s.get("user_message", ""), s.get("pending_intent"))}
 
     async def _diagnose(s):

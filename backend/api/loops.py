@@ -10,6 +10,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import json
 import logging
 import os
@@ -17,7 +18,7 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from sqlalchemy import select
 
 from backend.agent_core.learning import record_feedback
@@ -37,7 +38,6 @@ from backend.db.models import (
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
-
 
 
 def _utcnow() -> datetime:
@@ -331,10 +331,8 @@ async def metrics_upload(
     targets = await _latest_plan_targets(bid)
     kpi = calculate_kpi(merged, targets=targets)
 
-    try:
+    with contextlib.suppress(OSError):
         os.remove(path)
-    except OSError:
-        pass
 
     return {"ok": True, "merged_numbers": merged, "kpi": kpi, "business_id": bid}
 

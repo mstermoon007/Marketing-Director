@@ -459,7 +459,7 @@ async def search_marketing_knowledge(
         from backend.agent_core.learning import apply_strategy_scores
 
         results = await apply_strategy_scores(results)
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         logger.warning("策略分重排序失败，回退原始排序：%s", e)
     return {"ok": True, "query": query, "count": len(results), "cards": results}
 

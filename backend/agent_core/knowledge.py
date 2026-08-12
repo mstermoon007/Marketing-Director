@@ -12,6 +12,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import json
 import logging
 from pathlib import Path
@@ -43,10 +44,8 @@ class KnowledgeBase:
             return 0
 
         if force:
-            try:
+            with contextlib.suppress(Exception):
                 self._client.delete_collection("marketing_knowledge")
-            except Exception:
-                pass
             self._col = self._client.get_or_create_collection(
                 name="marketing_knowledge", embedding_function=self._ef
             )

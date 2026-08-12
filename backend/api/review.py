@@ -10,17 +10,15 @@ from __future__ import annotations
 
 import logging
 import uuid
-from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from pydantic import BaseModel, Field
-
-from backend.api.auth import get_current_user
 from sqlalchemy import select
 
 from backend.agents.reviewer import ReviewAgent
+from backend.api.auth import get_current_user
 from backend.config.settings import PROJECT_ROOT, app_config
 from backend.db.models import (
     AsyncSessionLocal,
@@ -39,13 +37,13 @@ router = APIRouter(dependencies=[Depends(get_current_user)])
 UPLOAD_DIR = (PROJECT_ROOT / "data" / "uploads").resolve()
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
-_staged_uploads: Dict[str, List[str]] = {}
+_staged_uploads: dict[str, list[str]] = {}
 
 
 # ── 上传安全工具 ──
 
 # Magic byte 签名表：扩展名 → (前N字节签名, 签名长度)
-_MAGIC_BYTES: Dict[str, tuple] = {
+_MAGIC_BYTES: dict[str, tuple] = {
     ".png":  (b"\x89PNG\r\n\x1a\n", 8),
     ".jpg":  (b"\xff\xd8\xff", 3),
     ".jpeg": (b"\xff\xd8\xff", 3),
@@ -174,7 +172,7 @@ class ReviewResponse(BaseModel):
 class GenerateRequest(BaseModel):
     """生成复盘报告请求体。"""
 
-    files: Optional[List[str]] = Field(None, description="可选文件路径列表，默认使用暂存文件")
+    files: Optional[list[str]] = Field(None, description="可选文件路径列表，默认使用暂存文件")
 
 
 class ReviewSubmitRequest(BaseModel):
@@ -184,11 +182,11 @@ class ReviewSubmitRequest(BaseModel):
     week_number: Optional[int] = Field(1, description="周数")
     plan_id: Optional[str] = Field(None, description="关联执行计划ID（可选）")
     business_id: Optional[str] = Field(None, description="企业ID（可选）")
-    completed_tasks: List[str] = Field(default_factory=list, description="已完成任务列表")
-    incomplete_tasks: List[str] = Field(default_factory=list, description="未完成任务列表")
+    completed_tasks: list[str] = Field(default_factory=list, description="已完成任务列表")
+    incomplete_tasks: list[str] = Field(default_factory=list, description="未完成任务列表")
     key_takeaway: str = Field("", description="核心收获")
     difficulties: str = Field("", description="遇到的困难")
-    images: List[str] = Field(default_factory=list, description="图片URL列表")
+    images: list[str] = Field(default_factory=list, description="图片URL列表")
     numbers: Optional[dict] = Field(None, description="业务数据，如{'新增客户':5, '咨询量':20}")
 
 
@@ -210,7 +208,7 @@ def _build_rule_based_review(
 
     numbers = req.numbers or {"新增客户": 0, "咨询量": 0, "成交量": 0}
 
-    what_worked: List[str] = []
+    what_worked: list[str] = []
     if req.key_takeaway:
         what_worked.append(req.key_takeaway)
     if completed_count > 0:
@@ -218,7 +216,7 @@ def _build_rule_based_review(
     if not what_worked:
         what_worked.append("本周基础工作推进顺利")
 
-    what_didnt: List[str] = []
+    what_didnt: list[str] = []
     if req.difficulties:
         what_didnt.append(req.difficulties)
     if incomplete_count > 0:
@@ -232,7 +230,7 @@ def _build_rule_based_review(
         "每天固定时间段复盘当日进度",
     ]
 
-    vs_target: List[dict] = []
+    vs_target: list[dict] = []
     for metric_name, actual in numbers.items():
         try:
             actual_val = int(actual) if isinstance(actual, (int, float)) else 0
@@ -278,7 +276,7 @@ def _build_rule_based_review(
 
 async def _generate_review_with_fallback(
     plan: Optional[SevenDayPlan],
-    uploaded_files: Optional[List[str]],
+    uploaded_files: Optional[list[str]],
     submit_req: Optional[ReviewSubmitRequest] = None,
 ) -> dict:
     """复盘 Agent 3次重试 + 规则引擎兜底。"""
@@ -312,10 +310,10 @@ async def _generate_review_with_fallback(
 
 def _record_to_plan(record: ExecutionPlanRecord) -> SevenDayPlan:
     """DB ExecutionPlanRecord 转换为业务模型 SevenDayPlan。"""
-    days: List[DayPlan] = []
+    days: list[DayPlan] = []
     for d in record.days or []:
         if isinstance(d, dict):
-            tasks: List[Task] = [
+            tasks: list[Task] = [
                 Task.from_dict(t) if isinstance(t, dict) else t for t in d.get("tasks", [])
             ]
             days.append(
@@ -390,7 +388,7 @@ async def generate_review_report(
     if not saved_paths:
         raise HTTPException(
             status_code=422,
-            detail="请先上传文件（使用 /review/{plan_id}/upload 接口）",
+            detail=f"请先上传文件（使用 /review/{plan_id}/upload 接口）",
         )
 
     async with AsyncSessionLocal() as session:
@@ -448,13 +446,13 @@ async def generate_review_report(
 @router.post("/review/{plan_id}", response_model=ReviewResponse)
 async def create_review_legacy(
     plan_id: str,
-    files: List[UploadFile] = File(...),
+    files: list[UploadFile] = File(...),
 ) -> ReviewResponse:
     """[兼容旧版] 一次性上传多文件并生成复盘报告。"""
     if not files:
         raise HTTPException(status_code=422, detail="请上传至少一个文件")
 
-    saved_paths: List[str] = []
+    saved_paths: list[str] = []
 
     for f in files:
         content = await f.read()

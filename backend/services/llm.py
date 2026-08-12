@@ -14,6 +14,7 @@ import json
 import logging
 from typing import Any, Optional
 
+
 try:
     from openai import AsyncOpenAI as _AsyncOpenAI
 except ModuleNotFoundError:  # pragma: no cover - exercised when optional dependency is absent

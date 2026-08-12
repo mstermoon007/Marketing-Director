@@ -11,15 +11,14 @@ from __future__ import annotations
 import logging
 import uuid
 from datetime import date, timedelta
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
-
-from backend.api.auth import get_current_user
 from sqlalchemy import select
 
 from backend.agents.executor import ExecutorAgent
+from backend.api.auth import get_current_user
 from backend.db.models import (
     AsyncSessionLocal,
     BusinessRecord,
@@ -69,7 +68,7 @@ def _record_to_profile(record: BusinessRecord) -> BusinessProfile:
 
 def _record_to_diagnosis(record: DiagnosisRecord) -> DiagnosisReport:
     """DB DiagnosisRecord 转换为业务模型 DiagnosisReport。"""
-    problems: List[Problem] = []
+    problems: list[Problem] = []
     for p in record.top3_problems or []:
         if isinstance(p, dict):
             problems.append(Problem.from_dict(p))
@@ -92,7 +91,7 @@ def _build_rule_based_plan(
 ) -> dict:
     """规则引擎 fallback：生成通用7天计划模板。"""
     week_labels = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
-    days: List[dict] = []
+    days: list[dict] = []
     focuses = [
         "客户画像与需求梳理",
         "核心文案/话术打磨",
@@ -102,7 +101,7 @@ def _build_rule_based_plan(
         "数据复盘与下周规划",
         "休息调整或自学充电",
     ]
-    common_tasks_pool: List[dict] = [
+    common_tasks_pool: list[dict] = [
         {
             "time_slot": "09:00-09:30",
             "title": "梳理目标客户画像",
@@ -139,7 +138,7 @@ def _build_rule_based_plan(
 
     for i in range(7):
         d = start_date + timedelta(days=i)
-        day_tasks: List[dict] = []
+        day_tasks: list[dict] = []
         if i < 5:
             day_tasks = [common_tasks_pool[i % len(common_tasks_pool)]]
         elif i == 5:

@@ -27,7 +27,7 @@ _client = None
 _embedding_fn = None
 
 
-def get_chroma_client() -> "chromadb.api.client.Client":
+def get_chroma_client() -> chromadb.api.client.Client:
     """返回（惰性创建）共享的 ChromaDB 持久化客户端。"""
     global _client
     if _client is None:

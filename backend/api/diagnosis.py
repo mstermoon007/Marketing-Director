@@ -10,15 +10,14 @@ from __future__ import annotations
 
 import logging
 import uuid
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
-
-from backend.api.auth import get_current_user
 from sqlalchemy import select
 
 from backend.agents.diagnosis import DiagnosisAgent
+from backend.api.auth import get_current_user
 from backend.db.models import AsyncSessionLocal, BusinessRecord, DiagnosisRecord
 from backend.models.business import BusinessProfile
 from backend.services.rule_based_diagnosis import diagnose as rule_diagnose
@@ -48,7 +47,7 @@ class DiagnosisStartRequest(BaseModel):
     main_product: str = Field("", description="主营产品/服务描述")
     price_range: str = Field("", description="价格区间")
     target_customer: str = Field("", description="目标客户")
-    current_channels: List[str] = Field(default_factory=list, description="当前获客渠道列表")
+    current_channels: list[str] = Field(default_factory=list, description="当前获客渠道列表")
     monthly_budget: str = Field("", description="月度营销预算")
     biggest_pain: str = Field("", description="最大痛点")
 

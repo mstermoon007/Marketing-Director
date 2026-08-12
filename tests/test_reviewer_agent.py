@@ -12,14 +12,19 @@
 """
 
 import pytest
+
 from backend.agents.reviewer import ReviewAgent
-from backend.models.review import ReviewReport, MetricComparison
+from backend.models.review import MetricComparison, ReviewReport
 from backend.utils.document_parser import (
-    ParsedData, is_image_file, is_csv_file,
-    parse_csv_content, parse_csv_file, merge_parsed_data,
+    ParsedData,
+    is_csv_file,
+    is_image_file,
+    merge_parsed_data,
+    parse_csv_content,
+    parse_csv_file,
 )
-from tests.fixtures.industries import ALL_INDUSTRIES
 from tests.conftest import make_plan
+from tests.fixtures.industries import ALL_INDUSTRIES
 
 
 # ──────────────────────────────────────────────
@@ -272,7 +277,6 @@ class TestReviewAgent:
             review=ALL_INDUSTRIES["美容"]["review_resp"],
         )
         # 覆盖 chat_with_images 让它抛异常
-        original_vision = patched_llm.chat_with_images
         patched_llm.chat_with_images = failing_vision
 
         agent = ReviewAgent()

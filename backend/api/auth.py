@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Optional
 
 import httpx
 import jwt
@@ -94,12 +93,12 @@ def verify_token(token: str) -> dict:
         )
         return payload
     except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token 已过期，请重新登录")
+        raise HTTPException(status_code=401, detail="Token 已过期，请重新登录") from None
     except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="无效的 Token")
+        raise HTTPException(status_code=401, detail="无效的 Token") from None
 
 
-async def get_current_user(request: Request) -> dict:
+def get_current_user(request: Request) -> dict:
     """FastAPI 依赖注入：从 Authorization header 提取并验证 JWT。
 
     使用方式::

@@ -18,6 +18,7 @@ from datetime import date
 
 from backend.agent_core.config import agent_core_config
 from backend.agent_core.graph import build_agent_graph
+from backend.agent_core.intent import classify_intent
 from backend.agent_core.knowledge import KnowledgeBase
 from backend.agent_core.memory import MemoryStore
 from backend.agent_core.sessions import SessionManager
@@ -29,7 +30,6 @@ from backend.agent_core.state import (
     INTENT_REVIEW,
     INTENT_SCHEDULE,
 )
-from backend.agent_core.intent import classify_intent
 from backend.agent_core.sub_agents.chat_agent import run_chat
 from backend.agent_core.sub_agents.diagnosis_agent import run_diagnose
 from backend.agent_core.sub_agents.planner_agent import run_plan
@@ -282,7 +282,7 @@ class MainController:
 
             if result.get("knowledge_context"):
                 yield {"type": "thinking", "step": "已检索营销知识库（RAG），匹配相关方法卡片…"}
-            for tool_name in result.get("tool_results", {}).keys():
+            for tool_name in result.get("tool_results", {}):
                 yield {"type": "tool", "name": str(tool_name)}
             yield {"type": "thinking", "step": "正在整理回复…"}
 
@@ -324,7 +324,7 @@ class MainController:
                 "needs_clarification": result.get("needs_clarification", False),
                 "data": payload,
             }
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             logger.exception("流式对话异常")
             yield {"type": "error", "message": str(e)}
 

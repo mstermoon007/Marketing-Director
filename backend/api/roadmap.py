@@ -9,14 +9,13 @@ MIT License
 from __future__ import annotations
 
 import logging
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
-
-from backend.api.auth import get_current_user
 from sqlalchemy import select
 
+from backend.api.auth import get_current_user
 from backend.db.models import AsyncSessionLocal, DiagnosisRecord
 
 
@@ -40,8 +39,8 @@ class PhaseItem(BaseModel):
     title: str = Field("", description="阶段名称")
     duration: str = Field("", description="持续时间，例如'第1-2周'")
     goal: str = Field("", description="阶段目标")
-    key_results: List[str] = Field(default_factory=list, description="关键结果KR")
-    focus_tasks: List[str] = Field(default_factory=list, description="重点任务")
+    key_results: list[str] = Field(default_factory=list, description="关键结果KR")
+    focus_tasks: list[str] = Field(default_factory=list, description="重点任务")
 
 
 def _build_default_roadmap(strategy_summary: str, this_week_focus: str) -> dict:

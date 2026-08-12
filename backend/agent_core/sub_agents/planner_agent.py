@@ -61,7 +61,7 @@ async def run_plan(state: dict, memory, kb) -> dict:
 
     memory.save_profile(
         state["user_id"],
-        f"行业：{industry}；已生成计划，主题：{plan.get('theme','')}。",
+        f"行业：{industry}；已生成计划，主题：{plan.get('theme', '')}。",
         {"industry": industry or "", "business_id": business_id},
     )
 

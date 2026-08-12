@@ -21,7 +21,6 @@ import logging
 import math
 import os
 import re
-from typing import List
 
 from chromadb.api.collection_configuration import register_embedding_function
 
@@ -40,13 +39,13 @@ _CJK_RE = re.compile(_CJK)
 _WORD_RE = re.compile(r"[a-z0-9]+")
 
 
-def _tokenize(text: str) -> List[str]:
+def _tokenize(text: str) -> list[str]:
     """把文本切成特征单元：英文数字词 + 单个汉字 + 汉字二元组。
 
     中文没有空格分词，靠字 + 二元组兼顾词面与局部语序，对营销领域检索足够。
     """
     low = (text or "").lower()
-    features: List[str] = []
+    features: list[str] = []
     features.extend(_WORD_RE.findall(low))
     cjk = "".join(_CJK_RE.findall(low))
     features.extend(cjk)  # 单字
@@ -75,11 +74,11 @@ class LocalHashingEmbedding:
         return {"dim": self.dim}
 
     @classmethod
-    def build_from_config(cls, config: dict) -> "LocalHashingEmbedding":
+    def build_from_config(cls, config: dict) -> LocalHashingEmbedding:
         """从持久化配置重建实例。"""
         return cls(dim=int(config.get("dim", LOCAL_EMBED_DIM)))
 
-    def _embed(self, text: str) -> List[float]:
+    def _embed(self, text: str) -> list[float]:
         vec = [0.0] * self.dim
         for tok in _tokenize(text):
             h = int(hashlib.md5(tok.encode("utf-8")).hexdigest(), 16)
@@ -91,15 +90,15 @@ class LocalHashingEmbedding:
             vec = [v / norm for v in vec]
         return vec
 
-    def embed_documents(self, input: List[str]) -> List[List[float]]:
+    def embed_documents(self, input: list[str]) -> list[list[float]]:
         return [self._embed(t) for t in input]
 
-    def embed_query(self, input) -> List[float]:
+    def embed_query(self, input) -> list[float]:
         if isinstance(input, list):
             return [self._embed(t) for t in input]
         return self._embed(input)
 
-    def __call__(self, input: List[str]) -> List[List[float]]:
+    def __call__(self, input: list[str]) -> list[list[float]]:
         """ChromaDB 新接口：统一以列表形式调用。"""
         return self.embed_documents(input)
 
@@ -112,7 +111,7 @@ class LocalHashingEmbedding:
         """向量已 L2 归一化，使用余弦距离。"""
         return "cosine"
 
-    def supported_spaces(self) -> List[str]:
+    def supported_spaces(self) -> list[str]:
         return ["cosine", "l2", "ip"]
 
     @staticmethod
@@ -145,24 +144,24 @@ class OpenAIEmbedding:
         return {"model": self.model, "dim": self.dim}
 
     @classmethod
-    def build_from_config(cls, config: dict) -> "OpenAIEmbedding":
+    def build_from_config(cls, config: dict) -> OpenAIEmbedding:
         return cls(model=config.get("model", "text-embedding-3-small"),
                    dim=int(config.get("dim", 1536)))
 
-    def _embed_sync(self, texts: List[str]) -> List[List[float]]:
+    def _embed_sync(self, texts: list[str]) -> list[list[float]]:
         resp = self._client.embeddings.create(model=self.model, input=texts)
         return [list(d.embedding) for d in resp.data]
 
-    def embed_documents(self, input: List[str]) -> List[List[float]]:
+    def embed_documents(self, input: list[str]) -> list[list[float]]:
         # ChromaDB 的 embedding_function 接口为同步调用
         return self._embed_sync(input)
 
-    def embed_query(self, input) -> List[float]:
+    def embed_query(self, input) -> list[float]:
         if isinstance(input, list):
             return self._embed_sync(input)
         return self._embed_sync([input])[0]
 
-    def __call__(self, input: List[str]) -> List[List[float]]:
+    def __call__(self, input: list[str]) -> list[list[float]]:
         """ChromaDB 新接口：统一以列表形式调用。"""
         return self.embed_documents(input)
 
@@ -175,7 +174,7 @@ class OpenAIEmbedding:
         """OpenAI text-embedding-3-small 输出归一化向量，使用余弦距离。"""
         return "cosine"
 
-    def supported_spaces(self) -> List[str]:
+    def supported_spaces(self) -> list[str]:
         return ["cosine", "l2", "ip"]
 
     @staticmethod

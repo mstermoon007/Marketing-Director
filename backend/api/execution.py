@@ -10,15 +10,13 @@ from __future__ import annotations
 
 import logging
 from datetime import date
-from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
-
-from backend.api.auth import get_current_user
 from sqlalchemy import select
 
 from backend.agents.executor import ExecutorAgent
+from backend.api.auth import get_current_user
 from backend.db.models import (
     AsyncSessionLocal,
     BusinessRecord,
@@ -71,7 +69,7 @@ def _record_to_profile(record: BusinessRecord) -> BusinessProfile:
 
 def _record_to_diagnosis(record: DiagnosisRecord) -> DiagnosisReport:
     """DB DiagnosisRecord 转换为业务模型 DiagnosisReport。"""
-    problems: List[Problem] = []
+    problems: list[Problem] = []
     for p in record.top3_problems or []:
         if isinstance(p, dict):
             problems.append(Problem.from_dict(p))

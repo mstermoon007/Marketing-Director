@@ -13,7 +13,7 @@ import logging
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
 from pydantic import BaseModel, Field
@@ -137,7 +137,7 @@ class TaskCheckinRequest(BaseModel):
 
     task_id: str = Field(..., description="任务ID")
     notes: Optional[str] = Field(None, description="打卡文字备注")
-    images: Optional[List[str]] = Field(
+    images: Optional[list[str]] = Field(
         None, description="图片URL列表（可选，可先用/upload上传拿到URL）"
     )
 
