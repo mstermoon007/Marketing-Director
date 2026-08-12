@@ -19,7 +19,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 # ── 测试数据库隔离：创建临时目录，强制覆盖 DATABASE_URL ──
-#   必须在任何 src.* import 之前执行，因为 settings.py 在模块加载时评估 DATABASE_URL。
+#   必须在任何 backend.* import 之前执行，因为 settings.py 在模块加载时评估 DATABASE_URL。
 _test_db_dir = tempfile.mkdtemp(prefix="pytest_marketing_")
 _test_db_path = f"sqlite+aiosqlite:///{_test_db_dir}/test.db"
 atexit.register(lambda: shutil.rmtree(_test_db_dir, ignore_errors=True))
@@ -33,7 +33,7 @@ from backend.db.models import init_db as _init_db_func
 
 _init_db_func()
 
-# ── Fake module helper + stub src.agent_core ──
+# ── Fake module helper + stub backend.agent_core ──
 #   避免导入 chromadb/langgraph 等未安装重依赖，使 API 路由集成测试可正常加载。
 #   agent_core 测试通过 test_agent_core.py 顶层的 conftest override 注入真实函数 stub。
 
@@ -82,7 +82,7 @@ _agent_core_stub = _fake_module("backend.agent_core",
     get_controller=_fake_get_controller,
     MainController=type("_MC", (), {})(),
 )
-_sys.modules["src.agent_core"] = _agent_core_stub
+_sys.modules["backend.agent_core"] = _agent_core_stub
 for _sub in ("controller", "graph", "tools", "knowledge", "_chroma", "embeddings",
              "common", "learning", "config",
              "intent", "sessions", "memory",
@@ -90,7 +90,7 @@ for _sub in ("controller", "graph", "tools", "knowledge", "_chroma", "embeddings
              "sub_agents.diagnosis_agent", "sub_agents.executor_agent",
              "sub_agents.reviewer_agent", "sub_agents.planner_agent",
              "sub_agents.scheduler_agent"):
-    _full = f"src.agent_core.{_sub}"
+    _full = f"backend.agent_core.{_sub}"
     if _full not in _sys.modules:
         _sys.modules[_full] = _fake_module(_full)
 
@@ -128,7 +128,7 @@ def _stub_classify_intent(text, pending_intent=None):
     return INTENT_CHAT
 
 
-_sys.modules["src.agent_core.intent"].classify_intent = _stub_classify_intent
+_sys.modules["backend.agent_core.intent"].classify_intent = _stub_classify_intent
 
 # -- calculate_kpi（纯函数，与原版完全一致） --
 from typing import Optional as _Optional
@@ -188,7 +188,7 @@ def _stub_calculate_kpi(numbers, targets=None, previous=None):
     return {"rows": rows, "overall_achievement": overall, "derived": derived, "trend": trend, "summary": summary}
 
 
-_sys.modules["src.agent_core.tools"].calculate_kpi = _stub_calculate_kpi
+_sys.modules["backend.agent_core.tools"].calculate_kpi = _stub_calculate_kpi
 
 # -- search_marketing_knowledge（简化 stub：返回固定卡片） --
 async def _stub_search_knowledge(query, category=None, top_k=None):
@@ -201,7 +201,7 @@ async def _stub_search_knowledge(query, category=None, top_k=None):
     return {"ok": True, "query": query, "count": len(filtered), "cards": filtered[:top_k or 3]}
 
 
-_sys.modules["src.agent_core.tools"].search_marketing_knowledge = _stub_search_knowledge
+_sys.modules["backend.agent_core.tools"].search_marketing_knowledge = _stub_search_knowledge
 
 # -- diagnose_business（简化 stub：离线规则评分） --
 async def _stub_diagnose_business(business_id):
@@ -222,7 +222,7 @@ async def _stub_diagnose_business(business_id):
     return {"ok": True, "report": {"overall_score": score}}
 
 
-_sys.modules["src.agent_core.tools"].diagnose_business = _stub_diagnose_business
+_sys.modules["backend.agent_core.tools"].diagnose_business = _stub_diagnose_business
 
 # -- schedule_task（完全复制原版，无重依赖） --
 from datetime import date as _date, datetime as _datetime, timedelta as _timedelta
@@ -284,7 +284,7 @@ async def _stub_schedule_task(business_id, items=None, days=7, start_date=None, 
     return {"ok": True, "business_id": business_id, "goal": goal, "schedule": schedule, "reminders": reminders, "total_tasks": len(items)}
 
 
-_sys.modules["src.agent_core.tools"].schedule_task = _stub_schedule_task
+_sys.modules["backend.agent_core.tools"].schedule_task = _stub_schedule_task
 
 # -- persist_todos（复制自 src/agent_core/tools.py，纯 DB，无重依赖）--
 #   loops.py 的 confirm_plan 调用它把计划落库为 todos；保持与真实实现一致的契约。
@@ -334,7 +334,7 @@ async def _stub_persist_todos(business_id, user_id, plan_id, day_groups):
     return {"ok": True, "persisted": len(rows), "plan_id": plan_id}
 
 
-_sys.modules["src.agent_core.tools"].persist_todos = _stub_persist_todos
+_sys.modules["backend.agent_core.tools"].persist_todos = _stub_persist_todos
 
 
 # -- generate_plan / upload_and_parse_data（闭环 regenerate / 上传解析用）--
@@ -359,7 +359,7 @@ async def _stub_generate_plan(business_id):
     return {"ok": True, "plan": {"id": plan_id, "days": days, "theme": "本周引流"}, "diagnosis": {"overall_score": 65}}
 
 
-_sys.modules["src.agent_core.tools"].generate_plan = _stub_generate_plan
+_sys.modules["backend.agent_core.tools"].generate_plan = _stub_generate_plan
 
 
 async def _stub_upload_and_parse_data(files):
@@ -375,7 +375,7 @@ async def _stub_upload_and_parse_data(files):
     }
 
 
-_sys.modules["src.agent_core.tools"].upload_and_parse_data = _stub_upload_and_parse_data
+_sys.modules["backend.agent_core.tools"].upload_and_parse_data = _stub_upload_and_parse_data
 
 # -- 持续学习：注入真实 record_feedback / get_strategy_scores / apply_strategy_scores --
 #   learning.py 仅依赖 sqlalchemy + db.models（无 chromadb/langgraph 重依赖），可直接加载。
@@ -388,9 +388,9 @@ _learn_spec = _ilu.spec_from_file_location(
 )
 _learn_mod = _ilu.module_from_spec(_learn_spec)
 _learn_spec.loader.exec_module(_learn_mod)
-_sys.modules["src.agent_core.learning"].record_feedback = _learn_mod.record_feedback
-_sys.modules["src.agent_core.learning"].get_strategy_scores = _learn_mod.get_strategy_scores
-_sys.modules["src.agent_core.learning"].apply_strategy_scores = _learn_mod.apply_strategy_scores
+_sys.modules["backend.agent_core.learning"].record_feedback = _learn_mod.record_feedback
+_sys.modules["backend.agent_core.learning"].get_strategy_scores = _learn_mod.get_strategy_scores
+_sys.modules["backend.agent_core.learning"].apply_strategy_scores = _learn_mod.apply_strategy_scores
 
 # -- MemoryStore（简化 stub，无 ChromaDB） --
 import time as _time
@@ -422,7 +422,7 @@ class _StubMemoryStore:
         return self._profiles.get(user_id)
 
 
-_sys.modules["src.agent_core.memory"].MemoryStore = _StubMemoryStore
+_sys.modules["backend.agent_core.memory"].MemoryStore = _StubMemoryStore
 # Also expose at top-level for get_controller
 _MEM_INST = _StubMemoryStore()
 
@@ -545,7 +545,7 @@ def _stub_get_controller():
     return _CTRL
 
 
-_sys.modules["src.agent_core"].get_controller = _stub_get_controller
+_sys.modules["backend.agent_core"].get_controller = _stub_get_controller
 
 # 在所有 LLM 测试中，模拟 API Key 已配置 → LLM 路径会被走（实际调用被 Mock 替代）
 _os.environ.setdefault("DEEPSEEK_API_KEY", "sk-test-dummy-for-pytest")
@@ -670,11 +670,11 @@ def patched_llm(mock_llm):
     _orig_key = llm_config.text_api_key
     llm_config.text_api_key = _os.environ.get("DEEPSEEK_API_KEY", "sk-test-dummy-for-pytest")
     try:
-        with patch("src.services.llm._llm_provider", mock_llm):
-            with patch("src.services.llm.get_llm_provider", return_value=mock_llm):
-                with patch("src.agents.diagnosis.get_llm_provider", return_value=mock_llm):
-                    with patch("src.agents.executor.get_llm_provider", return_value=mock_llm):
-                        with patch("src.agents.reviewer.get_llm_provider", return_value=mock_llm):
+        with patch("backend.services.llm._llm_provider", mock_llm):
+            with patch("backend.services.llm.get_llm_provider", return_value=mock_llm):
+                with patch("backend.agents.diagnosis.get_llm_provider", return_value=mock_llm):
+                    with patch("backend.agents.executor.get_llm_provider", return_value=mock_llm):
+                        with patch("backend.agents.reviewer.get_llm_provider", return_value=mock_llm):
                             yield mock_llm
     finally:
         llm_config.text_api_key = _orig_key

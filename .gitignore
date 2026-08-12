@@ -138,3 +138,7 @@ logs/
 # ----------------------------- Generated data / vector store -----------------------------
 # Chroma 向量库为本地生成产物（embedding 缓存），不入库
 data/chroma_db/
+
+# ----------------------------- Test / build artifacts (regenerable) -----------------------------
+.coverage
+coverage_html/

@@ -51,7 +51,7 @@ class TestAuthRoutes:
         resp = client.post("/api/auth/login", json={})
         assert resp.status_code == 422
 
-    @patch("src.api.auth._wechat_code2session")
+    @patch("backend.api.auth._wechat_code2session")
     def test_login_with_invalid_code(self, mock_c2s, client):
         """无效微信 code 返回 401。"""
         mock_c2s.return_value = None
@@ -59,7 +59,7 @@ class TestAuthRoutes:
         assert resp.status_code == 401
         assert "code 无效" in resp.json()["detail"]
 
-    @patch("src.api.auth._wechat_code2session")
+    @patch("backend.api.auth._wechat_code2session")
     def test_login_success_returns_token(self, mock_c2s, client):
         """有效微信 code 返回 token 和用户信息。"""
         mock_c2s.return_value = {"openid": "test_openid_login", "session_key": "sk_test"}

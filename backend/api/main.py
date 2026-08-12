@@ -123,7 +123,7 @@ if __name__ == "__main__":
 
     # CloudRun 容器模式会注入 PORT 环境变量；本地/默认回退 8000
     uvicorn.run(
-        "src.api.main:app",
+        "backend.api.main:app",
         host="0.0.0.0",
         port=int(os.environ.get("PORT", 8000)),
         reload=False,
