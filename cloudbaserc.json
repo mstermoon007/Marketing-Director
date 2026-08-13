@@ -1,0 +1,16 @@
+{
+  "envId": "cloudbase-d7gfkiqind298f38c",
+  "functionRoot": "./functions",
+  "functions": [],
+  "ai": {
+    "defaultAgent": "{{env.AI_DEFAULT_AGENT}}",
+    "agents": {
+      "codebuddy": {
+        "type": "none"
+      }
+    }
+  },
+  "cloudrun": {
+    "name": "marketing-agent"
+  }
+}
