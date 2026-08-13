@@ -74,7 +74,7 @@ class Store {
             content: msg.content,
             intent: msg.intent,
             thinkingSteps: msg.thinkingSteps,
-            toolCalls: msg.toolCalls,
+            toolCalls: msg.toolCalls || [],
             streaming: msg.streaming,
             card: msg.card,
         };
@@ -193,7 +193,7 @@ class Store {
     loadCache() {
         const cachedMsgs = (0, storage_1.getStorage)(storage_1.STORAGE_KEYS.CHAT_SUMMARY);
         if (cachedMsgs && Array.isArray(cachedMsgs)) {
-            this.state.messages = cachedMsgs.slice(-MAX_CACHED_MESSAGES);
+            this.state.messages = cachedMsgs.slice(-MAX_CACHED_MESSAGES).map((m) => (Object.assign(Object.assign({}, m), { toolCalls: (m.toolCalls || []) })));
         }
         const profile = (0, storage_1.getStorage)(storage_1.STORAGE_KEYS.PROFILE_SUMMARY);
         if (profile)

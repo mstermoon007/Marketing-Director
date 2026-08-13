@@ -162,7 +162,8 @@ class Store {
       content: msg.content,
       intent: msg.intent,
       thinkingSteps: msg.thinkingSteps,
-      toolCalls: msg.toolCalls,
+      // 归一化为数组：用户消息等未携带 toolCalls 时避免组件收到 undefined 触发类型告警
+      toolCalls: msg.toolCalls || [],
       streaming: msg.streaming,
       card: msg.card,
     }
@@ -303,7 +304,11 @@ class Store {
   loadCache(): void {
     const cachedMsgs = getStorage<ChatMessage[]>(STORAGE_KEYS.CHAT_SUMMARY)
     if (cachedMsgs && Array.isArray(cachedMsgs)) {
-      this.state.messages = cachedMsgs.slice(-MAX_CACHED_MESSAGES)
+      // 兼容旧缓存：确保每条消息都有 toolCalls 数组，避免组件类型告警
+      this.state.messages = cachedMsgs.slice(-MAX_CACHED_MESSAGES).map((m) => ({
+        ...m,
+        toolCalls: m.toolCalls || [],
+      }))
     }
     const profile = getStorage<ProfileSummary | null>(STORAGE_KEYS.PROFILE_SUMMARY)
     if (profile) this.state.profile = profile

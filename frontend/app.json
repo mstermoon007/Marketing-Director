@@ -1,9 +1,9 @@
 {
   "pages": [
+    "pages/onboarding/index",
     "pages/chat/index",
     "pages/dashboard/index",
-    "pages/schedule/index",
-    "pages/onboarding/index"
+    "pages/schedule/index"
   ],
   "subpackages": [
     {

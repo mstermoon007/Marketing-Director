@@ -5,8 +5,10 @@
  * 与旧版（V3.1）的关键差异：
  *   ❌ 移除 legacy key 迁移逻辑（businessId / diagnosisId … 无命名空间旧键）
  *   ❌ 移除启动期导航锁 safeNavigate / _launching / _navLock
- *      —— 新架构首页 pages[0] 即 tabBar 的「对话」页，onLaunch 期间不再发生
- *         reLaunch/redirectTo，天然不存在「appLaunch with non-empty page stack」竞态
+ *      —— 新架构首页 pages[0] 即「一键登录」页（onboarding）：未登录先走登录，
+ *         已登录由 onboarding.onLoad 直接 switchTab 到 tabBar 的「对话」页；全程仅
+ *         switchTab，不再发生 reLaunch/redirectTo，天然不存在
+ *         「appLaunch with non-empty page stack」竞态
  *   ❌ 移除散落在 globalData 的业务对象（diagnosisResult / weeklyPlan / latestReview …）
  *      —— 统一收敛到 store/index.ts 单一可信源
  *   ✅ onLaunch 同步 store.loadCache()：从 wx.storage 秒开恢复对话摘要 / 日程 / 画像 / 设置

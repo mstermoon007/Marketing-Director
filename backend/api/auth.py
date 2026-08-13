@@ -8,6 +8,7 @@ MIT License
 
 from __future__ import annotations
 
+import hashlib
 import logging
 import time
 
@@ -165,11 +166,22 @@ async def _wechat_code2session(code: str) -> dict:
     appid = app_config.wechat_appid
     secret = app_config.wechat_secret
 
+    # 开发模式且未配置微信密钥时走 mock 登录（与 .env.example 文档约定一致）；
+    # 生产环境必须配置真实 WECHAT_APPID/WECHAT_SECRET，缺失则直接拒绝启动外的登录。
     if not appid or not secret:
-        raise HTTPException(
-            status_code=500,
-            detail="微信小程序配置缺失（WECHAT_APPID/WECHAT_SECRET），无法验证登录",
+        if app_config.app_env == "production":
+            raise HTTPException(
+                status_code=500,
+                detail="微信小程序配置缺失（WECHAT_APPID/WECHAT_SECRET），无法验证登录",
+            )
+        logger.warning(
+            "WECHAT_APPID/WECHAT_SECRET 未配置，使用开发 mock 登录（仅限非生产环境）"
         )
+        return {
+            "openid": f"dev_mock_{hashlib.md5(code.encode()).hexdigest()[:16]}",
+            "session_key": "dev_mock_session_key",
+            "unionid": "",
+        }
 
     url = "https://api.weixin.qq.com/sns/jscode2session"
     params = {
