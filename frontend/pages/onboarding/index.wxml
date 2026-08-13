@@ -1,9 +1,29 @@
 <view class="onboard">
-  <view class="logo">📈</view>
-  <view class="title">AI 营销战略顾问</view>
-  <view class="subtitle">像和真人顾问聊天一样，完成诊断、计划、日程与复盘</view>
-  <view class="login-btn {{logging ? 'disabled' : ''}}" bindtap="onLogin">
-    {{logging ? '登录中…' : '微信登录，开始对话'}}
+  <!-- 背景光晕（深蓝玻璃质感） -->
+  <view class="orb orb-1"></view>
+  <view class="orb orb-2"></view>
+  <view class="orb orb-3"></view>
+
+  <!-- 玻璃登录卡片 -->
+  <view class="glass-card">
+    <view class="logo">📈</view>
+    <view class="title">AI 营销战略顾问</view>
+    <view class="subtitle">像和真人顾问聊天一样，完成诊断、计划、日程与复盘</view>
+
+    <!-- 微信一键登录 -->
+    <button
+      class="wechat-btn {{logging ? 'disabled' : ''}}"
+      hover-class="wechat-btn-hover"
+      bindtap="onLogin"
+      disabled="{{logging}}"
+    >
+      <view class="wx-logo" aria-hidden="true">
+        <view class="b1"></view>
+        <view class="b2"></view>
+      </view>
+      <text class="wechat-btn-text">{{logging ? '登录中…' : '微信一键登录'}}</text>
+    </button>
+
+    <view class="tip">登录仅用于保存你的对话与计划，数据本地加密</view>
   </view>
-  <view class="tip">登录仅用于保存你的对话与计划，数据本地加密</view>
 </view>

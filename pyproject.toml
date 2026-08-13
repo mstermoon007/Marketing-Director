@@ -140,7 +140,7 @@ exclude = [
     "dist",
     "build",
     "*.egg-info",
-    "data/app.db",
+    "data/*.db",
 ]
 
 [tool.ruff.lint.per-file-ignores]

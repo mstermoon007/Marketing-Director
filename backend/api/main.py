@@ -25,7 +25,7 @@ from backend.api.plan import router as plan_router
 from backend.api.review import router as review_router
 from backend.api.roadmap import router as roadmap_router
 from backend.api.task import router as task_router
-from backend.config.settings import PROJECT_ROOT, app_config
+from backend.config.settings import DATABASE_URL, PROJECT_ROOT, app_config
 from backend.db.models import init_db
 
 
@@ -36,6 +36,12 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+logger.info("运行环境: %s | 数据库: %s", app_config.app_env, DATABASE_URL)
+if app_config.app_env == "production":
+    logger.info("=== 生产环境：数据已隔离至生产库 %s ===", DATABASE_URL)
+else:
+    logger.warning("=== 非生产环境(app_env=%s)：数据库为 %s，仅供开发/联调，勿写入客户生产数据 ===",
+                   app_config.app_env, DATABASE_URL)
 logger.info("初始化数据库...")
 init_db()
 
@@ -113,7 +119,7 @@ app.include_router(task_router, prefix="/api", tags=["任务"])
 app.include_router(dashboard_router, prefix="/api", tags=["工作台"])
 
 # 静态文件挂载：仅暴露上传目录（data/uploads），绝不挂载 data/ 根目录，
-# 否则会连带暴露 SQLite 数据库（app.db）等敏感文件。
+# 否则会连带暴露 SQLite 数据库（app_*.db）等敏感文件。
 _UPLOAD_DIR = (PROJECT_ROOT / "data" / "uploads").resolve()
 _UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=str(_UPLOAD_DIR)), name="uploads")

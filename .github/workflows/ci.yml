@@ -32,6 +32,11 @@ jobs:
       - name: Pytest
         run: pytest
 
+      - name: Prod env isolation guard
+        # 校验「生产部署必须分库」契约：误配（生产服务写开发库）必须被运行时护栏拦截，
+        # 正确配置（APP_ENV=production 或独立 DATABASE_URL）必须放行。失败则阻断合并/部署。
+        run: python scripts/check_prod_env.py
+
   frontend:
     name: Frontend (TypeScript build)
     runs-on: ubuntu-latest

@@ -1,14 +1,17 @@
 "use strict";
 /**
- * 本地缓存管理工具（V3.1 整理版）
- *   - 所有 key 统一命名空间前缀 `md:`，避免与历史脏键冲突
+ * 本地缓存管理工具（V3.2 环境隔离版）
+ *   - 业务/用户数据按运行环境加命名空间段：`md:dev:` / `md:prod:`，隔离开发↔生产缓存
+ *   - 环境配置键（dev/prod 后端地址）使用稳定前缀 `md:`，dev/prod 本就异号，无需再分段
  *   - 支持 TTL 自动过期
- *   - 提供开发环境/遗留缓存的统一清理入口
+ *   - 提供开发环境/遗留缓存的统一清理入口（含旧版 `md:` 未分段脏键迁移清理）
  *   - 提供启动时缓存自检报告
+ *
+ * 与后端对应：dev → APP_ENV=development → app_dev.db；prod → APP_ENV=production → app_prod.db。
  *
  * @file    storage.ts
  * @author  AI Marketing Team
- * @version 3.1.0
+ * @version 3.2.0
  * @since   2026-01-01
  */
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -19,8 +22,18 @@ exports.removeStorage = removeStorage;
 exports.clearAllStorage = clearAllStorage;
 exports.clearDevAndLegacyCaches = clearDevAndLegacyCaches;
 exports.storageSelfCheckReport = storageSelfCheckReport;
-/** 缓存键命名空间前缀 */
-const NS = 'md:';
+const env_1 = require("./env");
+/**
+ * 业务/用户数据命名空间前缀（按运行环境隔离）
+ *   develop / trial → md:dev:    （开发/体验版）
+ *   release        → md:prod:    （正式版）
+ */
+const NS = 'md:' + ((0, env_1.detectEnvKind)() === 'prod' ? 'prod:' : 'dev:');
+/**
+ * 环境配置键命名空间（dev/prod 两组后端地址本就异号，保持跨环境稳定，
+ * 以免升级覆盖后开发者已持久化的 `md:dev_api_base` 丢失）。
+ */
+const CFG_NS = 'md:';
 /** 遗留脏键前缀（历史上未带命名空间的旧值） */
 const LEGACY_PREFIX = '_LEGACY_';
 /** 统一缓存键常量（项目中禁止再直接写字符串 key） */
@@ -40,10 +53,10 @@ exports.STORAGE_KEYS = {
     WEEKLY_PLAN: `${NS}weekly_plan_cache`,
     LAST_CHECKIN_TIME: `${NS}last_checkin_time`,
     LATEST_REVIEW: `${NS}latest_review`,
-    // ===== 开发调试专用（不在小程序正式发布环境依赖 =====
-    DEV_API_BASE: `${NS}dev_api_base`,
+    // ===== 开发调试专用（不在小程序正式发布环境依赖；使用稳定 CFG_NS 避免迁移丢失）=====
+    DEV_API_BASE: `${CFG_NS}dev_api_base`,
     /** 生产环境后端基址：登录成功后由后端下发并持久化（取代原先的本地加密/硬编码方案） */
-    API_BASE_URL: `${NS}api_base_url`,
+    API_BASE_URL: `${CFG_NS}api_base_url`,
     // ===== 页面级临时缓存 key 前缀（动态拼接 ID）=====
     PLAN_TASK_PREFIX: `${NS}plan_tasks_`,
     CHECKLIST_PREFIX: `${NS}checklist_`,
@@ -181,6 +194,19 @@ function clearDevAndLegacyCaches() {
             catch ( /* ignore */_a) { /* ignore */ }
         }
     });
+    // 4) 迁移清理：旧版（V3.1）未分段命名空间键 md:business_id / md:api_base_url 等
+    //    当前数据键已升级为 md:dev: / md:prod:，旧键不再被读取，统一回收避免脏读/占用空间。
+    //    注意：当前合法键（含 CFG_NS 的 md:dev_api_base 等）不在此列，不会被误删。
+    const validKeys = new Set(Object.values(exports.STORAGE_KEYS).filter((k) => typeof k === 'string'));
+    allKeys.forEach((k) => {
+        if (k.startsWith('md:') && !validKeys.has(k)) {
+            try {
+                wx.removeStorageSync(k);
+                removed.push(k);
+            }
+            catch ( /* ignore */_a) { /* ignore */ }
+        }
+    });
     return { removed };
 }
 /**
@@ -192,8 +218,8 @@ function storageSelfCheckReport() {
     var _a;
     const info = (_a = wx.getStorageInfoSync) === null || _a === void 0 ? void 0 : _a.call(wx);
     const allKeys = (info === null || info === void 0 ? void 0 : info.keys) || [];
-    const nsKeys = allKeys.filter((k) => k.startsWith(NS));
-    const legacyKeys = allKeys.filter((k) => !k.startsWith(NS));
+    const nsKeys = allKeys.filter((k) => k.startsWith('md:'));
+    const legacyKeys = allKeys.filter((k) => !k.startsWith('md:'));
     const sizes = nsKeys.map((k) => {
         try {
             const raw = null;

@@ -1,43 +1,145 @@
+/* 微信一键登录 · 深蓝玻璃质感 */
 .onboard {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: 0 32px;
-  background: #0a0e1a;
+  padding: 0 48rpx;
+  box-sizing: border-box;
+  overflow: hidden;
+  background:
+    radial-gradient(1200rpx 900rpx at 20% 8%, rgba(59, 130, 246, 0.18), transparent 55%),
+    radial-gradient(1000rpx 800rpx at 85% 95%, rgba(99, 102, 241, 0.16), transparent 55%),
+    linear-gradient(160deg, #0a0e1a 0%, #0b1226 55%, #0a0e1a 100%);
 }
+
+/* 背景模糊光晕（玻璃氛围） */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80rpx);
+  opacity: 0.55;
+  z-index: 0;
+}
+.orb-1 { width: 420rpx; height: 420rpx; top: -80rpx; left: -120rpx; background: rgba(59, 130, 246, 0.55); }
+.orb-2 { width: 360rpx; height: 360rpx; bottom: -60rpx; right: -100rpx; background: rgba(139, 92, 246, 0.45); }
+.orb-3 { width: 280rpx; height: 280rpx; top: 45%; left: 55%; background: rgba(34, 211, 238, 0.28); }
+
+/* 玻璃登录卡片 */
+.glass-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 64rpx 48rpx 56rpx;
+  border-radius: 40rpx;
+  background: rgba(20, 27, 46, 0.45);
+  border: 1rpx solid rgba(255, 255, 255, 0.10);
+  box-shadow:
+    0 24rpx 64rpx rgba(0, 0, 0, 0.45),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(24rpx);
+  -webkit-backdrop-filter: blur(24rpx);
+}
+
 .logo {
-  font-size: 64px;
-  margin-bottom: 16px;
+  font-size: 72rpx;
+  margin-bottom: 20rpx;
+  filter: drop-shadow(0 8rpx 20rpx rgba(59, 130, 246, 0.35));
 }
 .title {
-  font-size: 24px;
+  font-size: 44rpx;
   font-weight: 800;
   color: #eaf1ff;
+  letter-spacing: 1rpx;
 }
 .subtitle {
-  font-size: 14px;
+  font-size: 26rpx;
   color: #9fb0cc;
   text-align: center;
-  margin-top: 10px;
+  margin-top: 14rpx;
   line-height: 1.6;
-  max-width: 280px;
+  max-width: 420rpx;
 }
-.login-btn {
-  margin-top: 40px;
-  background: #2f6bff;
-  color: #fff;
-  font-size: 16px;
+
+/* 微信一键登录按钮（深蓝玻璃） */
+.wechat-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  width: 100%;
+  height: 104rpx;
+  margin-top: 56rpx;
+  padding: 0;
+  border-radius: 28rpx;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.32), rgba(99, 102, 241, 0.26));
+  border: 1rpx solid rgba(96, 165, 250, 0.55);
+  box-shadow:
+    0 12rpx 32rpx rgba(59, 130, 246, 0.30),
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.20);
+  backdrop-filter: blur(12rpx);
+  -webkit-backdrop-filter: blur(12rpx);
+  color: #eaf1ff;
+  font-size: 32rpx;
   font-weight: 600;
-  padding: 14px 40px;
-  border-radius: 26px;
+  letter-spacing: 1rpx;
+  line-height: 1;
 }
-.login-btn.disabled {
+.wechat-btn::after { border: none; } /* 去除 button 默认边框 */
+.wechat-btn-hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.46), rgba(99, 102, 241, 0.38));
+  transform: translateY(1rpx);
+}
+.wechat-btn.disabled {
   opacity: 0.6;
+  background: rgba(38, 48, 74, 0.6);
+  border-color: rgba(255, 255, 255, 0.10);
+  box-shadow: none;
 }
+.wechat-btn-text {
+  color: #eaf1ff;
+}
+
+/* 微信双气泡 logo（CSS 绘制，品牌绿） */
+.wx-logo {
+  position: relative;
+  width: 52rpx;
+  height: 44rpx;
+  flex-shrink: 0;
+}
+.wx-logo .b1,
+.wx-logo .b2 {
+  position: absolute;
+  background: #07c160;
+}
+.wx-logo .b1 {
+  width: 32rpx;
+  height: 28rpx;
+  left: 0;
+  top: 8rpx;
+  border-radius: 50% 50% 50% 8rpx;
+  box-shadow: inset 0 0 0 4rpx rgba(255, 255, 255, 0.92);
+}
+.wx-logo .b2 {
+  width: 28rpx;
+  height: 24rpx;
+  right: 0;
+  top: 0;
+  background: #07c160;
+  border-radius: 50% 50% 8rpx 50%;
+  box-shadow: inset 0 0 0 4rpx rgba(255, 255, 255, 0.92);
+}
+
 .tip {
-  margin-top: 18px;
-  font-size: 12px;
+  margin-top: 28rpx;
+  font-size: 24rpx;
   color: #5f6c86;
+  text-align: center;
+  line-height: 1.5;
 }

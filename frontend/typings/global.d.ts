@@ -65,6 +65,16 @@ interface WxRequestTask {
   onHeadersReceived(cb: (res: { header: Record<string, string> }) => void): void
 }
 
+/** WebSocket 连接任务（connectSocket 返回值），用于流式对话 */
+interface WxSocketTask {
+  send(options: { data: string | ArrayBuffer; success?: () => void; fail?: (err: { errMsg: string }) => void }): void
+  close(options?: { code?: number; reason?: string; success?: () => void; fail?: (err: any) => void }): void
+  onOpen(cb: (res: { header?: Record<string, string> }) => void): void
+  onMessage(cb: (res: { data: string | ArrayBuffer }) => void): void
+  onClose(cb: (res: { code?: number; reason?: string }) => void): void
+  onError(cb: (res: { errMsg: string }) => void): void
+}
+
 // 微信小程序环境内置支持 require
 declare const require: (id: string) => any
 declare const module: any
@@ -94,6 +104,14 @@ declare const wx: {
     fail?: (err: { errMsg: string }) => void
     complete?: () => void
   }): WxRequestTask
+  connectSocket(options: {
+    url: string
+    header?: Record<string, string>
+    protocols?: string[]
+    success?: () => void
+    fail?: (err: { errMsg: string }) => void
+    complete?: () => void
+  }): WxSocketTask
   uploadFile(options: {
     url: string
     filePath: string

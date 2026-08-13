@@ -3,7 +3,7 @@
  *
  * 统一封装：
  *   - chatOnce      非流式一轮对话（降级 / 简单场景）
- *   - streamChat    SSE 流式对话（实时渲染思考过程）
+ *   - streamChat    WebSocket 流式对话（实时渲染思考过程）
  *   - getAgentHistory  读取会话历史
  *   - uploadReviewFiles 上传复盘图片 / 文件（两阶段）
  *
@@ -59,11 +59,12 @@ export function chatOnce(opts: {
 }
 
 /**
- * 流式对话（SSE）。逐事件回调 onEvent，返回的句柄可 abort（见 StreamHandle）。
+ * 流式对话（WebSocket）。逐事件回调 onEvent，返回的句柄可 abort（见 StreamHandle）。
+ * 对应后端 WS /api/agent/chat/ws：连接后发送首帧，再逐条回推 Agent 事件。
  */
 export function streamChat(opts: StreamChatOptions): StreamHandle {
   return stream({
-    url: '/agent/chat/stream',
+    url: '/agent/chat/ws',
     data: {
       message: opts.message,
       session_id: opts.sessionId || '',

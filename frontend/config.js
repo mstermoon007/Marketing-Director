@@ -25,29 +25,28 @@ const storage_1 = require("./utils/storage");
 /** 开发环境后端端口（需与后端 uvicorn --port 保持一致） */
 exports.DEV_PORT = 8000;
 /**
- * 云端 CloudRun 公网地址（生产 bootstrap，同时作为开发环境兜底）。
+ * 云端 CloudRun 公网地址（仅生产/体验版 bootstrap 用）。
  *
- * ⚠️ 不能为空：正式版（release）首次启动时尚未有登录态，getBase() 只能依赖本地址
- * 才能发出第一次 /auth/login 请求；若为空，getBase() 会直接抛错，导致「微信一键登录」
- * 在正式版完全不可用（鸡生蛋问题）。
+ * ⚠️ 不能为空：正式版（release）首次启动尚无登录态时，getBase() 只能依赖本地址
+ * 发出第一次 /auth/login；若为空，微信一键登录在正式版会直接不可用（鸡生蛋问题）。
  *
- * 开发工具模拟器在「探测不到本机局域网 IP / 本机没起后端」时也会回退到这里，
- * 避免硬编码错误 LAN IP（如 192.168.0.105）导致 502、登录永远失败。
- * 如需纯本地开发，用 Console 执行 wx.setStorageSync('md:dev_api_base', 'http://你的IP:8000/api') 覆盖即可。
- * 路径需带 /api，因为请求封装为 base + opts.url（如 /auth/login）。
+ * 注意：本地址【仅】用于生产/体验版引导。开发版（develop）默认走 DEV_DEFAULT_URL（本地后端），
+ * 不再默认指向此处，以免开发/联调数据误写生产库（后端按 APP_ENV 分库：prod → app_prod.db）。
  */
 exports.PROD_DEFAULT_URL = 'https://marketing-agent-295298-11-1466398119.sh.run.tcloudbase.com/api';
 /**
- * 开发环境默认 API 地址。
- * 默认直连云端 CloudRun（开箱即用，无需本地起后端，已验证可达且 0.5s 内响应）；
- * 如需本地联调，用 Console 执行：
- *   wx.setStorageSync('md:dev_api_base', 'http://本机IP:8000/api')
- * 即可覆盖本默认值（resolveDevBaseUrl 优先读 Storage）。
+ * 开发环境默认 API 地址 —— 必须与生产地址解耦，绝不指向 PROD_DEFAULT_URL。
  *
- * 注：原先的「自动探测局域网 IP」方案会命中一个没有后端的 IP，导致
- * /auth/login 出现 502 / 超时、登录永远失败、界面卡在启动，故弃用。
+ * 旧实现 `DEV_DEFAULT_URL = PROD_DEFAULT_URL` 会让开发/联调数据默认写进生产库
+ * （生产部署 APP_ENV=production → app_prod.db），属数据隔离漏洞。
+ *
+ * 这里默认指向本地后端（端口见 DEV_PORT=8000，需本地 `uvicorn --port 8000` 或 Docker 起服务）。
+ * 如需连云端开发后端，在开发者工具 Console 执行一次即可持久化覆盖：
+ *   wx.setStorageSync('md:dev_api_base', 'https://你的-dev-cloudrun/api')
+ * 真机/模拟器连本机后端请用局域网 IP（非 localhost）。
+ * resolveDevBaseUrl 优先级：Storage(md:dev_api_base) → globalData.DEV_API_BASE → 本默认值。
  */
-exports.DEV_DEFAULT_URL = exports.PROD_DEFAULT_URL;
+exports.DEV_DEFAULT_URL = 'http://localhost:8000/api';
 // ======================== 运行时解析 ========================
 /**
  * 获取当前有效的 Dev BaseURL

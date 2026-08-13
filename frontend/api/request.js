@@ -25,9 +25,8 @@ const auth_1 = require("../utils/auth");
 const constants_1 = require("../utils/constants");
 const error_1 = require("../utils/error");
 const config_1 = require("../config");
+const env_1 = require("../utils/env");
 // ======================== 常量集中定义 ========================
-/** 旧占位符域名（生产校验：命中则判定为未配置） */
-const PLACEHOLDER_DOMAIN = 'example.com';
 // ===== 超时配置（环境分级，避免 WAServiceMainContext 全局 timeout 兜底炸崩渲染层）=====
 /** Dev 环境（开发者工具 / 真机调试）：后端没起时 10s 快速失败，不傻等 30s */
 const DEV_TIMEOUT = 10000;
@@ -39,16 +38,10 @@ const DEV_UPLOAD_TIMEOUT = 20000;
 const PROD_UPLOAD_TIMEOUT = 60000;
 /** getBase() 解密总超时：避免 prod 场景下 showModal 等用户操作阻塞初始化整 3s 还没拿到 base → 快速降级 */
 const GET_BASE_RESOLVE_TIMEOUT = 3000;
-/**
- * 流式（SSE）请求超时：分块连接本身会持续较长时间，且后端有心跳保活，
- * 因此使用远大于一次性请求的超时（微信 wx.request timeout 上限约 60s）。
- * 配合后端 SSE 心跳注释行，避免 WAServiceMainContext 的 Error: timeout。
- */
-const STREAM_TIMEOUT = 60000;
 /** 按环境返回默认请求超时（毫秒） */
-const defaultTimeoutMs = () => (detectEnvKind() === 'dev' ? DEV_TIMEOUT : PROD_TIMEOUT);
+const defaultTimeoutMs = () => ((0, env_1.detectEnvKind)() === 'dev' ? DEV_TIMEOUT : PROD_TIMEOUT);
 /** 按环境返回默认上传超时（毫秒） */
-const defaultUploadTimeoutMs = () => detectEnvKind() === 'dev' ? DEV_UPLOAD_TIMEOUT : PROD_UPLOAD_TIMEOUT;
+const defaultUploadTimeoutMs = () => (0, env_1.detectEnvKind)() === 'dev' ? DEV_UPLOAD_TIMEOUT : PROD_UPLOAD_TIMEOUT;
 /**
  * 通用 Promise 超时工具：Promise.race([task, rejectAfter(ms)])
  * 用于任何可能被用户交互/解密/IO 阻塞的异步调用，防止卡死 → 基础库全局 timeout 兜底炸崩
@@ -84,32 +77,6 @@ const _sanitizeLocalhostUrl = (url) => {
  */
 const _resolveDevBaseUrl = () => (0, config_1.resolveDevBaseUrl)();
 /**
- * 根据小程序 envVersion 判定环境
- *   develop  → dev（开发者工具 + 真机调试）
- *   trial    → dev（体验版）
- *   release  → prod（正式版，配置由登录后后端下发，不再本地解密）
- */
-const detectEnvKind = () => {
-    var _a, _b, _c, _d;
-    try {
-        const app = getApp();
-        // 1) 显式 apiBase（兼容老代码，优先级最高，排除占位符域名）
-        if (((_a = app === null || app === void 0 ? void 0 : app.globalData) === null || _a === void 0 ? void 0 : _a.apiBase) &&
-            !app.globalData.apiBase.includes(PLACEHOLDER_DOMAIN) &&
-            /^https?:\/\//.test(app.globalData.apiBase)) {
-            return 'dev';
-        }
-        // 2) 微信官方 envVersion 判断
-        const envVer = (_d = (_c = (_b = wx === null || wx === void 0 ? void 0 : wx.getAccountInfoSync) === null || _b === void 0 ? void 0 : _b.call(wx)) === null || _c === void 0 ? void 0 : _c.miniProgram) === null || _d === void 0 ? void 0 : _d.envVersion;
-        if (envVer === 'release')
-            return 'prod';
-        return 'dev';
-    }
-    catch (_e) {
-        return 'dev';
-    }
-};
-/**
  * 读取登录后持久化的生产地址（后端下发）
  */
 const _readStoredProdBaseUrl = () => {
@@ -127,7 +94,7 @@ const _readStoredProdBaseUrl = () => {
  */
 const _isValidProdBaseUrl = (url) => {
     return (!!url &&
-        !url.includes(PLACEHOLDER_DOMAIN) &&
+        !url.includes(env_1.PLACEHOLDER_DOMAIN) &&
         url.length >= 16 &&
         /^https:\/\/[a-z0-9.-]+(:\d+)?(\/.*)?$/i.test(url));
 };
@@ -154,7 +121,7 @@ const getBase = async () => {
     catch (_b) {
         /* ignore */
     }
-    const env = detectEnvKind();
+    const env = (0, env_1.detectEnvKind)();
     if (env === 'dev') {
         const resolved = _resolveDevBaseUrl();
         // ⚠️ 若最终仍是回环地址（理论上不会），打印 WARN 引导用户
@@ -530,38 +497,21 @@ function utf8Decode(bytes) {
     return out;
 }
 /**
- * 从累加缓冲中切出完整 SSE 事件（以 \n\n 分隔），返回事件数组与剩余未完缓冲。
- */
-function parseSSEBuffer(buffer) {
-    var _a;
-    const parts = buffer.split('\n\n');
-    const rest = (_a = parts.pop()) !== null && _a !== void 0 ? _a : '';
-    const events = [];
-    for (const part of parts) {
-        const lines = part.split('\n').filter((l) => l.startsWith('data:'));
-        for (const line of lines) {
-            const json = line.slice(5).trim();
-            if (!json)
-                continue;
-            try {
-                events.push(JSON.parse(json));
-            }
-            catch (_b) {
-                /* 忽略不完整/非法片段 */
-            }
-        }
-    }
-    return { events, rest };
-}
-/**
- * 流式请求（SSE）：用 wx.request({enableChunked:true}) 接收分块，
- * 解析 `data: {json}\n\n` 事件并逐个回调。用于 Agent 思考过程实时渲染。
+ * 流式请求（WebSocket）：用 wx.connectSocket 建立长连接，
+ * 连接后发送首帧 JSON（opts.data），随后逐个回推后端 Agent 事件（onEvent）。
  *
- * 注意：SSE 走 JSON body（非纯文本），content-type 仍为 application/json。
+ * 对应后端 ``WS /api/agent/chat/ws`` 协议：
+ *   - token 通过 ``?token=`` 查询参数下发（小程序 connectSocket 自定义请求头支持有限）；
+ *   - 后端空闲时下发 ``{"type":"ping"}`` 心跳，前端忽略；
+ *   - 后端下推 ``{"type":"error", "message": ...}`` 时当作失败（reject）；
+ *   - 连接关闭（onClose）即视为流正常结束并 resolve。
+ *
+ * 不再使用 wx.request({enableChunked:true}) 的 SSE 方案，规避微信分块请求
+ * 在部分基础库版本下的 ``Error: timeout``（WAServiceMainContext 原生超时）。
  */
 function stream(opts) {
     let aborted = false;
-    let task = null;
+    let ws = null;
     let settled = false;
     let resolveFn = () => { };
     let rejectFn = () => { };
@@ -582,62 +532,68 @@ function stream(opts) {
     (async () => {
         try {
             const base = _sanitizeLocalhostUrl(await withTimeout(getBase(), GET_BASE_RESOLVE_TIMEOUT, '获取 BaseURL'));
-            // 若在中止后才拿到 base，不再发起请求
+            // 若在中止后才拿到 base，不再发起连接
             if (aborted)
                 return;
             const token = storage_1.TokenStorage.get();
-            const header = Object.assign({ 'Content-Type': 'application/json', Accept: 'text/event-stream' }, (opts.header || {}));
-            if (token)
-                header['Authorization'] = `Bearer ${token}`;
-            let buffer = '';
-            task = wx.request({
-                url: base + opts.url,
-                method: opts.method || 'POST',
-                data: opts.data,
-                header,
-                timeout: opts.timeout || STREAM_TIMEOUT,
-                enableChunked: true,
-                success(res) {
-                    const statusCode = res === null || res === void 0 ? void 0 : res.statusCode;
-                    // 🔴 非 2xx 必须显式报错：鉴权失效(401/403)或服务端错误(5xx) 会让 SSE 根本不开始，
-                    // 若静默吞掉，前端 agent 气泡永远空白 → 用户看到「发消息无反应」。
-                    if (statusCode && statusCode >= 400) {
-                        if (statusCode === 401 || statusCode === 403) {
-                            (0, auth_1.handleTokenExpired)();
-                        }
-                        onErr(`流式请求失败 (HTTP ${statusCode})`);
-                        return;
-                    }
-                    if (!settled) {
-                        settled = true;
-                        resolveFn();
-                    }
-                },
-                fail(err) {
-                    if (aborted)
-                        return;
-                    onErr((err === null || err === void 0 ? void 0 : err.errMsg) || '流式请求失败');
-                },
-            });
-            task.onChunkReceived((res) => {
+            // http(s)://host/api → ws(s)://host/api
+            const wsBase = base.replace(/^http/i, 'ws');
+            const wsUrl = wsBase + opts.url + (token ? `?token=${encodeURIComponent(token)}` : '');
+            ws = wx.connectSocket({ url: wsUrl });
+            ws === null || ws === void 0 ? void 0 : ws.onOpen(() => {
                 if (aborted)
                     return;
                 try {
-                    const text = utf8Decode(new Uint8Array(res.data));
-                    buffer += text;
-                    const { events, rest } = parseSSEBuffer(buffer);
-                    buffer = rest;
-                    for (const e of events)
-                        opts.onEvent(e);
+                    ws === null || ws === void 0 ? void 0 : ws.send({ data: JSON.stringify(opts.data || {}) });
+                }
+                catch (_a) {
+                    onErr('WebSocket 首帧发送失败');
+                }
+            });
+            ws === null || ws === void 0 ? void 0 : ws.onMessage((res) => {
+                if (aborted)
+                    return;
+                try {
+                    const text = typeof res.data === 'string'
+                        ? res.data
+                        : utf8Decode(new Uint8Array(res.data));
+                    const evt = JSON.parse(text);
+                    if (!evt || typeof evt !== 'object')
+                        return;
+                    // 心跳忽略，不回调业务
+                    if (evt.type === 'ping')
+                        return;
+                    // 后端下推的错误事件 → 当作失败处理（与 SSE HTTP>=400 等价）
+                    if (evt.type === 'error') {
+                        if (/token|登录|未登录|失效/i.test(String(evt.message || ''))) {
+                            (0, auth_1.handleTokenExpired)();
+                        }
+                        onErr(evt.message || '流式对话出错');
+                        return;
+                    }
+                    opts.onEvent(evt);
                 }
                 catch (e) {
-                    // 解码异常不中断整个流，仅记录
-                    console.error('[stream] chunk decode error', e);
+                    // 解析异常不中断整个流，仅记录
+                    console.error('[stream] ws message parse error', e);
                 }
+            });
+            ws === null || ws === void 0 ? void 0 : ws.onClose(() => {
+                if (aborted)
+                    return;
+                if (!settled) {
+                    settled = true;
+                    resolveFn();
+                }
+            });
+            ws === null || ws === void 0 ? void 0 : ws.onError((err) => {
+                if (aborted)
+                    return;
+                onErr((err === null || err === void 0 ? void 0 : err.errMsg) || 'WebSocket 连接失败');
             });
         }
         catch (e) {
-            onErr((e === null || e === void 0 ? void 0 : e.message) || '流式请求初始化失败');
+            onErr((e === null || e === void 0 ? void 0 : e.message) || 'WebSocket 初始化失败');
         }
     })();
     const abort = () => {
@@ -645,7 +601,7 @@ function stream(opts) {
             return;
         aborted = true;
         try {
-            task === null || task === void 0 ? void 0 : task.abort();
+            ws === null || ws === void 0 ? void 0 : ws.close({ code: 1000 });
         }
         catch (_a) {
             /* ignore */
@@ -664,7 +620,7 @@ exports.requestUtil = {
     /** 获取当前 baseUrl（调试用，注意：生产环境是异步解密） */
     getBaseUrl: getBase,
     /** 获取当前环境 */
-    detectEnv: detectEnvKind,
+    detectEnv: env_1.detectEnvKind,
     /** 重新设置 baseUrl（本地调试） */
     setBase(url) {
         try {
