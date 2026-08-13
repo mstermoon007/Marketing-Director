@@ -54,10 +54,11 @@ async def run_diagnose(state: dict, memory, kb) -> dict:
     report = res["report"]
     industry = detect_industry(user_msg) or report.get("industry", "")
 
-    # RAG：围绕策略方向与行业检索具体打法
+    # RAG：围绕策略方向与行业检索具体打法（按行业精准命中）
     rag = await search_marketing_knowledge(
         f"{report.get('strategy_summary', '')} {industry} 获客 转化 内容 方法",
         top_k=3,
+        industry=industry or None,
     )
     cards = rag.get("cards", [])
     cards_text = format_cards(cards)

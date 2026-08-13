@@ -69,6 +69,10 @@ export const STORAGE_KEYS = {
   USER_SETTINGS: `${NS}user_settings`,
   /** 用户画像摘要（Agent 记忆，看板展示用） */
   PROFILE_SUMMARY: `${NS}profile_summary`,
+  /** 看板最近一次上传解析出的 KPI（跨页面/重启回显） */
+  DASHBOARD_KPI: `${NS}dashboard_kpi`,
+  /** 个人中心：当前用户名下企业列表 */
+  BUSINESS_LIST: `${NS}business_list`,
 } as const
 
 export type StorageKey = Exclude<

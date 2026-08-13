@@ -35,6 +35,7 @@ from backend.agent_core.sub_agents.diagnosis_agent import run_diagnose
 from backend.agent_core.sub_agents.planner_agent import run_plan
 from backend.agent_core.sub_agents.reviewer_agent import run_review
 from backend.agent_core.sub_agents.scheduler_agent import run_schedule
+from backend.agent_core.common import business_owned_by
 
 
 logger = logging.getLogger(__name__)
@@ -139,11 +140,15 @@ class MainController:
         self.kb = KnowledgeBase()
         self.sessions = SessionManager()
         self.graph = build_agent_graph(self.memory, self.kb)
-        # 首次确保知识库已入库（为空则自动 ingest；rebuild 环境变量可强制重建）
+        # 首次确保知识库已入库：
+        # - rebuild_knowledge=true 时强制重建（清空后从语料全量写入）；
+        # - 否则增量 ingest（补充语料中「尚未入库」的新卡，使重启后能召回新增卡）。
+        #   注意：不能用 ensure_loaded()，它仅在集合为空时才入库，会导致后续追加的
+        #   卡片（如方法库增强）在重启后无法被检索。
         if agent_core_config.rebuild_knowledge:
             self.kb.ingest(force=True)
         else:
-            self.kb.ensure_loaded()
+            self.kb.ingest(force=False)
         logger.info("主控 Agent 已就绪：知识库 %d 张卡片", self.kb.count())
 
     async def chat(
@@ -175,6 +180,11 @@ class MainController:
         """
         session = self.sessions.get_or_create(session_id, user_id)
         biz = business_id or session.business_id
+        # 防 IDOR：客户端传入的 business_id 若不属于当前用户，拒绝下钻他人数据，
+        # 回退为 None（后续按本会话 / 自动建档处理），不抛 404 以免打断对话流。
+        if biz and not await business_owned_by(biz, user_id):
+            logger.warning("business_id %s 不归属当前用户 %s，已回退为 None", biz, user_id)
+            biz = None
 
         state = {
             "user_id": user_id,
@@ -242,6 +252,11 @@ class MainController:
         """
         session = self.sessions.get_or_create(session_id, user_id)
         biz = business_id or session.business_id
+        # 防 IDOR：客户端传入的 business_id 若不属于当前用户，拒绝下钻他人数据，
+        # 回退为 None（后续按本会话 / 自动建档处理），不抛 404 以免打断对话流。
+        if biz and not await business_owned_by(biz, user_id):
+            logger.warning("business_id %s 不归属当前用户 %s，已回退为 None", biz, user_id)
+            biz = None
 
         state = {
             "user_id": user_id,

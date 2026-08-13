@@ -1,0 +1,133 @@
+.profile {
+  padding: 14px;
+  background: #0a0e1a;
+  min-height: 100vh;
+}
+
+/* 用户头 */
+.user-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg, #1b2942, #16223c);
+  border: 1px solid #28395c;
+  border-radius: 14px;
+  padding: 18px 14px;
+  margin-bottom: 14px;
+}
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #2f6bff;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.user-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.user-id {
+  font-size: 15px;
+  color: #eaf1ff;
+  font-weight: 700;
+}
+.user-sub {
+  font-size: 12px;
+  color: #7f8eaa;
+}
+
+/* 卡片通用 */
+.card {
+  background: #141d33;
+  border: 1px solid #23304d;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+.card-title {
+  font-size: 15px;
+  color: #eaf1ff;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.card-empty {
+  font-size: 13px;
+  color: #7f8eaa;
+  line-height: 1.6;
+  padding: 8px 0;
+}
+
+/* 企业列表 */
+.biz-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 10px;
+  border-radius: 10px;
+  border: 1px solid #23304d;
+  margin-bottom: 10px;
+  background: #0f1828;
+}
+.biz-item:last-child { margin-bottom: 0; }
+.biz-active {
+  border-color: #5b8def;
+  background: #16233f;
+}
+.biz-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.biz-name {
+  font-size: 14px;
+  color: #eaf1ff;
+  font-weight: 600;
+}
+.biz-tag {
+  font-size: 12px;
+  color: #7f8eaa;
+}
+.biz-check {
+  font-size: 12px;
+  color: #5b8def;
+  font-weight: 600;
+}
+
+/* 统计 */
+.stat-row {
+  display: flex;
+  justify-content: space-around;
+}
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.stat-num {
+  font-size: 24px;
+  font-weight: 800;
+  color: #5b8def;
+}
+.stat-label {
+  font-size: 12px;
+  color: #9fb0cc;
+}
+
+/* 退出 */
+.logout-btn {
+  margin-top: 10px;
+  background: #2a1822;
+  color: #ff6b81;
+  border: 1px solid #4a2530;
+  text-align: center;
+  font-size: 15px;
+  padding: 12px;
+  border-radius: 12px;
+}

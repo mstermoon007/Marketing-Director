@@ -181,6 +181,25 @@ class RuleBasedDiagnosis:
         overall_score = self._calculate_overall_score(scores, dimensions)
         score_summary = self._generate_score_summary(overall_score, profile)
 
+        # Step 5.5: 离线营销理论分析（不依赖大模型，纯规则/框架匹配）
+        theory: dict = {}
+        frameworks: list = []
+        try:
+            from backend.agent_core.theory import analyze_profile_theory
+            theory = analyze_profile_theory(profile, {})
+            frameworks = theory.get("frameworks", [])
+            # 在策略里追加理论框架与工具提示（增量文本，不影响评分与维度键）
+            notes = []
+            if frameworks:
+                notes.append(f"可套用营销框架：{'、'.join(frameworks)}")
+            tool_names = "、".join(theory.get("recommended_tools", [])[:3])
+            if tool_names:
+                notes.append(f"可借力分析工具：{tool_names}")
+            if notes:
+                strategy_summary = (strategy_summary or "") + "；" + "。".join(notes) + "。"
+        except Exception as e:
+            logger.warning("理论分析附加失败（不影响主诊断）: %s", e)
+
         report = DiagnosisReport(
             business_id=profile.id,
             overall_score=overall_score,
@@ -189,6 +208,8 @@ class RuleBasedDiagnosis:
             top3_problems=top3_problems,
             strategy_summary=strategy_summary,
             this_week_focus=this_week_focus,
+            theory_analysis=theory,
+            frameworks=frameworks,
         )
 
         logger.info(

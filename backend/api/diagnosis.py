@@ -84,8 +84,9 @@ async def _run_diagnosis_with_fallback(profile: BusinessProfile):
         try:
             agent = DiagnosisAgent()
             report = await agent.run(profile)
-            logger.info("诊断Agent第%d次调用成功 | business=%s", attempt, profile.business_name)
-            return report, "llm"
+            logger.info("诊断Agent第%d次调用成功 | business=%s | mode=%s",
+                        attempt, profile.business_name, agent.mode)
+            return report, agent.mode
         except Exception as e:
             last_error = e
             logger.warning("诊断Agent第%d次调用失败: %s", attempt, e)

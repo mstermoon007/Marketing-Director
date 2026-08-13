@@ -42,6 +42,7 @@ from backend.utils.document_parser import (
     merge_parsed_data,
     parse_csv_file,
 )
+from backend.agent_core.kpi_formulas import calculate_retail_kpis
 
 
 logger = logging.getLogger(__name__)
@@ -432,10 +433,16 @@ def calculate_kpi(
     if derived:
         summary += "；派生指标：" + "，".join(f"{k}={v}" for k, v in derived.items())
 
+    # 离线零售 KPI（SKILL-03）：可算则算，附基准诊断，并入 derived 与 retail_kpis
+    retail_kpis = calculate_retail_kpis(numbers)
+    for r in retail_kpis:
+        derived[r["name"]] = r["value"]
+
     return {
         "rows": rows,
         "overall_achievement": overall,
         "derived": derived,
+        "retail_kpis": retail_kpis,
         "trend": trend,
         "summary": summary,
     }
@@ -448,13 +455,31 @@ async def search_marketing_knowledge(
     query: str,
     category: Optional[str] = None,
     top_k: Optional[int] = None,
+    industry: Optional[str] = None,
 ) -> dict:
     """RAG 检索营销方法卡片，返回相关方法（含原理/步骤/可衡量 KPI）。
 
     检索结果会融合「策略有效性评分」做重排序（持续学习）。
+
+    Parameters
+    ----------
+    query : str
+        自然语言查询。
+    category : str | None
+        按类别过滤（内容运营/获客引流/...）。
+    top_k : int | None
+        返回条数。
+    industry : str | None
+        按行业过滤（餐饮/家装/...），与知识库卡片 industry 元数据一致。
+        传入后优先做「行业精准命中」；若精准结果为空（该行业暂无卡片），
+        则回退为不带行业过滤的广搜，避免返回 0 条。
     """
     kb = KnowledgeBase()
-    results = kb.search(query=query, top_k=top_k, category=category)
+    results = kb.search(query=query, top_k=top_k, category=category, industry=industry)
+    # 行业过滤兜底：精准结果为空时放开行业限制，退化为语义广搜
+    if not results and industry:
+        logger.info("行业过滤(%s)无命中，回退广搜", industry)
+        results = kb.search(query=query, top_k=top_k, category=category)
     try:
         from backend.agent_core.learning import apply_strategy_scores
 
@@ -513,8 +538,8 @@ def get_langchain_tools():
         return calculate_kpi(numbers, targets, previous)
 
     @tool("search_marketing_knowledge")
-    async def t_search(query: str, category: Optional[str] = None, top_k: Optional[int] = None) -> dict:
-        """RAG 检索营销方法卡片。query 为自然语言问题。"""
-        return await search_marketing_knowledge(query, category, top_k)
+    async def t_search(query: str, category: Optional[str] = None, top_k: Optional[int] = None, industry: Optional[str] = None) -> dict:
+        """RAG 检索营销方法卡片。query 为自然语言问题；industry 为行业标签（如 餐饮）可按行业精准命中。"""
+        return await search_marketing_knowledge(query, category, top_k, industry)
 
     return [t_diagnose, t_plan, t_schedule, t_upload, t_kpi, t_search]

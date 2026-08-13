@@ -72,7 +72,13 @@ def parse_csv_content(content: str, delimiter: str = ",") -> dict:
 
         # 尝试 key-value 格式（2列）
         if len(rows[0]) == 2 and all(len(r) == 2 for r in rows):
-            for key, val in rows:
+            # 跳过表头：若首行 value 不是数值，视为表头行（如「指标,数值」）
+            start = 0
+            try:
+                float(rows[0][1])
+            except (ValueError, TypeError):
+                start = 1
+            for key, val in rows[start:]:
                 key = key.strip()
                 try:
                     result[key] = float(val)

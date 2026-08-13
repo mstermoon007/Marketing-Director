@@ -12,7 +12,7 @@
  *   // onUnload: unsub()
  */
 
-import { getStorage, setStorage, STORAGE_KEYS } from '../utils/storage'
+import { getStorage, setStorage, removeStorage, STORAGE_KEYS } from '../utils/storage'
 import { AgentIntent, TASK_STATUS } from '../utils/constants'
 import type { Task, DayPlan, DiagnosisReport, SevenDayPlan, ReviewReport } from '../types'
 
@@ -74,6 +74,16 @@ export interface StoreState {
   sessionId: string
   messages: ChatMessage[]
   profile: ProfileSummary | null
+  /** 当前选中的企业 ID（对话/看板/上传复用，避免重复依赖 profile 字段） */
+  currentBusinessId: string
+  /** 个人中心：当前用户名下企业列表 */
+  businesses: Array<{
+    id: string
+    business_name: string
+    industry: string
+    city: string
+    created_at: string | null
+  }>
   /** 最新日程任务（扁平化，含所属日信息） */
   todos: Array<Task & { day_index: number; day_name: string; date: string }>
   /** 最新诊断报告（闭环：对话产出后持久化，看板/详情可查） */
@@ -103,6 +113,8 @@ class Store {
       sessionId: '',
       messages: [],
       profile: null,
+      currentBusinessId: '',
+      businesses: [],
       todos: [],
       diagnosis: null,
       plan: null,
@@ -238,6 +250,23 @@ class Store {
   setProfile(profile: ProfileSummary | null): void {
     this.set({ profile })
     setStorage(STORAGE_KEYS.PROFILE_SUMMARY, profile)
+    // 画像带 business_id 时同步到当前企业，提升上传/排期复用命中率
+    if (profile?.business_id) {
+      this.setCurrentBusinessId(profile.business_id)
+    }
+  }
+
+  /** 设置当前企业 ID（对话/看板/上传复用），持久化便于重启恢复。 */
+  setCurrentBusinessId(id: string): void {
+    if (!id) return
+    this.set({ currentBusinessId: id })
+    setStorage(STORAGE_KEYS.BUSINESS_ID, id)
+  }
+
+  /** 设置当前用户名下企业列表（个人中心用），持久化便于离线展示。 */
+  setBusinesses(list: StoreState['businesses']): void {
+    this.set({ businesses: list || [] })
+    setStorage(STORAGE_KEYS.BUSINESS_LIST, list || [])
   }
 
   setTodos(todos: StoreState['todos']): void {
@@ -312,6 +341,10 @@ class Store {
     }
     const profile = getStorage<ProfileSummary | null>(STORAGE_KEYS.PROFILE_SUMMARY)
     if (profile) this.state.profile = profile
+    const currentBusinessId = getStorage<string>(STORAGE_KEYS.BUSINESS_ID)
+    if (currentBusinessId) this.state.currentBusinessId = currentBusinessId
+    const businesses = getStorage<StoreState['businesses']>(STORAGE_KEYS.BUSINESS_LIST)
+    if (businesses && Array.isArray(businesses)) this.state.businesses = businesses
     const todos = getStorage<StoreState['todos']>(STORAGE_KEYS.SCHEDULE_CACHE)
     if (todos && Array.isArray(todos)) this.state.todos = todos
     const settings = getStorage<UserSettings>(STORAGE_KEYS.USER_SETTINGS)
@@ -330,12 +363,19 @@ class Store {
     setStorage(STORAGE_KEYS.CHAT_SUMMARY, msgs)
   }
 
-  /** 清空（退出登录时调用） */
+  /** 清空（退出登录时调用）。
+   *
+   * 同步清理本地持久化的业务数据（画像/日程/诊断/计划/复盘/KPI/企业列表/当前企业），
+   * 否则下一位用户登录时会从 wx.storage 读到上一位用户的数据，造成数据泄漏。
+   * 注意：登录 token 由 logout 显式清除，这里不触碰。
+   */
   clearAll(): void {
     this.state = {
       sessionId: '',
       messages: [],
       profile: null,
+      currentBusinessId: '',
+      businesses: [],
       todos: [],
       diagnosis: null,
       plan: null,
@@ -343,6 +383,16 @@ class Store {
       agentStatus: { streaming: false, thinking: false, steps: [], intent: undefined },
       settings: { showThinking: true },
     }
+    ;[
+      STORAGE_KEYS.PROFILE_SUMMARY,
+      STORAGE_KEYS.SCHEDULE_CACHE,
+      STORAGE_KEYS.DIAGNOSIS,
+      STORAGE_KEYS.WEEKLY_PLAN,
+      STORAGE_KEYS.LATEST_REVIEW,
+      STORAGE_KEYS.DASHBOARD_KPI,
+      STORAGE_KEYS.BUSINESS_LIST,
+      STORAGE_KEYS.BUSINESS_ID,
+    ].forEach((k) => removeStorage(k))
     this.emit()
   }
 }

@@ -17,6 +17,7 @@ exports.logout = logout;
 exports.handleTokenExpired = handleTokenExpired;
 const request_1 = require("../api/request");
 const storage_1 = require("./storage");
+const index_1 = require("../store/index");
 /**
  * 是否已登录（有token）
  *
@@ -121,6 +122,9 @@ async function ensureLogin(redirectOnFail = false) {
 function logout(redirect = true) {
     storage_1.TokenStorage.clear();
     (0, storage_1.removeStorage)(storage_1.STORAGE_KEYS.USER_INFO);
+    // 清空会话态 + 本地业务数据（画像/日程/诊断/计划/复盘/KPI/企业列表），
+    // 避免下一位用户从 wx.storage 读到上一位用户的数据（数据隔离最后一道闸）。
+    index_1.store.clearAll();
     if (redirect) {
         wx.reLaunch({ url: '/pages/onboarding/index' });
     }

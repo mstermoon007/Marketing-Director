@@ -10,6 +10,7 @@
 import { post } from '../api/request'
 
 import { getStorage, removeStorage, setStorage, STORAGE_KEYS, TokenStorage } from './storage'
+import { store } from '../store/index'
 
 export interface LoginResult {
   token: string
@@ -130,6 +131,9 @@ export async function ensureLogin(redirectOnFail = false): Promise<LoginResult |
 export function logout(redirect = true): void {
   TokenStorage.clear()
   removeStorage(STORAGE_KEYS.USER_INFO)
+  // 清空会话态 + 本地业务数据（画像/日程/诊断/计划/复盘/KPI/企业列表），
+  // 避免下一位用户从 wx.storage 读到上一位用户的数据（数据隔离最后一道闸）。
+  store.clearAll()
   if (redirect) {
     wx.reLaunch({ url: '/pages/onboarding/index' })
   }

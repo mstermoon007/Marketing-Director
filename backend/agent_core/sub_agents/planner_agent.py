@@ -55,9 +55,9 @@ async def run_plan(state: dict, memory, kb) -> dict:
     # 基于计划生成排期 + 提醒
     sched = await schedule_task(business_id, goal=plan.get("theme"))
 
-    # RAG：围绕行业与执行方法检索
+    # RAG：围绕行业与执行方法检索（按行业精准命中）
     rag = await search_marketing_knowledge(
-        f"{industry} 执行计划 获客 内容 私域 方法", top_k=3
+        f"{industry} 执行计划 获客 内容 私域 方法", top_k=3, industry=industry or None
     )
     cards_text = format_cards(rag.get("cards", []))
 

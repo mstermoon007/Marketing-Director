@@ -110,7 +110,7 @@ class LLMConfig:
 class AppConfig:
     """应用全局配置"""
     app_name: str = "AI营销战略执行智能体"
-    app_version: str = "1.0.0"
+    app_version: str = "1.1.0"
     # 运行环境（development / production），与模块级 APP_ENV 保持一致
     app_env: str = APP_ENV
     debug: bool = os.getenv("DEBUG", "false").lower() == "true"

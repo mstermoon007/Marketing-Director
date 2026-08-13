@@ -28,6 +28,8 @@ class Store {
             sessionId: '',
             messages: [],
             profile: null,
+            currentBusinessId: '',
+            businesses: [],
             todos: [],
             diagnosis: null,
             plan: null,
@@ -74,6 +76,7 @@ class Store {
             content: msg.content,
             intent: msg.intent,
             thinkingSteps: msg.thinkingSteps,
+            // 归一化为数组：用户消息等未携带 toolCalls 时避免组件收到 undefined 触发类型告警
             toolCalls: msg.toolCalls || [],
             streaming: msg.streaming,
             card: msg.card,
@@ -139,6 +142,22 @@ class Store {
     setProfile(profile) {
         this.set({ profile });
         (0, storage_1.setStorage)(storage_1.STORAGE_KEYS.PROFILE_SUMMARY, profile);
+        // 画像带 business_id 时同步到当前企业，提升上传/排期复用命中率
+        if (profile === null || profile === void 0 ? void 0 : profile.business_id) {
+            this.setCurrentBusinessId(profile.business_id);
+        }
+    }
+    /** 设置当前企业 ID（对话/看板/上传复用），持久化便于重启恢复。 */
+    setCurrentBusinessId(id) {
+        if (!id)
+            return;
+        this.set({ currentBusinessId: id });
+        (0, storage_1.setStorage)(storage_1.STORAGE_KEYS.BUSINESS_ID, id);
+    }
+    /** 设置当前用户名下企业列表（个人中心用），持久化便于离线展示。 */
+    setBusinesses(list) {
+        this.set({ businesses: list || [] });
+        (0, storage_1.setStorage)(storage_1.STORAGE_KEYS.BUSINESS_LIST, list || []);
     }
     setTodos(todos) {
         this.set({ todos });
@@ -193,11 +212,18 @@ class Store {
     loadCache() {
         const cachedMsgs = (0, storage_1.getStorage)(storage_1.STORAGE_KEYS.CHAT_SUMMARY);
         if (cachedMsgs && Array.isArray(cachedMsgs)) {
-            this.state.messages = cachedMsgs.slice(-MAX_CACHED_MESSAGES).map((m) => (Object.assign(Object.assign({}, m), { toolCalls: (m.toolCalls || []) })));
+            // 兼容旧缓存：确保每条消息都有 toolCalls 数组，避免组件类型告警
+            this.state.messages = cachedMsgs.slice(-MAX_CACHED_MESSAGES).map((m) => (Object.assign(Object.assign({}, m), { toolCalls: m.toolCalls || [] })));
         }
         const profile = (0, storage_1.getStorage)(storage_1.STORAGE_KEYS.PROFILE_SUMMARY);
         if (profile)
             this.state.profile = profile;
+        const currentBusinessId = (0, storage_1.getStorage)(storage_1.STORAGE_KEYS.BUSINESS_ID);
+        if (currentBusinessId)
+            this.state.currentBusinessId = currentBusinessId;
+        const businesses = (0, storage_1.getStorage)(storage_1.STORAGE_KEYS.BUSINESS_LIST);
+        if (businesses && Array.isArray(businesses))
+            this.state.businesses = businesses;
         const todos = (0, storage_1.getStorage)(storage_1.STORAGE_KEYS.SCHEDULE_CACHE);
         if (todos && Array.isArray(todos))
             this.state.todos = todos;
@@ -219,12 +245,19 @@ class Store {
         const msgs = this.state.messages.slice(-MAX_CACHED_MESSAGES);
         (0, storage_1.setStorage)(storage_1.STORAGE_KEYS.CHAT_SUMMARY, msgs);
     }
-    /** 清空（退出登录时调用） */
+    /** 清空（退出登录时调用）。
+     *
+     * 同步清理本地持久化的业务数据（画像/日程/诊断/计划/复盘/KPI/企业列表/当前企业），
+     * 否则下一位用户登录时会从 wx.storage 读到上一位用户的数据，造成数据泄漏。
+     * 注意：登录 token 由 logout 显式清除，这里不触碰。
+     */
     clearAll() {
         this.state = {
             sessionId: '',
             messages: [],
             profile: null,
+            currentBusinessId: '',
+            businesses: [],
             todos: [],
             diagnosis: null,
             plan: null,
@@ -232,6 +265,16 @@ class Store {
             agentStatus: { streaming: false, thinking: false, steps: [], intent: undefined },
             settings: { showThinking: true },
         };
+        [
+            storage_1.STORAGE_KEYS.PROFILE_SUMMARY,
+            storage_1.STORAGE_KEYS.SCHEDULE_CACHE,
+            storage_1.STORAGE_KEYS.DIAGNOSIS,
+            storage_1.STORAGE_KEYS.WEEKLY_PLAN,
+            storage_1.STORAGE_KEYS.LATEST_REVIEW,
+            storage_1.STORAGE_KEYS.DASHBOARD_KPI,
+            storage_1.STORAGE_KEYS.BUSINESS_LIST,
+            storage_1.STORAGE_KEYS.BUSINESS_ID,
+        ].forEach((k) => (0, storage_1.removeStorage)(k));
         this.emit();
     }
 }

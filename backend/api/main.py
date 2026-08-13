@@ -22,6 +22,7 @@ from backend.api.diagnosis import router as diagnosis_router
 from backend.api.execution import router as execution_router
 from backend.api.loops import router as loops_router
 from backend.api.plan import router as plan_router
+from backend.api.profile import router as profile_router
 from backend.api.review import router as review_router
 from backend.api.roadmap import router as roadmap_router
 from backend.api.task import router as task_router
@@ -115,6 +116,7 @@ app.include_router(review_router, prefix="/api", tags=["复盘"])
 app.include_router(auth_router, prefix="/api", tags=["认证"])
 app.include_router(roadmap_router, prefix="/api", tags=["路线图"])
 app.include_router(plan_router, prefix="/api", tags=["周计划"])
+app.include_router(profile_router, prefix="/api", tags=["个人中心"])
 app.include_router(task_router, prefix="/api", tags=["任务"])
 app.include_router(dashboard_router, prefix="/api", tags=["工作台"])
 

@@ -18,25 +18,36 @@ from typing import Optional
 from sqlalchemy import select
 
 from backend.db.models import AsyncSessionLocal, BusinessRecord, ExecutionPlanRecord
-from backend.skills.loader import INDUSTRY_ALIASES
+from backend.skills.loader import INDUSTRY_ALIASES, INDUSTRY_CANONICAL
 
 
 logger = logging.getLogger(__name__)
 
 
+# 行业别名按长度降序，保证「咖啡馆」优先于「餐饮」等长前缀匹配
+_INDUSTRY_CANON_ITEMS = sorted(
+    INDUSTRY_CANONICAL.items(), key=lambda kv: len(kv[0]), reverse=True
+)
+
+
 # ── 行业识别 ──
 def detect_industry(text: str) -> Optional[str]:
-    """从用户文本中识别行业（返回用户说法，如『餐饮』）。未能识别返回 None。"""
+    """从用户文本中识别行业，返回知识库行业标签（如『餐饮』『烘焙坊』）。
+
+    未能识别返回 None。识别结果用于：
+    - 企业档案 industry 字段（与知识库卡片 industry 元数据一致）
+    - RAG 检索的 ``industry`` 过滤条件，确保方法库按行业精确命中
+    """
     if not text:
         return None
-    # 精确包含
-    for alias in INDUSTRY_ALIASES:
+    # 精确包含（长别名优先，避免被短别名抢先匹配）
+    for alias, canon in _INDUSTRY_CANON_ITEMS:
         if alias in text:
-            return alias
-    # 模糊包含
-    for alias in INDUSTRY_ALIASES:
+            return canon
+    # 模糊包含（兜底）
+    for alias, canon in _INDUSTRY_CANON_ITEMS:
         if alias in text or text in alias:
-            return alias
+            return canon
     return None
 
 
@@ -89,6 +100,24 @@ async def business_exists(bid: str) -> bool:
     async with AsyncSessionLocal() as session:
         rec = (
             await session.execute(select(BusinessRecord).filter_by(id=bid))
+        ).scalar_one_or_none()
+        return rec is not None
+
+
+async def business_owned_by(bid: str, user_id: str) -> bool:
+    """校验企业档案归属当前用户（防 IDOR）。
+
+    Agent 接口允许客户端携带 ``business_id``（用于复用既有企业、跨轮连续对话）。
+    若该 ID 属于其他用户，必须拒绝下钻他人数据——但在对话流里不应直接抛 404 打断用户，
+    而是返回 False，由调用方将其视为 None，回退到「按本会话 / 自动建档」的逻辑。
+    """
+    if not bid or not user_id:
+        return False
+    async with AsyncSessionLocal() as session:
+        rec = (
+            await session.execute(
+                select(BusinessRecord).filter_by(id=bid, user_id=user_id)
+            )
         ).scalar_one_or_none()
         return rec is not None
 

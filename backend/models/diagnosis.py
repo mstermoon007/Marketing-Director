@@ -73,6 +73,8 @@ class DiagnosisReport:
     top3_problems: list = field(default_factory=list)      # list[Problem]
     strategy_summary: str = ""                  # 一句话策略方向（执行引擎的关键输入）
     this_week_focus: str = ""                   # 本周应重点做的一件事
+    theory_analysis: dict = field(default_factory=dict)   # 离线营销理论分析（框架+工具）
+    frameworks: list = field(default_factory=list)        # 适用的营销框架 key 列表
     created_at: Optional[datetime] = None
 
     def to_dict(self) -> dict:
@@ -88,6 +90,8 @@ class DiagnosisReport:
             ],
             "strategy_summary": self.strategy_summary,
             "this_week_focus": self.this_week_focus,
+            "theory_analysis": self.theory_analysis,
+            "frameworks": self.frameworks,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 

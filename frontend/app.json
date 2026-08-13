@@ -3,7 +3,8 @@
     "pages/onboarding/index",
     "pages/chat/index",
     "pages/dashboard/index",
-    "pages/schedule/index"
+    "pages/schedule/index",
+    "pages/profile/index"
   ],
   "subpackages": [
     {
@@ -41,6 +42,10 @@
       {
         "pagePath": "pages/schedule/index",
         "text": "日程"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的"
       }
     ]
   },

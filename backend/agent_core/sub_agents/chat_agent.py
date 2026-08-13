@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import re
 
-from backend.agent_core.common import format_cards
+from backend.agent_core.common import detect_industry, format_cards
 from backend.agent_core.tools import search_marketing_knowledge
 
 
@@ -32,8 +32,9 @@ async def run_chat(state: dict, memory, kb) -> dict:
         )
         return state
 
-    # RAG 检索方法卡片作为回答支撑
-    rag = await search_marketing_knowledge(user_msg, top_k=3)
+    # RAG 检索方法卡片作为回答支撑（按行业精准命中）
+    industry = detect_industry(user_msg)
+    rag = await search_marketing_knowledge(user_msg, top_k=3, industry=industry)
     cards = rag.get("cards", [])
     cards_text = format_cards(cards)
 

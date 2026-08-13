@@ -1,0 +1,52 @@
+<view class="profile">
+  <!-- 用户信息头 -->
+  <view class="user-head">
+    <view class="avatar">我</view>
+    <view class="user-meta">
+      <text class="user-id">用户 ID：{{userId || '—'}}</text>
+      <text class="user-sub">AI 营销战略执行智能体</text>
+    </view>
+  </view>
+
+  <!-- 名下企业 -->
+  <view class="card">
+    <view class="card-title">我的企业（{{businesses.length}}）</view>
+    <view wx:if="{{businesses.length}}">
+      <view
+        wx:for="{{businesses}}"
+        wx:key="id"
+        class="biz-item {{item.id === activeBusinessId ? 'biz-active' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="onSelectBusiness"
+      >
+        <view class="biz-main">
+          <text class="biz-name">{{item.business_name}}</text>
+          <text class="biz-tag">{{item.industry}} · {{item.city || '—'}}</text>
+        </view>
+        <text wx:if="{{item.id === activeBusinessId}}" class="biz-check">当前</text>
+      </view>
+    </view>
+    <view wx:else class="card-empty">还没有企业，去对话页让顾问帮你诊断建档吧</view>
+  </view>
+
+  <!-- 历史统计 -->
+  <view class="card">
+    <view class="card-title">我的记录</view>
+    <view class="stat-row">
+      <view class="stat">
+        <text class="stat-num">{{counts.diagnosis}}</text>
+        <text class="stat-label">诊断</text>
+      </view>
+      <view class="stat">
+        <text class="stat-num">{{counts.plan}}</text>
+        <text class="stat-label">计划</text>
+      </view>
+      <view class="stat">
+        <text class="stat-num">{{counts.review}}</text>
+        <text class="stat-label">复盘</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="logout-btn" bindtap="onLogout">退出登录</view>
+</view>

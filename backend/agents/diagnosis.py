@@ -65,6 +65,8 @@ class DiagnosisAgent:
         self.llm = get_llm_provider()
         self.default_template = "diagnosis/system.txt"
         self._use_local = not llm_config.text_api_key
+        # 实际使用的诊断来源（llm / local），供调用方如实上报，避免误标
+        self.mode = "unknown"
 
     def _select_template(self, industry: str) -> str:
         """根据行业选择 Prompt 模板"""
@@ -100,6 +102,7 @@ class DiagnosisAgent:
         # 无 API Key 时，使用本地规则引擎
         if not self._can_use_llm():
             logger.info("DiagnosisAgent 使用本地规则引擎（无 API Key）")
+            self.mode = "local"
             return self._run_local_diagnosis(profile)
 
         # Step 1: 根据行业选择模板并加载渲染（含行业技能注入）
@@ -141,12 +144,14 @@ class DiagnosisAgent:
                 report.strategy_summary[:50] if report.strategy_summary else "(empty)"
             )
 
+            self.mode = "llm"
             return report
 
         except Exception as e:
             logger.warning(
                 "DiagnosisAgent LLM 调用失败，降级到本地规则引擎: %s", e
             )
+            self.mode = "local"
             return self._run_local_diagnosis(profile)
 
     def _run_local_diagnosis(self, profile: BusinessProfile) -> DiagnosisReport:
